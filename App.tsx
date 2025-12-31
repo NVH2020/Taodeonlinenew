@@ -84,7 +84,7 @@ const App: React.FC = () => {
             HỆ THỐNG RA ĐỀ ONLINE <br className="md:hidden" /> MÔN TOÁN
           </h1>
           <p className="text-sm md:text-lg opacity-90 font-bold tracking-wide max-w-2xl mx-auto">
-            Biên soạn bởi đội ngũ giáo viên Toán uy tín, chuyên nghiệp
+            Biên soạn bởi đội ngũ giáo viên Toán uy tín - chuyên nghiệp
           </p>
         </div>
       </header>

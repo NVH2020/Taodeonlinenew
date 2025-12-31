@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ExamResult, Question } from '../types';
 import MathText from './MathText';
 
@@ -22,38 +22,38 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
           <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
         </div>
         <h2 className="text-4xl font-black text-slate-800 mb-2 uppercase tracking-tight">KẾT QUẢ BÀI THI</h2>
-        <p className="text-slate-500 mb-10 font-medium">Bản kết quả chính thức từ Hệ thống thi Online THPT Yên Dũng số 2</p>
+        <p className="text-slate-500 mb-10 font-bold uppercase text-xs tracking-widest">Hệ thống thi trực tuyến THPT Yên Dũng số 2</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-10 text-left">
           <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-inner">
-            <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Thí sinh</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Họ tên thí sinh</p>
             <p className="font-black text-slate-800 text-xl leading-tight">{result.name}</p>
-            <p className="text-sm text-slate-500 mt-1">SBD: {result.sbd} • Lớp: {result.className}</p>
+            <p className="text-sm text-slate-500 mt-1 font-bold">SBD: {result.sbd} • Lớp: {result.className}</p>
           </div>
           <div className="bg-blue-600 p-8 rounded-3xl shadow-2xl flex flex-col justify-center transform hover:scale-105 transition">
-            <p className="text-[10px] font-black text-white/70 uppercase mb-2 tracking-[0.2em]">Điểm số</p>
+            <p className="text-[10px] font-black text-white/70 uppercase mb-2 tracking-[0.2em]">Tổng điểm</p>
             <p className="text-6xl font-black text-white">{result.score.toFixed(2)}</p>
           </div>
           <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-inner">
-            <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Thời gian làm</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Thời gian hoàn thành</p>
             <p className="font-black text-slate-800 text-xl leading-tight">{result.totalTime}</p>
-            <p className="text-sm text-slate-500 mt-1">{new Date(result.timestamp).toLocaleDateString('vi-VN')} {new Date(result.timestamp).toLocaleTimeString('vi-VN')}</p>
+            <p className="text-sm text-slate-500 mt-1 font-bold">{new Date(result.timestamp).toLocaleDateString('vi-VN')} {new Date(result.timestamp).toLocaleTimeString('vi-VN')}</p>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-6 border-t border-slate-100">
           <button onClick={() => setShowReview(!showReview)} className={btnStyle}>
-            {showReview ? 'ĐÓNG XEM LẠI' : 'XEM CHI TIẾT'}
+            {showReview ? 'ĐÓNG XEM CHI TIẾT' : 'XEM LẠI BÀI LÀM'}
           </button>
           <button onClick={onBack} className={btnStyle}>
-            QUAY VỀ TRANG CHỦ
+            VỀ TRANG CHỦ
           </button>
         </div>
       </div>
 
       {showReview && (
         <div className="space-y-8 animate-fade-in">
-          <h3 className="text-2xl font-black text-slate-800 uppercase px-6 border-l-8 border-blue-600 mb-6">ĐÁP ÁN CHI TIẾT</h3>
+          <h3 className="text-2xl font-black text-slate-800 uppercase px-6 border-l-8 border-blue-600 mb-6">ĐÁP ÁN VÀ GIẢI THÍCH</h3>
           {questions.map((q, idx) => {
             const u = result.details[idx].answer;
             const isCorrect = q.type === 'true-false' 
@@ -73,39 +73,24 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
                     </div>
                   </div>
                   <span className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${isCorrect ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
-                    {isCorrect ? '✓ CHÍNH XÁC' : '✗ CHƯA ĐÚNG'}
+                    {isCorrect ? 'Chính xác' : 'Chưa đúng'}
                   </span>
                 </div>
 
-                <div className="text-2xl font-semibold text-slate-800 mb-10 leading-relaxed">
+                <div className="text-2xl font-bold text-slate-800 mb-10 leading-relaxed">
                    <MathText content={q.question} />
                 </div>
 
-                {q.type === 'mcq' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                    {q.o?.map((opt, i) => {
-                      const isUserChoice = u === opt;
-                      const isCorrectChoice = q.a === opt;
-                      return (
-                        <div key={i} className={`p-4 rounded-2xl border-2 flex items-center gap-4 ${isCorrectChoice ? 'bg-emerald-50 border-emerald-500' : (isUserChoice ? 'bg-red-50 border-red-500' : 'bg-slate-50 border-slate-100')}`}>
-                          <span className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm border-2 ${isCorrectChoice ? 'bg-emerald-600 text-white border-emerald-600' : (isUserChoice ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-400 border-slate-200')}`}>{String.fromCharCode(65+i)}</span>
-                          <MathText className="text-slate-700 font-bold" content={opt} />
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
-                    <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Lựa chọn của bạn</p>
-                    <div className="font-black text-slate-700 text-lg">
-                       {q.type === 'true-false' ? (u as any).map((v:any, i:any) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {v===true?'Đúng':(v===false?'Sai':'--')}</span>) : (u || <span className="opacity-50 font-normal">Bỏ trống</span>)}
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Phương án đã chọn</p>
+                    <div className="font-bold text-slate-700 text-lg">
+                       {q.type === 'true-false' ? (u as any).map((v:any, i:any) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {v===true?'Đúng':(v===false?'Sai':'Chưa chọn')}</span>) : (u || <span className="opacity-50">Không trả lời</span>)}
                     </div>
                   </div>
                   <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-inner">
-                    <p className="text-[10px] font-black text-emerald-500 uppercase mb-3 tracking-widest">Đáp án chuẩn</p>
-                    <div className="font-black text-emerald-700 text-lg">
+                    <p className="text-[10px] font-black text-emerald-500 uppercase mb-3 tracking-widest">Đáp án đúng</p>
+                    <div className="font-bold text-emerald-700 text-lg">
                       {q.type === 'true-false' ? q.s!.map((s, i) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {s.a?'Đúng':'Sai'}</span>) : q.a}
                     </div>
                   </div>

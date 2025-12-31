@@ -5,19 +5,19 @@ function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const type = e.parameter.type;
 
-  // 1. Lấy thống kê đánh giá và TOP 10 thực tế
+  // 1. Lấy thống kê đánh giá và TOP 10 Quiz thực tế
   if (type === 'getStats') {
     const stats = {
       ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       top10: []
     };
 
-    // Thống kê sao từ sheet danhgia
+    // Thống kê sao từ sheet danhgia (Cột B - index 1)
     const sheetRate = ss.getSheetByName("danhgia");
     if (sheetRate) {
       const rateData = sheetRate.getDataRange().getValues();
       for (let i = 1; i < rateData.length; i++) {
-        const star = parseInt(rateData[i][1]); // Cột sosao (index 1)
+        const star = parseInt(rateData[i][1]);
         if (star >= 1 && star <= 5) stats.ratings[star]++;
       }
     }
@@ -29,13 +29,13 @@ function doGet(e) {
       const results = [];
       for (let i = 1; i < quizData.length; i++) {
         results.push({
-          name: quizData[i][2], // name
-          score: parseFloat(quizData[i][6]), // tongdiem
-          time: quizData[i][7], // fulltime
-          phone: quizData[i][5].toString() // phoneNumber
+          name: quizData[i][2], // Cột C
+          score: parseFloat(quizData[i][6]), // Cột G
+          time: quizData[i][7], // Cột H
+          phone: quizData[i][5].toString() // Cột F
         });
       }
-      // Sắp xếp: điểm cao trước, thời gian ít sau
+      // Sắp xếp: Điểm cao trước, thời gian ít sau
       results.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.time.localeCompare(b.time);
@@ -49,11 +49,10 @@ function doGet(e) {
     return createResponse("success", "Lấy dữ liệu thành công", stats);
   }
 
-  // 2. Xác minh thí sinh (giữ nguyên logic cũ)
+  // 2. Xác minh thí sinh
   const idnumber = e.parameter.idnumber;
   const sbd = e.parameter.sbd;
   const sheetList = ss.getSheetByName("danhsach");
-  const sheetResult = ss.getSheetByName("ketqua");
   
   if (!sheetList) return createResponse("error", "Không tìm thấy sheet 'danhsach'");
 
@@ -85,7 +84,6 @@ function doGet(e) {
   }
 
   if (!student) return createResponse("error", "Thông tin SBD hoặc ID không khớp!");
-
   return createResponse("success", "Xác minh thành công", student);
 }
 
@@ -97,7 +95,7 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     
-    // Xử lý đánh giá với các cột mới: Timestamp, sosao, name, class, idNumber, taikhoanapp
+    // Xử lý đánh giá: Timestamp, sosao, name, class, idNumber, taikhoanapp
     if (data.type === 'rating') {
       let sheetRate = ss.getSheetByName("danhgia");
       if (!sheetRate) {
@@ -107,15 +105,15 @@ function doPost(e) {
       sheetRate.appendRow([
         new Date(), 
         data.stars, 
-        data.name || "Khách", 
-        data.className || "Tự do", 
-        data.idNumber || "GUEST", 
-        data.taikhoanapp || "FREE"
+        data.name, 
+        data.class, 
+        data.idNumber, 
+        data.taikhoanapp
       ]);
-      return createResponse("success", "Cảm ơn bạn đã đánh giá!");
+      return createResponse("success", "Lưu đánh giá thành công");
     }
 
-    // Xử lý lưu kết quả QuiZ
+    // Xử lý lưu kết quả QuiZ vào sheet riêng
     if (data.type === 'quiz') {
       let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
       if (!sheetQuiz) {
@@ -131,12 +129,12 @@ function doPost(e) {
         data.phoneNumber || "",
         data.score,
         data.totalTime,
-        "" 
+        ""
       ]);
       return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
-    // Xử lý lưu kết quả thi (Exam)
+    // Xử lý lưu kết quả thi (Exam) vào sheet ketqua
     let sheetResult = ss.getSheetByName("ketqua");
     if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
     if (sheetResult.getLastRow() === 0) {

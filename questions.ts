@@ -1,12 +1,10 @@
 
 import { Question } from './types';
 
-// Dữ liệu ngân hàng câu hỏi rút gọn để demo cấu trúc
-export const questionsBank: Question[] = [
-  // ... (giữ nguyên các câu hỏi hiện có)
-];
+// Giả định questionsBank được nạp từ nguồn dữ liệu khác hoặc đã được định nghĩa
+export const questionsBank: Question[] = [];
 
-const shuffleArray = (array: any[]) => {
+const shuffleArray = <T>(array: T[]): T[] => {
   const newArr = [...array];
   for (let i = newArr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -25,6 +23,7 @@ export const pickQuestionsSmart = (
   let selectedPart3: Question[] = [];
   
   topicIds.forEach((tid, idx) => {
+    // Lọc câu hỏi theo chuyên đề
     const pool = questionsBank.filter(q => q.classTag.toString().startsWith(tid.toString() + "."));
     
     const getSub = (type: string, l3: number, l4: number, total: number) => {
@@ -50,10 +49,15 @@ export const pickQuestionsSmart = (
     selectedPart3 = [...selectedPart3, ...getSub('short-answer', levels.sa3[idx] || 0, levels.sa4[idx] || 0, counts.sa[idx] || 0)];
   });
 
-  return [...selectedPart1, ...selectedPart2, ...selectedPart3].map(q => ({
-    ...q,
-    shuffledOptions: q.o ? shuffleArray(q.o) : undefined,
-    // Trộn ngẫu nhiên các ý (statements) trong câu hỏi Đúng/Sai
-    s: q.s ? shuffleArray(q.s) : undefined
-  }));
+  // Xử lý hậu kỳ: Trộn đáp án MCQ và trộn các ý của câu hỏi Đúng/Sai
+  return [...selectedPart1, ...selectedPart2, ...selectedPart3].map(q => {
+    const newQ = { ...q };
+    if (newQ.o) {
+      newQ.shuffledOptions = shuffleArray(newQ.o);
+    }
+    if (newQ.s && newQ.type === 'true-false') {
+      newQ.s = shuffleArray(newQ.s);
+    }
+    return newQ;
+  });
 };

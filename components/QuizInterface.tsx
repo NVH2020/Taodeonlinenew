@@ -69,10 +69,10 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
         setTabSwitches(prev => {
           const newCount = prev + 1;
           if (newCount >= student.limittab) {
-            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần, vượt quá giới hạn cho phép (${student.limittab}). Hệ thống sẽ tự động nộp bài!`);
+            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần, vượt quá giới hạn (${student.limittab}). Hệ thống sẽ tự động nộp bài!`);
             handleSubmit();
           } else {
-            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần. Nếu quá ${student.limittab} lần hệ thống sẽ tự nộp bài!`);
+            alert(`Cảnh báo: Bạn đã chuyển tab ${newCount} lần. Nếu vượt quá ${student.limittab} lần, hệ thống sẽ tự nộp bài!`);
           }
           return newCount;
         });
@@ -118,16 +118,16 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
                    { bg: "bg-orange-600", text: "text-orange-600" };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 font-sans">
       <div className="lg:col-span-1 space-y-6">
         <div className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
            <div className="space-y-3 mb-6">
               <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                 <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Tài khoản ứng dụng</p>
+                 <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Tài khoản hiện tại</p>
                  <p className="font-black text-blue-700 truncate">{student.taikhoanapp || "FREE_USER"}</p>
               </div>
               <div className={`p-4 rounded-2xl border transition-colors ${tabSwitches > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Số lần chuyển Tab</p>
+                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vi phạm chuyển tab</p>
                  <p className={`font-black ${tabSwitches > 0 ? 'text-red-600' : 'text-slate-700'}`}>{tabSwitches} / {student.limittab}</p>
               </div>
            </div>
@@ -142,11 +142,11 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
         </div>
         
         <div className="bg-white p-6 rounded-[2rem] shadow-xl text-center border border-slate-100">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Thời gian</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Thời gian còn lại</p>
           <p className={`text-4xl font-black ${timeLeft < 300 && config.time < 900 ? 'text-red-600 animate-pulse' : 'text-slate-800'}`}>
             {formatTime(timeLeft)}
           </p>
-          <button onClick={() => confirm("Xác nhận nộp bài?") && handleSubmit()} className="w-full mt-6 py-4 bg-red-600 text-white rounded-2xl font-black shadow-lg hover:bg-red-700 transition active:scale-95 border-b-4 border-red-800 uppercase text-sm">Nộp Bài Ngay</button>
+          <button onClick={() => confirm("Bạn có chắc chắn muốn nộp bài?") && handleSubmit()} className="w-full mt-6 py-4 bg-red-600 text-white rounded-2xl font-black shadow-lg hover:bg-red-700 transition active:scale-95 border-b-4 border-red-800 uppercase text-sm">Nộp Bài Thi</button>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
         <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-50 min-h-[600px] flex flex-col animate-fade-in" key={currentIndex}>
           <div className="mb-8">
             <div className="flex flex-col gap-2 mb-6">
-               <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>ID: {currentQuestion.id}</span>
+               <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>Mã: {currentQuestion.id}</span>
                <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorSet.text}`}>{currentQuestion.part}</span>
             </div>
             <div className="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed">
@@ -168,17 +168,17 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
               <label key={i} className={`flex items-center p-5 rounded-2xl border-2 transition-all cursor-pointer group ${answers[currentIndex].answer === opt ? 'border-blue-500 bg-blue-50/50' : 'border-slate-100 hover:border-blue-100 bg-slate-50/30'}`}>
                 <input type="radio" className="hidden" checked={answers[currentIndex].answer === opt} onChange={() => { const n = [...answers]; n[currentIndex].answer = opt; setAnswers(n); }} />
                 <span className={`w-10 h-10 rounded-full flex items-center justify-center font-black mr-4 border-2 transition-colors shrink-0 ${answers[currentIndex].answer === opt ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-300 border-slate-200 group-hover:border-blue-200'}`}>{String.fromCharCode(65+i)}</span>
-                <MathText className="text-base md:text-lg font-medium text-slate-700" content={opt} />
+                <MathText className="text-base md:text-lg font-bold text-slate-700" content={opt} />
               </label>
             ))}
             
             {currentQuestion.type === 'short-answer' && (
-              <input type="text" className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black bg-slate-50 text-blue-900 outline-none" placeholder="Nhập đáp án..." value={answers[currentIndex].answer as string || ''} onChange={e => { const n = [...answers]; n[currentIndex].answer = e.target.value; setAnswers(n); }} />
+              <input type="text" className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black bg-slate-50 text-blue-900 outline-none" placeholder="Nhập đáp án của bạn..." value={answers[currentIndex].answer as string || ''} onChange={e => { const n = [...answers]; n[currentIndex].answer = e.target.value; setAnswers(n); }} />
             )}
             
             {currentQuestion.type === 'true-false' && currentQuestion.s?.map((s, si) => (
               <div key={si} className="bg-slate-50/50 p-5 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 group hover:border-blue-200 transition-colors">
-                <div className="text-slate-700 font-medium text-base md:text-lg flex items-start flex-1">
+                <div className="text-slate-700 font-bold text-base md:text-lg flex items-start flex-1">
                   <span className="text-blue-600 font-black mr-3">{String.fromCharCode(97+si)}.</span>
                   <MathText content={s.text} />
                 </div>
@@ -194,8 +194,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
           </div>
 
           <div className="mt-10 flex justify-between gap-4">
-            <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(p => p - 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Trước</button>
-            <button disabled={currentIndex === questions.length - 1} onClick={() => setCurrentIndex(p => p + 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Tiếp</button>
+            <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(p => p - 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Trước</button>
+            <button disabled={currentIndex === questions.length - 1} onClick={() => setCurrentIndex(p => p + 1)} className="flex-1 py-4 rounded-2xl font-black border-2 border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 disabled:opacity-30 transition-all active:scale-95 text-xs uppercase">Câu Tiếp</button>
           </div>
         </div>
       </div>

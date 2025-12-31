@@ -56,12 +56,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     if (!verifiedStudent || !selectedCode) return alert("Vui lòng xác minh và chọn mã đề!");
     
     let questions: Question[] = [];
-    let finalConfig: any = {};
     const fc = currentCodeDef?.fixedConfig;
-
     if (!fc) return alert("Lỗi cấu hình mã đề!");
 
-    finalConfig = { 
+    const finalConfig = { 
       id: selectedCode, 
       title: currentCodeDef.name, 
       time: fc.duration, 
@@ -86,7 +84,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       }
     );
 
-    if (questions.length === 0) return alert("Ngân hàng không đủ câu hỏi!");
+    if (questions.length === 0) return alert("Ngân hàng không đủ câu hỏi cho phạm vi này!");
     onStart(finalConfig, verifiedStudent, questions);
   };
 
@@ -97,8 +95,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     const level34 = (f.mcL3[0] + f.mcL4[0] + f.tfL3[0] + f.tfL4[0] + f.saL3[0] + f.saL4[0]);
     return {
       parts: `MCQ: ${f.numMC[0]}; TF: ${f.numTF[0]}; SA: ${f.numSA[0]}`,
-      l12: `MỨC 1, 2: ${totalQ - level34}`,
-      l34: `MỨC 3, 4: ${level34}`
+      l12: `Mức 1, 2: ${totalQ - level34}`,
+      l34: `Mức 3, 4: ${level34}`
     };
   }, [currentCodeDef]);
 
@@ -111,37 +109,38 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 
       <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="space-y-6">
-          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Thí sinh</h3>
+          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Thông tin thí sinh</h3>
           <div className="bg-slate-50 p-6 rounded-[2rem] space-y-4 border border-slate-100 shadow-inner">
-            <input type="text" placeholder="ID Giáo viên" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 font-bold" value={idInput} onChange={e => setIdInput(e.target.value)} />
-            <input type="text" placeholder="Số báo danh" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 font-bold" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
+            <input type="text" placeholder="ID Giáo viên" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 font-bold outline-none" value={idInput} onChange={e => setIdInput(e.target.value)} />
+            <input type="text" placeholder="Số báo danh" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-500 font-bold outline-none" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
             <button onClick={handleVerify} disabled={isVerifying} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg hover:bg-blue-700 transition active:scale-95 disabled:opacity-50">
               {isVerifying ? 'ĐANG KIỂM TRA...' : 'XÁC MINH'}
             </button>
             {verifiedStudent && (
-              <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl animate-fade-in text-xs font-bold text-slate-700 space-y-1">
-                <p><span className="text-slate-400 uppercase text-[9px]">Họ tên:</span> {verifiedStudent.name}</p>
-                <p><span className="text-slate-400 uppercase text-[9px]">Lớp:</span> {verifiedStudent.class}</p>
-                <p><span className="text-slate-400 uppercase text-[9px]">SBD:</span> {verifiedStudent.sbd}</p>
-                <p><span className="text-slate-400 uppercase text-[9px]">Lượt thi tối đa:</span> {verifiedStudent.limit}</p>
-                <p><span className="text-slate-400 uppercase text-[9px]">Lượt tab tối đa:</span> {verifiedStudent.limittab}</p>
+              <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl animate-fade-in text-xs font-bold text-slate-700 space-y-2">
+                <p><span className="text-slate-400 uppercase text-[9px]">👤 Họ tên:</span> {verifiedStudent.name}</p>
+                <p><span className="text-slate-400 uppercase text-[9px]">🏫 Lớp:</span> {verifiedStudent.class}</p>
+                <p><span className="text-slate-400 uppercase text-[9px]">🆔 SBD:</span> {verifiedStudent.sbd}</p>
+                <p><span className="text-slate-400 uppercase text-[9px]">🔄 Lượt thi tối đa:</span> {verifiedStudent.limit}</p>
+                <p><span className="text-slate-400 uppercase text-[9px]">🚫 Lượt tab tối đa:</span> {verifiedStudent.limittab}</p>
+                <p><span className="text-slate-400 uppercase text-[9px]">💎 Tài khoản:</span> {verifiedStudent.taikhoanapp}</p>
               </div>
             )}
           </div>
         </div>
 
         <div className="space-y-6">
-          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Mã đề</h3>
+          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Chọn mã đề thi</h3>
           <div className="space-y-4">
-            <select className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl font-black text-blue-700 focus:ring-2 focus:ring-blue-500 shadow-sm transition appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
+            <select className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl font-black text-blue-700 focus:ring-2 focus:ring-blue-500 shadow-sm transition appearance-none outline-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
               <option value="">-- CHỌN MÃ ĐỀ --</option>
               {availableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
             </select>
             {codeInfo && (
               <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem] shadow-inner space-y-2">
-                 <p className="text-[10px] font-black text-blue-400 uppercase">TỔNG SỐ CÂU HỎI</p>
+                 <p className="text-[10px] font-black text-blue-400 uppercase">Thông số đề thi</p>
                  <p className="text-sm font-black text-blue-700 uppercase">{codeInfo.parts}</p>
-                 <p className="text-[10px] font-black text-blue-400 uppercase mt-2">PHÂN PHỐI MỨC ĐỘ</p>
+                 <p className="text-[10px] font-black text-blue-400 uppercase mt-2">Cấu trúc mức độ</p>
                  <p className="text-sm font-black text-blue-700 uppercase">{codeInfo.l12}</p>
                  <p className="text-sm font-black text-blue-700 uppercase">{codeInfo.l34}</p>
               </div>
@@ -150,29 +149,31 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
         </div>
 
         <div className="space-y-6">
-          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Phạm vi</h3>
-          <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 h-[350px] overflow-y-auto shadow-inner">
+          <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Phạm vi kiến thức</h3>
+          <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 h-[350px] overflow-y-auto shadow-inner no-scrollbar">
             {currentCodeDef?.topics === 'manual' ? (
               getTopicRange().map(g => (
-                <div key={g} className="mb-4">
-                  <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Chuyên đề lớp {g}</p>
-                  {TOPICS_DATA[g]?.map(t => (
-                    <label key={t.id} className="flex items-center gap-3 p-2 hover:bg-white rounded-xl cursor-pointer transition">
-                      <input type="checkbox" className="w-5 h-5 rounded" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
-                      <span className="text-xs font-bold text-slate-600">{t.name}</span>
-                    </label>
-                  ))}
+                <div key={g} className="mb-6">
+                  <p className="text-[10px] font-black text-slate-400 uppercase mb-3 border-b border-slate-200 pb-1">Chuyên đề lớp {g}</p>
+                  <div className="space-y-2">
+                    {TOPICS_DATA[g]?.map(t => (
+                      <label key={t.id} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-transparent hover:border-blue-200 cursor-pointer transition shadow-sm group">
+                        <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
+                        <span className="text-[11px] font-bold text-slate-600 leading-tight group-hover:text-blue-700">{t.name}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               ))
             ) : (
-              <div className="text-center p-10 text-slate-400 italic text-sm">Cấu hình cố định</div>
+              <div className="text-center p-10 text-slate-400 font-bold text-sm uppercase">Phạm vi đã được cấu hình cố định</div>
             )}
           </div>
         </div>
       </div>
 
       <div className="p-8 border-t bg-slate-50/50 flex justify-end">
-        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full sm:w-auto px-20 py-5 bg-blue-600 text-white rounded-2xl font-black text-2xl hover:bg-blue-700 transition shadow-2xl disabled:opacity-50 active:scale-95 uppercase tracking-tighter">BẮT ĐẦU THI</button>
+        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full sm:w-auto px-20 py-5 bg-blue-600 text-white rounded-2xl font-black text-2xl hover:bg-blue-700 transition shadow-2xl disabled:opacity-50 active:scale-95 uppercase tracking-tighter border-b-4 border-blue-900">BẮT ĐẦU LÀM BÀI</button>
       </div>
     </div>
   );

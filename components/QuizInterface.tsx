@@ -63,7 +63,6 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
     });
   }, [answers, config, questions, student, timeLeft, tabSwitches, isQuizMode, onFinish]);
 
-  // Theo dõi chuyển tab
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -85,7 +84,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
   }, [student.limittab, handleSubmit]);
 
   useEffect(() => {
-    if (config.id === 'QUIZ' && config.time > 900) return; // Vô hạn thời gian cho Quiz
+    if (config.id === 'QUIZ' && config.time > 900) return; 
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 0) { clearInterval(timer); handleSubmit(); return 0; }
@@ -127,7 +126,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
                  <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Tài khoản ứng dụng</p>
                  <p className="font-black text-blue-700 truncate">{student.taikhoanapp || "FREE_USER"}</p>
               </div>
-              <div className={`p-4 rounded-2xl border transition-colors ${tabSwitches > 0 ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-slate-50 border-slate-100'}`}>
+              <div className={`p-4 rounded-2xl border transition-colors ${tabSwitches > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Số lần chuyển Tab</p>
                  <p className={`font-black ${tabSwitches > 0 ? 'text-red-600' : 'text-slate-700'}`}>{tabSwitches} / {student.limittab}</p>
               </div>

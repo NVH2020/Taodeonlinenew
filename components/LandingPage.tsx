@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { NEWS_DATA, IMAGES_CAROUSEL, VIP_SHEET_URL, DEFAULT_API_URL } from '../config';
 import { AppUser, Student } from '../types';
 
-// Helper ẩn SĐT: 0912345678 -> 09xxx5678
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";
   return phone.slice(0, 2) + "xxx" + phone.slice(-4);
@@ -22,7 +21,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
   
-  // State Đánh giá & Thống kê
   const [showRateModal, setShowRateModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -32,7 +30,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     top10: []
   });
 
-  // Load stats from server
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -49,7 +46,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     };
     fetchStats();
     
-    // Carousel
     const interval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
     }, 4000);
@@ -73,14 +69,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const handleRateSubmit = async () => {
     setIsSubmittingRate(true);
     try {
-      await fetch(VIP_SHEET_URL, {
+      await fetch(DEFAULT_API_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify({
           type: 'rating',
-          phone: user?.phoneNumber || "GUEST",
           stars: rating,
-          comment: comment
+          comment: comment,
+          name: quizInfo.name || user?.phoneNumber || "GUEST",
+          className: quizInfo.class || "Tự do",
+          idNumber: user?.phoneNumber || "GUEST",
+          taikhoanapp: user?.isVip ? "VIP" : "FREE"
         })
       });
       alert("Cảm ơn bạn đã đánh giá!");
@@ -92,8 +91,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     }
   };
 
-  // Fix: Explicitly cast to number[] and type reduce arguments to avoid 'unknown' operator errors
-  const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a: number, b: number) => a + b, 0);
+  const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a, b) => a + b, 0);
 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
@@ -126,69 +124,70 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 3. Khối nội dung chính */}
+      {/* 3. Khối nội dung chính (Layout mới) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: TOP QUIZ (Dữ liệu thật từ stats) */}
-        <div className="lg:col-span-4 flex flex-col">
+        {/* CỘT TRÁI: TOP QUIZ (Hẹp hơn) */}
+        <div className="lg:col-span-3 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
-               <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
+               <i className="fas fa-crown text-yellow-300"></i> TOP 10 TUẦN
             </div>
             <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
               {stats.top10.length > 0 ? stats.top10.map((item) => (
-                <div key={item.rank} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
-                  <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-2">
-                    <span className="font-bold text-slate-800 text-[11px] truncate">{item.rank}. {item.name}</span>
+                <div key={item.rank} className="flex items-center justify-between p-2 bg-white rounded-xl border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-1">
+                    <span className="font-bold text-slate-800 text-[10px] truncate">{item.rank}. {item.name}</span>
                     <span className="text-[9px] text-slate-400 font-bold">{formatPhoneHidden(item.phone)}</span>
                   </div>
                   <div className="text-right flex flex-col shrink-0">
-                    <span className="font-black text-blue-600 text-xs leading-none">{item.score.toFixed(1)} đ</span>
-                    <span className="text-[9px] text-slate-400 italic mt-0.5"><i className="far fa-clock mr-0.5"></i>{item.time}</span>
+                    <span className="font-black text-blue-600 text-[10px] leading-none">{item.score.toFixed(1)} đ</span>
+                    <span className="text-[8px] text-slate-400 mt-0.5"><i className="far fa-clock mr-0.5"></i>{item.time}</span>
                   </div>
                 </div>
               )) : (
-                <div className="p-10 text-center text-slate-400 text-xs italic">Chưa có bảng xếp hạng...</div>
+                <div className="p-10 text-center text-slate-400 text-xs">Đang cập nhật...</div>
               )}
             </div>
           </div>
         </div>
 
-        {/* CỘT GIỮA: ẢNH CAROUSEL */}
-        <div className="lg:col-span-5">
+        {/* CỘT GIỮA: ẢNH CAROUSEL (Rộng hơn) */}
+        <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
               <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg ? 'opacity-100' : 'opacity-0'}`} alt="Carousel" />
             ))}
             <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                <p className="text-white font-black text-sm uppercase tracking-widest italic text-center">Học Tập Sáng Tạo</p>
+                <p className="text-white font-black text-sm uppercase tracking-widest text-center">Học Tập Sáng Tạo Mỗi Ngày</p>
             </div>
           </div>
         </div>
 
-        {/* CỘT PHẢI: NÚT CHỨC NĂNG */}
-        <div className="lg:col-span-3 flex flex-col gap-3 justify-between">
+        {/* CỘT PHẢI: NÚT CHỨC NĂNG (Thêm Logos & Hẹp lại) */}
+        <div className="lg:col-span-2 flex flex-col gap-3 justify-between">
           {[
-            { label: "Đăng ký học Toán", link: "https://www.facebook.com/groups/toanthpthaiduong" },
-            { label: user ? `Chào, ${user.phoneNumber}` : "Đăng nhập hệ thống", action: onOpenAuth },
-            { label: "Nâng cấp tài khoản VIP", action: onOpenVip },
-            { label: "Kho tài liệu học tập", link: "https://www.facebook.com/groups/toanthpthaiduong" },
-            { label: "Hỗ trợ học sinh 24/7", link: "https://www.facebook.com/groups/toanthpthaiduong" }
+            { label: "Đăng ký học", icon: "fas fa-user-plus", link: "https://www.facebook.com/groups/toanthpthaiduong" },
+            { label: user ? user.phoneNumber : "Đăng nhập", icon: "fas fa-sign-in-alt", action: onOpenAuth },
+            { label: "Nâng VIP", icon: "fas fa-gem", action: onOpenVip },
+            { label: "Tài liệu", icon: "fas fa-book", link: "https://www.facebook.com/groups/toanthpthaiduong" },
+            { label: "Hỗ trợ", icon: "fas fa-headset", link: "https://www.facebook.com/groups/toanthpthaiduong" }
           ].map((btn, i) => (
             <button 
               key={i} 
               onClick={btn.action || (() => window.open(btn.link, '_blank'))}
-              className="w-full h-full min-h-[65px] bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase shadow-md border-b-4 border-indigo-900 hover:brightness-110 hover:-translate-y-1 transition-all flex items-center justify-center text-center px-4 leading-tight"
+              className="w-full h-full min-h-[65px] bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase shadow-md border-b-4 border-indigo-900 hover:brightness-110 hover:-translate-y-1 transition-all flex flex-col items-center justify-center text-center p-2 leading-tight gap-1"
             >
+              <i className={`${btn.icon} text-lg`}></i>
               {btn.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* 4. Tin tức */}
+      {/* 4. Tin tức (Xóa italic) */}
       <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 border-b-8 border-slate-200">
-        <h4 className="font-black text-blue-700 uppercase text-xs tracking-widest border-l-4 border-blue-600 pl-4 mb-6 italic">Thông báo mới nhất</h4>
+        <h4 className="font-black text-blue-700 uppercase text-xs tracking-widest border-l-4 border-blue-600 pl-4 mb-6">Thông báo mới nhất</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {NEWS_DATA.slice(0, 6).map((news, i) => (
             <a key={i} href={news.link} target="_blank" rel="noreferrer" className="block p-4 bg-slate-50 hover:bg-blue-50 rounded-2xl border border-slate-100 transition-all hover:shadow-md">
@@ -198,7 +197,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 5. Footer */}
+      {/* 5. Footer (Xóa italic) */}
       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
@@ -227,11 +226,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
         <div className="text-slate-400 space-y-1">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">© 2025 KÊNH HỌC TOÁN CHUYÊN NGHIỆP</p>
-            <p className="text-[9px] font-bold opacity-60 italic uppercase tracking-tighter">THPT Yên Dũng số 2 - Bắc Giang • Admin: Nguyễn Văn Hà</p>
+            <p className="text-[9px] font-bold opacity-60 uppercase tracking-tighter">THPT Yên Dũng số 2 - Bắc Giang • Admin: Nguyễn Văn Hà</p>
         </div>
       </footer>
 
-      {/* Modal Quiz */}
+      {/* Modal Quiz (Xóa italic) */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl animate-fade-in relative border border-slate-100">
@@ -250,19 +249,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       )}
 
-      {/* Modal Đánh giá (Bổ sung Thống kê) */}
+      {/* Modal Đánh giá (Xóa italic, cập nhật thống kê) */}
       {showRateModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6 overflow-hidden">
-            <h3 className="text-xl font-black text-slate-800 uppercase italic">Bạn thấy Web thế nào?</h3>
+            <h3 className="text-xl font-black text-slate-800 uppercase">Đánh giá hệ thống</h3>
             
-            {/* Thống kê số lượt đánh giá */}
             <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} đánh giá</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt đánh giá</p>
               {[5, 4, 3, 2, 1].map(star => {
                 const count = stats.ratings[star] || 0;
-                // Fix: Added explicit casting to ensure comparison and arithmetic operations work on numbers
-                const percent = (totalRatings as number) > 0 ? (count / (totalRatings as number)) * 100 : 0;
+                const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
                 return (
                   <div key={star} className="flex items-center gap-2">
                     <span className="text-[10px] font-bold w-4">{star}★</span>

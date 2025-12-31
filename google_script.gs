@@ -5,34 +5,34 @@ function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const type = e.parameter.type;
 
-  // 1. Lấy thống kê đánh giá và TOP 10
+  // 1. Lấy thống kê đánh giá và TOP 10 thực tế
   if (type === 'getStats') {
     const stats = {
       ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       top10: []
     };
 
-    // Thống kê sao
+    // Thống kê sao từ sheet danhgia
     const sheetRate = ss.getSheetByName("danhgia");
     if (sheetRate) {
       const rateData = sheetRate.getDataRange().getValues();
       for (let i = 1; i < rateData.length; i++) {
-        const star = parseInt(rateData[i][2]);
+        const star = parseInt(rateData[i][1]); // Cột sosao (index 1)
         if (star >= 1 && star <= 5) stats.ratings[star]++;
       }
     }
 
-    // Lấy Top 10 Quiz
+    // Lấy Top 10 Quiz từ sheet ketquaQuiZ
     const sheetQuiz = ss.getSheetByName("ketquaQuiZ");
     if (sheetQuiz) {
       const quizData = sheetQuiz.getDataRange().getValues();
       const results = [];
       for (let i = 1; i < quizData.length; i++) {
         results.push({
-          name: quizData[i][2],
-          score: parseFloat(quizData[i][6]),
-          time: quizData[i][7],
-          phone: quizData[i][5].toString()
+          name: quizData[i][2], // name
+          score: parseFloat(quizData[i][6]), // tongdiem
+          time: quizData[i][7], // fulltime
+          phone: quizData[i][5].toString() // phoneNumber
         });
       }
       // Sắp xếp: điểm cao trước, thời gian ít sau
@@ -86,22 +86,6 @@ function doGet(e) {
 
   if (!student) return createResponse("error", "Thông tin SBD hoặc ID không khớp!");
 
-  let turnsTaken = 0;
-  if (sheetResult) {
-    const results = sheetResult.getDataRange().getValues();
-    if (results.length > 0) {
-      const resHeaders = results[0].map(h => h.toString().toLowerCase().trim());
-      const resIdxSbd = resHeaders.indexOf("sbd");
-      for (let j = 1; j < results.length; j++) {
-        if (results[j][resIdxSbd].toString() === sbd) turnsTaken++;
-      }
-    }
-  }
-
-  if (turnsTaken >= student.limit) {
-    return createResponse("error", "Bạn đã hết lượt thi! (Đã thi " + turnsTaken + "/" + student.limit + " lần)");
-  }
-
   return createResponse("success", "Xác minh thành công", student);
 }
 
@@ -113,16 +97,25 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     
+    // Xử lý đánh giá với các cột mới: Timestamp, sosao, name, class, idNumber, taikhoanapp
     if (data.type === 'rating') {
       let sheetRate = ss.getSheetByName("danhgia");
       if (!sheetRate) {
         sheetRate = ss.insertSheet("danhgia");
-        sheetRate.appendRow(["Timestamp", "Phone", "Stars", "Comment"]);
+        sheetRate.appendRow(["Timestamp", "sosao", "name", "class", "idNumber", "taikhoanapp"]);
       }
-      sheetRate.appendRow([new Date(), data.phone, data.stars, data.comment]);
+      sheetRate.appendRow([
+        new Date(), 
+        data.stars, 
+        data.name || "Khách", 
+        data.className || "Tự do", 
+        data.idNumber || "GUEST", 
+        data.taikhoanapp || "FREE"
+      ]);
       return createResponse("success", "Cảm ơn bạn đã đánh giá!");
     }
 
+    // Xử lý lưu kết quả QuiZ
     if (data.type === 'quiz') {
       let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
       if (!sheetQuiz) {
@@ -143,6 +136,7 @@ function doPost(e) {
       return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
+    // Xử lý lưu kết quả thi (Exam)
     let sheetResult = ss.getSheetByName("ketqua");
     if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
     if (sheetResult.getLastRow() === 0) {

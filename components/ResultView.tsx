@@ -15,14 +15,14 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
   const btnStyle = "w-full sm:w-64 py-4 bg-blue-600 text-white rounded-full font-black text-lg hover:bg-blue-700 transition shadow-xl flex items-center justify-center gap-3 active:scale-95 border-b-4 border-blue-800";
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in pb-20">
+    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in pb-20 font-sans">
       <div className="bg-white p-12 rounded-[3rem] shadow-2xl border border-slate-200 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
           <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
         </div>
         <h2 className="text-4xl font-black text-slate-800 mb-2 uppercase tracking-tight">KẾT QUẢ BÀI THI</h2>
-        <p className="text-slate-500 mb-10 font-medium italic">Bản kết quả chính thức từ Hệ thống thi Online THPT Yên Dũng số 2</p>
+        <p className="text-slate-500 mb-10 font-medium">Bản kết quả chính thức từ Hệ thống thi Online THPT Yên Dũng số 2</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-10 text-left">
           <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-inner">
@@ -81,7 +81,6 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
                    <MathText content={q.question} />
                 </div>
 
-                {/* Show Options for MCQ */}
                 {q.type === 'mcq' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                     {q.o?.map((opt, i) => {
@@ -101,7 +100,7 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
                   <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
                     <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Lựa chọn của bạn</p>
                     <div className="font-black text-slate-700 text-lg">
-                       {q.type === 'true-false' ? (u as any).map((v:any, i:any) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {v===true?'Đúng':(v===false?'Sai':'--')}</span>) : (u || <span className="italic opacity-50 font-normal">Bỏ trống</span>)}
+                       {q.type === 'true-false' ? (u as any).map((v:any, i:any) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {v===true?'Đúng':(v===false?'Sai':'--')}</span>) : (u || <span className="opacity-50 font-normal">Bỏ trống</span>)}
                     </div>
                   </div>
                   <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-inner">

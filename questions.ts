@@ -626,12 +626,12 @@ part: "PHẦN I. CÂU TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN",
 type: "mcq",
 question: "Giá trị của biểu thức $\\cos \\frac{\\pi}{3}$ bằng.",
 o: [
-"$\\frac{1}{2}$. (A Đ 1)",
+"$\\frac{1}{2$. (A Đ 1)",
 "$\\frac{\\sqrt{3}}{2}$. (B)",
-"$\\frac{\\sqrt{2}}{2}$. (C)",
+"$\\frac{\\sqrt{2}}{2$. (C)",
 "$1$. (D)"
 ],
-a: "$\\frac{1}{2}$. (A Đ 1)"
+a: "$\\frac{1}{2$. (A Đ 1)"
 },
 {
 id: 1100008,
@@ -724,12 +724,12 @@ part: "PHẦN I. CÂU TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN",
 type: "mcq",
 question: "Cho $\\sin \\alpha = \\frac{1}{2}$. Tính $\\cos 2\\alpha$.",
 o: [
-"$\\frac{1}{2}$. (A Đ 1)",
+"$\\frac{1}{2$. (A Đ 1)",
 "$0$. (B)",
 "$1$. (C)",
-"$\\frac{\\sqrt{3}}{2}$. (D)"
+"$\\frac{\\sqrt{3}}{2$. (D)"
 ],
-a: "$\\frac{1}{2}$. (A Đ 1)"
+a: "$\\frac{1}{2$. (A Đ 1)"
 },
 {
 id: 1100015,
@@ -755,7 +755,7 @@ o: [
 "$y = \\tan x$. (A Đ 1)",
 "$y = \\sin x$. (B)",
 "$y = \\cos x$. (C)",
-"$y = \\sin \\frac{x}{2}$. (D)"
+"$y = \\sin \\frac{x}{2$. (D)"
 ],
 a: "$y = \\tan x$. (A Đ 1)"
 },
@@ -2005,9 +2005,9 @@ export const pickQuestionsSmart = (
 
       // Logic bốc Mức 4 trước
       let res4 = shuffleArray(p4).slice(0, l4);
-      let deficit4 = l4 - res4.length; // Số câu mức 4 còn thiếu
+      let deficit4 = l4 - res4.length; 
       
-      // Bốc mức 3 (bao gồm cả số câu bù cho mức 4)
+      // Bốc mức 3
       let res3 = shuffleArray(p3).slice(0, l3 + deficit4);
       
       let res = [...res4, ...res3];
@@ -2025,6 +2025,9 @@ export const pickQuestionsSmart = (
 
   return [...selectedPart1, ...selectedPart2, ...selectedPart3].map(q => ({
     ...q,
-    shuffledOptions: q.o ? shuffleArray(q.o) : undefined
+    // Trộn phương án MCQ
+    shuffledOptions: q.o ? shuffleArray(q.o) : undefined,
+    // Trộn các ý (statements) của câu hỏi Đúng/Sai
+    s: q.s ? shuffleArray(q.s) : undefined
   }));
 };

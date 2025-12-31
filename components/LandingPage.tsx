@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { NEWS_DATA, IMAGES_CAROUSEL, VIP_SHEET_URL } from '../config';
+import { NEWS_DATA, IMAGES_CAROUSEL, VIP_SHEET_URL, DEFAULT_API_URL } from '../config';
 import { AppUser, Student } from '../types';
 
 // Helper ẩn SĐT: 0912345678 -> 09xxx5678
@@ -8,20 +8,6 @@ const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";
   return phone.slice(0, 2) + "xxx" + phone.slice(-4);
 };
-
-// Dữ liệu mẫu TOP 10 cho Leaderboard
-const MOCK_LEADERBOARD = [
-  { rank: 1, name: "Nguyễn Văn Hà", phone: "0988948882", score: 10.0, time: "04:12" },
-  { rank: 2, name: "Trần Minh Tâm", phone: "0912345678", score: 10.0, time: "05:45" },
-  { rank: 3, name: "Lê Thị Hồng", phone: "0345678901", score: 9.8, time: "04:50" },
-  { rank: 4, name: "Phạm Quốc Bảo", phone: "0909090909", score: 9.8, time: "06:10" },
-  { rank: 5, name: "Đỗ Mạnh Hùng", phone: "0888888888", score: 9.6, time: "05:15" },
-  { rank: 6, name: "Hoàng Anh Tuấn", phone: "0777777777", score: 9.4, time: "04:55" },
-  { rank: 7, name: "Vũ Thanh Vân", phone: "0911223344", score: 9.4, time: "07:20" },
-  { rank: 8, name: "Ngô Quang Hải", phone: "0933445566", score: 9.2, time: "05:55" },
-  { rank: 9, name: "Lý Gia Kiệt", phone: "0977889900", score: 9.0, time: "06:30" },
-  { rank: 10, name: "Trương Mỹ Linh", phone: "0966554433", score: 8.8, time: "05:40" },
-];
 
 interface LandingPageProps {
   onSelectGrade: (grade: number) => void;
@@ -36,13 +22,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
   
-  // State Đánh giá
+  // State Đánh giá & Thống kê
   const [showRateModal, setShowRateModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [isSubmittingRate, setIsSubmittingRate] = useState(false);
+  const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
+    ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    top10: []
+  });
 
+  // Load stats from server
   useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const url = new URL(DEFAULT_API_URL);
+        url.searchParams.append("type", "getStats");
+        const resp = await fetch(url.toString());
+        const result = await resp.json();
+        if (result.status === "success") {
+          setStats(result.data);
+        }
+      } catch (e) {
+        console.error("Lỗi lấy thống kê:", e);
+      }
+    };
+    fetchStats();
+    
+    // Carousel
     const interval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
     }, 4000);
@@ -85,6 +92,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     }
   };
 
+  // Fix: Explicitly cast to number[] and type reduce arguments to avoid 'unknown' operator errors
+  const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a: number, b: number) => a + b, 0);
+
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
@@ -119,14 +129,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: TOP QUIZ (Cập nhật SĐT & Fulltime) */}
+        {/* CỘT TRÁI: TOP QUIZ (Dữ liệu thật từ stats) */}
         <div className="lg:col-span-4 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
                <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
             </div>
             <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
-              {MOCK_LEADERBOARD.map((item) => (
+              {stats.top10.length > 0 ? stats.top10.map((item) => (
                 <div key={item.rank} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
                   <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-2">
                     <span className="font-bold text-slate-800 text-[11px] truncate">{item.rank}. {item.name}</span>
@@ -137,7 +147,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                     <span className="text-[9px] text-slate-400 italic mt-0.5"><i className="far fa-clock mr-0.5"></i>{item.time}</span>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="p-10 text-center text-slate-400 text-xs italic">Chưa có bảng xếp hạng...</div>
+              )}
             </div>
           </div>
         </div>
@@ -186,7 +198,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 5. Footer mới cập nhật Logo MXH & Đánh giá */}
+      {/* 5. Footer */}
       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
@@ -219,7 +231,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </footer>
 
-      {/* Modal nhập thông tin Quiz */}
+      {/* Modal Quiz */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl animate-fade-in relative border border-slate-100">
@@ -231,21 +243,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 <input required type="tel" placeholder="SĐT liên hệ" className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
               </div>
               <input type="text" placeholder="Trường học" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.school} onChange={e=>setQuizInfo({...quizInfo, school: e.target.value})} />
-              
-              <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">
-                VÀO LUYỆN TẬP
-              </button>
+              <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">VÀO LUYỆN TẬP</button>
             </form>
             <button onClick={() => setShowQuizModal(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors text-2xl">✕</button>
           </div>
         </div>
       )}
 
-      {/* Modal Đánh giá (Star Rating) */}
+      {/* Modal Đánh giá (Bổ sung Thống kê) */}
       {showRateModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
-          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6 overflow-hidden">
             <h3 className="text-xl font-black text-slate-800 uppercase italic">Bạn thấy Web thế nào?</h3>
+            
+            {/* Thống kê số lượt đánh giá */}
+            <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} đánh giá</p>
+              {[5, 4, 3, 2, 1].map(star => {
+                const count = stats.ratings[star] || 0;
+                // Fix: Added explicit casting to ensure comparison and arithmetic operations work on numbers
+                const percent = (totalRatings as number) > 0 ? (count / (totalRatings as number)) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold w-4">{star}★</span>
+                    <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-400" style={{ width: `${percent}%` }}></div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400 w-6 text-right">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+
             <div className="flex justify-center gap-3">
               {[1, 2, 3, 4, 5].map(star => (
                 <button key={star} onClick={() => setRating(star)} className="text-4xl transition-transform hover:scale-125 focus:outline-none">

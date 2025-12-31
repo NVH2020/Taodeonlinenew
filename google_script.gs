@@ -2,10 +2,56 @@
 const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 function doGet(e) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const type = e.parameter.type;
+
+  // 1. Lấy thống kê đánh giá và TOP 10
+  if (type === 'getStats') {
+    const stats = {
+      ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+      top10: []
+    };
+
+    // Thống kê sao
+    const sheetRate = ss.getSheetByName("danhgia");
+    if (sheetRate) {
+      const rateData = sheetRate.getDataRange().getValues();
+      for (let i = 1; i < rateData.length; i++) {
+        const star = parseInt(rateData[i][2]);
+        if (star >= 1 && star <= 5) stats.ratings[star]++;
+      }
+    }
+
+    // Lấy Top 10 Quiz
+    const sheetQuiz = ss.getSheetByName("ketquaQuiZ");
+    if (sheetQuiz) {
+      const quizData = sheetQuiz.getDataRange().getValues();
+      const results = [];
+      for (let i = 1; i < quizData.length; i++) {
+        results.push({
+          name: quizData[i][2],
+          score: parseFloat(quizData[i][6]),
+          time: quizData[i][7],
+          phone: quizData[i][5].toString()
+        });
+      }
+      // Sắp xếp: điểm cao trước, thời gian ít sau
+      results.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.time.localeCompare(b.time);
+      });
+      stats.top10 = results.slice(0, 10).map((r, idx) => ({
+        rank: idx + 1,
+        ...r
+      }));
+    }
+
+    return createResponse("success", "Lấy dữ liệu thành công", stats);
+  }
+
+  // 2. Xác minh thí sinh (giữ nguyên logic cũ)
   const idnumber = e.parameter.idnumber;
   const sbd = e.parameter.sbd;
-  
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheetList = ss.getSheetByName("danhsach");
   const sheetResult = ss.getSheetByName("ketqua");
   
@@ -67,7 +113,6 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     
-    // 1. Xử lý đánh giá
     if (data.type === 'rating') {
       let sheetRate = ss.getSheetByName("danhgia");
       if (!sheetRate) {
@@ -78,7 +123,6 @@ function doPost(e) {
       return createResponse("success", "Cảm ơn bạn đã đánh giá!");
     }
 
-    // 2. Xử lý Quiz (lưu vào ketquaQuiZ)
     if (data.type === 'quiz') {
       let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
       if (!sheetQuiz) {
@@ -94,12 +138,11 @@ function doPost(e) {
         data.phoneNumber || "",
         data.score,
         data.totalTime,
-        "" // xephangtuan để trống cho admin
+        "" 
       ]);
       return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
-    // 3. Xử lý Exam (lưu vào ketqua)
     let sheetResult = ss.getSheetByName("ketqua");
     if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
     if (sheetResult.getLastRow() === 0) {

@@ -1,9 +1,9 @@
-
 import { Question } from './types';
 
-// Giả định questionsBank được nạp từ nguồn dữ liệu khác hoặc đã được định nghĩa
+// Dữ liệu ngân hàng câu hỏi (Vui lòng đảm bảo paste đủ dữ liệu vào đây)
 export const questionsBank: Question[] = [
-   {
+
+ {
 id: 100001,
 classTag: "1001.1",
 part: "PHẦN I. Câu trắc nghiệm nhiều phương án lựa chọn",
@@ -1974,7 +1974,6 @@ type: "short-answer",
 question: "Tính tích phân $I=\\int\\limits_{0}^{1}{xdx}-\\int\\limits_{0}^{2}{34xdx}$(M4.3.3; 7.89)",
 a: "7.89"
 }
-];
 ];
 
 const shuffleArray = <T>(array: T[]): T[] => {

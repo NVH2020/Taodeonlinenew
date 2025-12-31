@@ -34,15 +34,15 @@ const App: React.FC = () => {
       usedIds.add(q.id);
       quizQuestions.push({...q, shuffledOptions: q.o ? [...q.o].sort(() => 0.5 - Math.random()) : undefined});
     }
-    setActiveExam({ id: 'QUIZ', title: `Luyện tập Quiz (${num} câu)`, time: 999, mcqPoints: pts, tfPoints: pts, saPoints: pts, gradingScheme: 1 });
+    setActiveExam({ id: 'QUIZ', title: `Luyện tập Quiz (${num} câu)`, time: 15, mcqPoints: pts, tfPoints: pts, saPoints: pts, gradingScheme: 1 });
     setActiveStudent({ 
       sbd: quizStudent.phoneNumber || 'QUIZ_GUEST', 
       name: quizStudent.name || 'Khách', 
       class: quizStudent.class || 'Tự do',
       school: quizStudent.school || 'Tự do',
       phoneNumber: quizStudent.phoneNumber,
-      limit: 999, 
-      limittab: 999, 
+      limit: 10, 
+      limittab: 10, 
       idnumber: 'QUIZ', 
       taikhoanapp: user?.isVip ? 'VIP' : 'FREE' 
     });

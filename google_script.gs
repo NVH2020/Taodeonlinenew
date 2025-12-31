@@ -20,7 +20,7 @@ function doGet(e) {
   const idxClass = headers.indexOf("class");
   const idxLimit = headers.indexOf("limit");
   const idxLimittab = headers.indexOf("limittab");
-  const idxTk = headers.indexOf("taikhoanapp"); // Cột G
+  const idxTk = headers.indexOf("taikhoanapp");
 
   let student = null;
   for (let i = 1; i < data.length; i++) {
@@ -67,41 +67,18 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     
-    // Xử lý đăng ký / Nâng cấp VIP
-    if (data.type === 'register' || data.type === 'vip') {
-      let sheetVip = ss.getSheetByName("VIP");
-      if (!sheetVip) {
-        sheetVip = ss.insertSheet("VIP");
-        sheetVip.appendRow(["phoneNumber", "password", "status"]);
+    // 1. Xử lý đánh giá
+    if (data.type === 'rating') {
+      let sheetRate = ss.getSheetByName("danhgia");
+      if (!sheetRate) {
+        sheetRate = ss.insertSheet("danhgia");
+        sheetRate.appendRow(["Timestamp", "Phone", "Stars", "Comment"]);
       }
-      
-      const vipData = sheetVip.getDataRange().getValues();
-      let rowIndex = -1;
-      for (let i = 1; i < vipData.length; i++) {
-        if (vipData[i][0].toString().trim() === data.phone.toString().trim()) {
-          rowIndex = i + 1;
-          break;
-        }
-      }
-      
-      if (data.type === 'register') {
-        if (rowIndex === -1) {
-          sheetVip.appendRow([data.phone, data.pass, "MEMBER"]);
-          return createResponse("success", "Đăng ký thành công");
-        } else {
-          return createResponse("error", "Số điện thoại đã được đăng ký trước đó!");
-        }
-      } else if (data.type === 'vip') {
-        if (rowIndex !== -1) {
-          sheetVip.getRange(rowIndex, 3).setValue("VIP");
-          return createResponse("success", "Đã nâng cấp lên VIP");
-        } else {
-          return createResponse("error", "Tài khoản không tồn tại");
-        }
-      }
+      sheetRate.appendRow([new Date(), data.phone, data.stars, data.comment]);
+      return createResponse("success", "Cảm ơn bạn đã đánh giá!");
     }
 
-    // Xử lý lưu kết quả QuiZ
+    // 2. Xử lý Quiz (lưu vào ketquaQuiZ)
     if (data.type === 'quiz') {
       let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
       if (!sheetQuiz) {
@@ -117,12 +94,12 @@ function doPost(e) {
         data.phoneNumber || "",
         data.score,
         data.totalTime,
-        "" // xephangtuan để trống cho admin cập nhật
+        "" // xephangtuan để trống cho admin
       ]);
-      return createResponse("success", "Lưu kết quả QuiZ thành công");
+      return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
-    // Xử lý lưu kết quả thi (Exam)
+    // 3. Xử lý Exam (lưu vào ketqua)
     let sheetResult = ss.getSheetByName("ketqua");
     if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
     if (sheetResult.getLastRow() === 0) {
@@ -140,7 +117,7 @@ function doPost(e) {
       JSON.stringify(data.details)
     ]);
 
-    return createResponse("success", "Lưu kết quả thành công");
+    return createResponse("success", "Lưu kết quả thi thành công");
   } catch (error) {
     return createResponse("error", error.message);
   } finally {

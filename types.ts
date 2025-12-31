@@ -50,7 +50,7 @@ export interface Student {
   sbd: string;
   name: string;
   class: string;
-  school?: string; // Thêm trường trường học cho Quiz
+  school?: string;
   limit: number;
   limittab: number;
   idnumber: string;
@@ -74,7 +74,7 @@ export interface ExamConfig {
 }
 
 export interface ExamResult {
-  type?: 'exam' | 'quiz'; // Phân biệt loại kết quả
+  type?: 'exam' | 'quiz';
   timestamp: string;
   examCode: string;
   sbd: string;

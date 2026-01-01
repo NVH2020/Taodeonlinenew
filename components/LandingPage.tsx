@@ -85,7 +85,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         body: JSON.stringify(payload)
       });
       
-      alert("Cảm ơn bạn đã đánh giá ${rating} sao! ❤️");
+      alert("Cảm ơn bạn đã đánh giá cho web ❤️");
       setShowRateModal(false);
       setComment("");
     } catch (e) {

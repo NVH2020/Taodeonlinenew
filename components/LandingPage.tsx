@@ -137,16 +137,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       </div>
 
       {/* 2. Marquee thông báo */}
-      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
-  <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest">
-    ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-    ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. 
-    ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <span className="text-yellow-300">End: 18:00 chủ nhật</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
+  <div className="relative flex overflow-x-hidden">
+    <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest py-1">
+      ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      
+    </div>
   </div>
 </div>
-      ⭐
+     
 
       {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">

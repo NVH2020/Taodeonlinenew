@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { NEWS_DATA, IMAGES_CAROUSEL, DEFAULT_API_URL } from '../config';
+// Đã thêm DANHGIA_URL vào import
+import { NEWS_DATA, IMAGES_CAROUSEL, DEFAULT_API_URL, DANHGIA_URL } from '../config';
 import { AppUser, Student } from '../types';
 
 const formatPhoneHidden = (phone: string) => {
@@ -30,9 +30,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     top10: []
   });
 
+  // Đã dọn dẹp useEffect: Chỉ dùng 1 khối duy nhất
   useEffect(() => {
-   useEffect(() => {
- useEffect(() => {
     const fetchStats = async () => {
       try {
         // Sử dụng DANHGIA_URL và thêm timestamp để tránh cache
@@ -53,7 +52,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []); // Chỉ chạy 1 lần khi load trang
+  }, []); 
+
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
     if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ họ tên và SĐT!");
@@ -75,7 +75,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     try {
       const payload = {
         type: 'rating',
-        stars: rating, // Sử dụng đúng biến rating từ state của bạn
+        stars: rating, 
         comment: comment,
         name: quizInfo.name || (user?.name || "Khách"),
         class: quizInfo.class || "Tự do",
@@ -83,15 +83,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         taikhoanapp: user?.isVip ? "VIP" : "FREE"
       };
 
-      // 1. Gửi dữ liệu sang Google Sheets qua API
       await fetch(DANHGIA_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(payload)
       });
 
-      // 2. CẬP NHẬT UI TỨC THÌ: Cộng thêm 1 vào thống kê hiện tại trên máy khách
-      // Việc này giúp học sinh thấy con số nhảy lên ngay lập tức, rất chuyên nghiệp.
       setStats(prev => ({
         ...prev,
         ratings: {
@@ -100,14 +97,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         }
       }));
 
-      // 3. Thông báo và đóng Modal
-      alert(`❤️Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
+      alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
       setShowRateModal(false);
       setComment("");
       
     } catch (e) {
       console.error("Lỗi gửi đánh giá:", e);
-      alert("Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!");
+      alert("Có lỗi xảy ra khi gửi đánh giá!");
     } finally {
       setIsSubmittingRate(false);
     }
@@ -120,12 +116,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       
       {/* 1. Header: Nút chọn lớp & Quiz */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
-  <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
-    {/* Nút Kiểm tra Online có thêm ghi chú nhỏ bên dưới */}
-    <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
-      <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
-      <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
-    </div>
+        <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
+          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
+            <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
+            <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
+          </div>
           {[9, 10, 11, 12].map(g => (
             <button key={g} onClick={() => onSelectGrade(g)} className="px-5 py-3 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 active:scale-95 transition-all h-[56px]">
               LỚP {g}
@@ -148,10 +143,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 3. Khối nội dung chính (Layout mới hẹp 2 bên) */}
+      {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        {/* CỘT TRÁI: TOP QUIZ TUẦN (LG 3) */}
+        {/* CỘT TRÁI: TOP QUIZ TUẦN */}
         <div className="lg:col-span-3 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
@@ -176,7 +170,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT GIỮA: ẢNH CAROUSEL (LG 7 - Mở rộng) */}
+        {/* CỘT GIỮA: ẢNH CAROUSEL */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
@@ -188,7 +182,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT PHẢI: NÚT CHỨC NĂNG (LG 2 - Hẹp lại) */}
+        {/* CỘT PHẢI: NÚT CHỨC NĂNG */}
         <div className="lg:col-span-2 flex flex-col gap-3">
           {[
             { label: "Trợ lý học tập", icon: "fas fa-headset", link: "https://new-chat-bot-two.vercel.app/" },
@@ -196,7 +190,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             { label: user ? `SĐT: ${user.phoneNumber}` : "Đăng Nhập", icon: "fas fa-sign-in-alt", action: onOpenAuth },
             { label: "Nâng Cấp VIP", icon: "fas fa-gem", action: onOpenVip },
             { label: "Kho Tài Liệu", icon: "fas fa-folder-open", link: "https://www.facebook.com/hoctoanthayha.bg" }
-           
           ].map((btn, i) => (
             <button 
               key={i} 
@@ -210,7 +203,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 4. Tin tức (Xóa in nghiêng) */}
+      {/* 4. Tin tức */}
       <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 border-b-8 border-slate-200">
         <h4 className="font-black text-blue-700 uppercase text-xs tracking-widest border-l-4 border-blue-600 pl-4 mb-6">Tin tức & Sự kiện học đường</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -222,43 +215,36 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 5. Footer (Xóa in nghiêng) */}
+      {/* 5. Footer */}
       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
             <span className="text-xl">⭐</span> ĐÁNH GIÁ WEB
           </button>
         </div>
-
         <div className="flex justify-center gap-8">
           {[
             { id: 'fb', icon: 'fa-facebook-f', color: '#1877F2', link: 'https://www.facebook.com/hoctoanthayha.bg' },
             { id: 'tw', icon: 'fa-twitter', color: '#1DA1F2', link: 'https://x.com/Math_teacher_Ha' },
             { id: 'tg', icon: 'fa-telegram-plane', color: '#229ED9', link: 'https://www.telegram.org' }
           ].map((social) => (
-            <a 
-              key={social.id} 
-              href={social.link} 
-              target="_blank" 
-              rel="noreferrer" 
-              style={{ backgroundColor: social.color }}
+            <a key={social.id} href={social.link} target="_blank" rel="noreferrer" style={{ backgroundColor: social.color }}
               className="w-12 h-12 rounded-2xl text-white flex items-center justify-center text-xl shadow-lg hover:rotate-12 hover:scale-110 transition-all border-b-4 border-black/20"
             >
               <i className={`fab ${social.icon}`}></i>
             </a>
           ))}
         </div>
-
         <div className="text-slate-400 space-y-1">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">© 2025 KÊNH HỌC TOÁN TRỰC TUYẾN CHUYÊN NGHIỆP</p>
-            <p className="text-[9px] font-bold opacity-60 uppercase tracking-tighter">Phát triên bởi nhóm giáo viên toán• Admin: Nguyễn Văn Hà</p>
+            <p className="text-[9px] font-bold opacity-60 uppercase tracking-tighter">Phát triên bởi nhóm giáo viên toán • Admin: Nguyễn Văn Hà</p>
         </div>
       </footer>
 
-      {/* Modal Quiz (Xóa in nghiêng) */}
+      {/* Modals (Giữ nguyên logic của bạn) */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl animate-fade-in relative border border-slate-100">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl relative border border-slate-100">
             <h2 className="text-2xl font-black text-orange-500 mb-6 uppercase tracking-tighter text-center">Thông tin luyện tập</h2>
             <form onSubmit={handleStartQuiz} className="space-y-4">
               <input required type="text" placeholder="Họ và tên" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.name} onChange={e=>setQuizInfo({...quizInfo, name: e.target.value})} />
@@ -274,14 +260,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       )}
 
-      {/* Modal Đánh giá (Cập nhật thống kê và xóa in nghiêng) */}
       {showRateModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
-          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6 overflow-hidden">
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
             <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá ứng dụng</h3>
-            
             <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt đánh giá</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt</p>
               {[5, 4, 3, 2, 1].map(star => {
                 const count = stats.ratings[star] || 0;
                 const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
@@ -296,7 +280,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 );
               })}
             </div>
-
             <div className="flex justify-center gap-3">
               {[1, 2, 3, 4, 5].map(star => (
                 <button key={star} onClick={() => setRating(star)} className="text-4xl transition-transform hover:scale-125 focus:outline-none">
@@ -304,27 +287,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 </button>
               ))}
             </div>
-            <textarea 
-              className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24"
-              placeholder="Chia sẻ ý kiến của bạn về ứng dụng..."
-              value={comment}
-              onChange={e => setComment(e.target.value)}
-            ></textarea>
+            <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24" placeholder="Ý kiến của bạn..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
             <div className="flex gap-3">
               <button onClick={() => setShowRateModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase text-xs">Đóng</button>
-              <button 
-                onClick={handleRateSubmit} 
-                disabled={isSubmittingRate}
-                className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-indigo-200"
-              >
-                {isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}
-              </button>
+              <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg">{isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* CSS Styles */}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

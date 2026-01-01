@@ -146,6 +146,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           </div>
         </div>   
+       </div>
 
       {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">

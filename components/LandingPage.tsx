@@ -93,7 +93,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
       await fetch(DANHGIA_URL, {
         method: 'POST',
-        mode: 'no-cors',
+        // mode: 'no-cors',
         body: JSON.stringify(payload)
       });
 

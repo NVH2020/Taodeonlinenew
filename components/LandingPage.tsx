@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL } from '../config';
 import { AppUser, Student } from '../types';
@@ -66,33 +65,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     }
     setShowQuizModal(null);
   };
-
-  const handleRateSubmit = async () => {
+ const handleRateSubmit = async () => {
     if (isSubmittingRate) return;
     setIsSubmittingRate(true);
+
     try {
       const payload = {
         type: 'rating',
-        stars: rating,
+        stars: rating, 
         comment: comment,
-        name: user?.name || quizInfo.name || "Khách",
+        name: quizInfo.name || (user?.name || "Khách"),
         class: quizInfo.class || "Tự do",
         idNumber: user?.phoneNumber || "GUEST",
         taikhoanapp: user?.isVip ? "VIP" : "FREE"
       };
+
       await fetch(DANHGIA_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(payload)
       });
-      alert("Cảm ơn bạn đã đánh giá!");
+
+      setStats(prev => ({
+        ...prev,
+        ratings: {
+          ...prev.ratings,
+          [rating]: (prev.ratings[rating] || 0) + 1
+        }
+      }));
+
+      alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} ⭐ cho hệ thống! ❤️`);
       setShowRateModal(false);
+      setComment("");
+      
     } catch (e) {
-      alert("Gửi đánh giá thất bại!");
+      console.error("Lỗi gửi đánh giá:", e);
+      alert("Có lỗi xảy ra khi gửi đánh giá!");
     } finally {
       setIsSubmittingRate(false);
     }
   };
+  
 
   const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a, b) => a + b, 0);
 

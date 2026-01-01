@@ -20,6 +20,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
+  const [isOtherSchool, setIsOtherSchool] = useState(false);
+  const [isOtherBank, setIsOtherBank] = useState(false);
   
   const [showRateModal, setShowRateModal] = useState(false);
   const [rating, setRating] = useState(5);

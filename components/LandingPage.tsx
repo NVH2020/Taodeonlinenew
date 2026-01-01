@@ -20,8 +20,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
-  const [isOtherSchool, setIsOtherSchool] = useState(false);
-  const [isOtherBank, setIsOtherBank] = useState(false);
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
   
   const [showRateModal, setShowRateModal] = useState(false);
@@ -101,28 +99,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
-      {/* 1. Header: Nút chọn lớp & Quiz */}
+      {/* 1. Header: Nút chọn lớp & Quiz - Căn chỉnh đồng đều h-[60px] */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
-          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
+          <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg shrink-0 flex items-center justify-center h-[60px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
             <span className="font-black text-sm uppercase flex items-center gap-2">
-              <i className="fas fa-fire"></i> Kiểm tra Online →
+              <i className="fas fa-edit"></i> Kiểm tra Online →
             </span>
           </div>
           {[
             {g: 9, icon: 'fas fa-graduation-cap'},
-            {g: 10, icon: 'fas fa-user-graduate'},
-            {g: 11, icon: 'fas fa-school'},
-            {g: 12, icon: 'fas fa-university'}
+            {g: 10, icon: 'fas fa-school'},
+            {g: 11, icon: 'fas fa-university'},
+            {g: 12, icon: 'fas fa-user-graduate'}
           ].map(item => (
-            <button key={item.g} onClick={() => onSelectGrade(item.g)} className="px-5 py-3 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 active:scale-95 transition-all h-[56px] flex items-center gap-2">
+            <button key={item.g} onClick={() => onSelectGrade(item.g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 active:scale-95 transition-all h-[60px] flex items-center justify-center gap-2 min-w-[120px]">
               <i className={item.icon}></i> LỚP {item.g}
             </button>
           ))}
-          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-5 py-3 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[56px] uppercase whitespace-nowrap flex items-center gap-2">
-            <i className="fas fa-vial"></i> QUIZ 10
+          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
+            <i className="fas fa-bolt"></i> QUIZ 10
           </button>
-          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-5 py-3 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[56px] uppercase whitespace-nowrap flex items-center gap-2">
+          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
             <i className="fas fa-brain"></i> QUIZ 20
           </button>
         </div>
@@ -136,7 +134,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 3. Khối nội dung chính (Layout hẹp 2 bên) */}
+      {/* 3. Khối nội dung chính (Layout hẹp 2 bên - giữa rộng) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* CỘT TRÁI: TOP QUIZ (LG 3) */}
@@ -164,26 +162,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT GIỮA: ẢNH CAROUSEL (LG 7) */}
+        {/* CỘT GIỮA: ẢNH CAROUSEL (LG 7 - Mở rộng) */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
               <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg ? 'opacity-100' : 'opacity-0'}`} alt="Carousel" />
             ))}
             <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                <p className="text-white font-black text-sm uppercase tracking-widest text-center">Học Tập - Sáng Tạo - Bứt Phá</p>
+                <p className="text-white font-black text-sm uppercase tracking-widest text-center">Hệ thống học tập chuyên nghiệp - Kết quả bứt phá</p>
             </div>
           </div>
         </div>
 
-        {/* CỘT PHẢI: NÚT CHỨC NĂNG (LG 2) */}
+        {/* CỘT PHẢI: NÚT CHỨC NĂNG (LG 2 - Hẹp lại) */}
         <div className="lg:col-span-2 flex flex-col gap-3">
           {[
-            { label: "Nhóm Facebook", icon: "fab fa-facebook", link: "https://www.facebook.com/hoctoanthayha.bg" },
+            { label: "Vào Học Nhóm", icon: "fas fa-users", link: "https://www.facebook.com/hoctoanthayha.bg" },
             { label: user ? `SĐT: ${user.phoneNumber}` : "Đăng Nhập", icon: "fas fa-sign-in-alt", action: onOpenAuth },
             { label: "Nâng Cấp VIP", icon: "fas fa-gem", action: onOpenVip },
-            { label: "Kho Tài Liệu", icon: "fas fa-folder-open", link: "https://www.facebook.com/hoctoanthayha.bg" },
-            { label: "Hỗ Trợ Zalo", icon: "fas fa-headset", link: "https://zalo.me/0988948882" }
+            { label: "Kho Tài Liệu", icon: "fas fa-book-open", link: "https://www.facebook.com/hoctoanthayha.bg" },
+            { label: "Hỗ Trợ Online", icon: "fas fa-headset", link: "https://zalo.me/0988948882" }
           ].map((btn, i) => (
             <button 
               key={i} 
@@ -209,7 +207,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 5. Footer */}
+      {/* 5. Footer - Chỉ dùng Logo cho FB, TW, TG */}
       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
@@ -246,38 +244,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 <input type="text" placeholder="Lớp" className="p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.class} onChange={e=>setQuizInfo({...quizInfo, class: e.target.value})} />
                 <input required type="tel" placeholder="Số điện thoại" className="p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
               </div>
-              
-              {!isOtherSchool ? (
-                <select className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-orange-500"
-                  onChange={(e) => e.target.value === "Khác" ? setIsOtherSchool(true) : setQuizInfo({ ...quizInfo, school: e.target.value })}>
-                  <option value="">Chọn trường học</option>
-                  <option value="THPT Yên Dũng số 2">THPT Yên Dũng số 2</option>
-                  <option value="THPT Yên Dũng số 1">THPT Yên Dũng số 1</option>
-                  <option value="Khác">Trường khác...</option>
-                </select>
-              ) : (
-                <input autoFocus type="text" placeholder="Nhập tên trường của bạn" className="w-full p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 font-black outline-none"
-                  onChange={e => setQuizInfo({ ...quizInfo, school: e.target.value })} />
-              )}
-
-              <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
-                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center">Bank nhận thưởng</p>
-                <input type="text" placeholder="Số tài khoản" className="w-full p-4 bg-white rounded-2xl border-none font-black outline-none" value={bankInfo.stk} onChange={e => setBankInfo({ ...bankInfo, stk: e.target.value })} />
-                {!isOtherBank ? (
-                  <select className="w-full p-4 bg-white rounded-2xl border-none font-black outline-none" onChange={(e) => e.target.value === "Khác" ? setIsOtherBank(true) : setBankInfo({ ...bankInfo, bankName: e.target.value })}>
-                    <option value="">Chọn ngân hàng</option>
-                    <option value="Agribank">Agribank</option>
-                    <option value="MB Bank">MB Bank</option>
-                    <option value="Vietcombank">Vietcombank</option>
-                    <option value="Khác">Khác...</option>
-                  </select>
-                ) : (
-                  <input autoFocus type="text" placeholder="Tên ngân hàng" className="w-full p-4 bg-white rounded-2xl border-2 border-orange-200 font-black outline-none" onChange={e => setBankInfo({ ...bankInfo, bankName: e.target.value })} />
-                )}
+              <input type="text" placeholder="Trường học" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black outline-none" value={quizInfo.school} onChange={e=>setQuizInfo({...quizInfo, school: e.target.value})} />
+              <div className="p-4 bg-orange-50 rounded-2xl space-y-2">
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center">Nhận thưởng (STK/Ngân hàng)</p>
+                <input type="text" placeholder="Số tài khoản" className="w-full p-3 bg-white rounded-xl font-bold" value={bankInfo.stk} onChange={e=>setBankInfo({...bankInfo, stk: e.target.value})} />
+                <input type="text" placeholder="Tên ngân hàng" className="w-full p-3 bg-white rounded-xl font-bold" value={bankInfo.bankName} onChange={e=>setBankInfo({...bankInfo, bankName: e.target.value})} />
               </div>
-              <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter flex items-center justify-center gap-2">
-                <i className="fas fa-play"></i> BẮT ĐẦU QUIZ
-              </button>
+              <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">BẮT ĐẦU QUIZ</button>
             </form>
             <button onClick={() => setShowQuizModal(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors text-2xl">✕</button>
           </div>
@@ -287,9 +260,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       {showRateModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
           <div className="bg-white w-full max-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá hệ thống</h3>
+            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá Web</h3>
             <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt đánh giá</p>
               {[5, 4, 3, 2, 1].map(star => {
                 const count = stats.ratings[star] || 0;
                 const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
@@ -311,7 +284,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 </button>
               ))}
             </div>
-            <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black text-sm outline-none h-24" placeholder="Góp ý của bạn..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
+            <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black text-sm outline-none h-24" placeholder="Nhập nhận xét..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
             <div className="flex gap-3">
               <button onClick={() => setShowRateModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-xs">Đóng</button>
               <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg">{isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}</button>

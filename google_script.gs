@@ -1,6 +1,19 @@
 
 const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
+/**
+ * Hàm xóa dữ liệu Quiz vào 23:59 Chủ Nhật hàng tuần.
+ * (Bạn cần vào phần Kích hoạt (Triggers) trong Apps Script để cài đặt chạy hàm này tự động)
+ */
+function clearWeeklyQuizData() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName("ketquaQuiZ");
+  if (sheet && sheet.getLastRow() > 1) {
+    sheet.deleteRows(2, sheet.getLastRow() - 1);
+    console.log("Đã xóa dữ liệu ketquaQuiZ định kỳ hàng tuần.");
+  }
+}
+
 function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const type = e.parameter.type;
@@ -12,7 +25,6 @@ function doGet(e) {
       top10: []
     };
 
-    // Thống kê sao từ sheet danhgia (Cột B - sosao)
     const sheetRate = ss.getSheetByName("danhgia");
     if (sheetRate) {
       const rateData = sheetRate.getDataRange().getValues();
@@ -22,7 +34,6 @@ function doGet(e) {
       }
     }
 
-    // Lấy Top 10 từ sheet ketquaQuiZ
     const sheetQuiz = ss.getSheetByName("ketquaQuiZ");
     if (sheetQuiz) {
       const quizData = sheetQuiz.getDataRange().getValues();
@@ -30,13 +41,12 @@ function doGet(e) {
         const results = [];
         for (let i = 1; i < quizData.length; i++) {
           results.push({
-            name: quizData[i][2],      // Cột C: name
-            score: parseFloat(quizData[i][6]) || 0, // Cột G: tongdiem
-            time: quizData[i][7] || "00:00",       // Cột H: fulltime
-            phone: quizData[i][5] ? quizData[i][5].toString() : "" // Cột F: phoneNumber
+            name: quizData[i][2],
+            score: parseFloat(quizData[i][6]) || 0,
+            time: quizData[i][7] || "00:00",
+            phone: quizData[i][5] ? quizData[i][5].toString() : ""
           });
         }
-        // Sắp xếp: Điểm cao nhất, nếu bằng điểm thì thời gian ít nhất
         results.sort((a, b) => {
           if (b.score !== a.score) return b.score - a.score;
           return a.time.localeCompare(b.time);
@@ -66,7 +76,7 @@ function doGet(e) {
   const idxClass = headers.indexOf("class");
   const idxLimit = headers.indexOf("limit");
   const idxLimittab = headers.indexOf("limittab");
-  const idxTk = headers.indexOf("taikhoanapp");
+  const idxTk = headers.indexOf("taikhoanapp"); // Cột G
 
   let student = null;
   for (let i = 1; i < data.length; i++) {
@@ -96,7 +106,6 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     
-    // Lưu đánh giá web
     if (data.type === 'rating') {
       let sheetRate = ss.getSheetByName("danhgia");
       if (!sheetRate) {
@@ -104,10 +113,9 @@ function doPost(e) {
         sheetRate.appendRow(["Timestamp", "sosao", "name", "class", "idNumber", "taikhoanapp"]);
       }
       sheetRate.appendRow([new Date(), data.stars, data.name, data.class, data.idNumber, data.taikhoanapp]);
-      return createResponse("success", "Đã lưu đánh giá");
+      return createResponse("success", "OK");
     }
 
-    // Lưu kết quả QuiZ/Luyện tập
     if (data.type === 'quiz') {
       let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
       if (!sheetQuiz) {
@@ -126,10 +134,9 @@ function doPost(e) {
         data.stk || "",
         data.bank || ""
       ]);
-      return createResponse("success", "Đã lưu kết quả Quiz");
+      return createResponse("success", "OK");
     }
 
-    // Lưu kết quả thi chính thức
     let sheetResult = ss.getSheetByName("ketqua");
     if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
     if (sheetResult.getLastRow() === 0) {
@@ -146,7 +153,7 @@ function doPost(e) {
       JSON.stringify(data.details)
     ]);
 
-    return createResponse("success", "Đã lưu kết quả thi");
+    return createResponse("success", "OK");
   } catch (error) {
     return createResponse("error", error.message);
   } finally {

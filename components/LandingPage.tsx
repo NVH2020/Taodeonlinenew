@@ -117,8 +117,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
           <div className="flex flex-col items-center shrink-0">
             <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg flex items-center justify-center h-[60px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
-              <span className="font-black text-sm uppercase flex items-center gap-2">
-                <i className="fas fa-edit"></i> Kiểm tra Online →</span>
+              <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
               <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
             </div>            
           </div>

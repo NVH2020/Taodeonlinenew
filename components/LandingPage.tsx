@@ -115,7 +115,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
           <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
             <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
-            <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
+            <span className="text-[8px] font-bold opacity-90 leading-tight">( Trên ĐT vuốt sang trái ⬅️ )</span>
           </div>          
           {[
             {g: 9, icon: 'fas fa-graduation-cap'},
@@ -156,7 +156,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     <span>TOP 10 QUIZ TUẦN</span>
   </div>
   <div className="font-bold lowercase first-letter:uppercase text-[10px] opacity-90">
-    End: 18:00 chủ nhật
+    ( End: 18:00 chủ nhật )
   </div>
 </div>
             <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">

@@ -120,7 +120,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
           <div className="bg-red-600 text-white px-6 py-4 rounded-2xl font-black text-sm shadow-lg shrink-0 flex items-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse uppercase">
-            Kiểm tra Online →
+                 <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
+                <span className="text-[8px] font-bold opacity-90 leading-tight">(Vuốt sang trái ⬅️)</span>
+          </div>
+
           </div>
           {[9, 10, 11, 12].map(g => (
             <button key={g} onClick={() => onSelectGrade(g)} className="px-5 py-3 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 active:scale-95 transition-all h-[56px]">

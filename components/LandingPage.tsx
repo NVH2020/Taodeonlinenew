@@ -150,8 +150,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         {/* CỘT TRÁI: TOP QUIZ */}
         <div className="lg:col-span-3 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
-            <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
-               <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
+            <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">              
+               <span className="font-black text-sm uppercase"> TOP 10 QUIZ TUẦN  →</span>
+               <span className="text-[8px] font-bold opacity-90 leading-tight">(Chụp nhanh 18:00 chủ nhật)</span>
             </div>
             <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
               {stats.top10.length > 0 ? stats.top10.map((item) => (

@@ -105,23 +105,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       setIsSubmittingRate(false);
     }
   };
-  
-
-  const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a, b) => a + b, 0);
+   const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a, b) => a + b, 0);
 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
-      {/* 1. Header: Nút chọn lớp & Quiz - Căn chỉnh đồng đều h-[60px] */}
+      {/* 1. Header: Nút chọn lớp & Quiz */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
-          <div className="flex flex-col items-center shrink-0">
-            <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg flex items-center justify-center h-[60px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
-              <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
-              <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
-            </div>            
-          </div>
-          
+          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
+            <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
+            <span className="text-[8px] font-bold opacity-90 leading-tight">(Trên ĐT vuốt sang trái ⬅️)</span>
+          </div>          
           {[
             {g: 9, icon: 'fas fa-graduation-cap'},
             {g: 10, icon: 'fas fa-school'},

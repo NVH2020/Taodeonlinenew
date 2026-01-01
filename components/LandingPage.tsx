@@ -95,8 +95,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           [rating]: (prev.ratings[rating] || 0) + 1
         }
       }));
-
-      alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} ⭐ cho hệ thống! ❤️`);
+      // Xử lý thông báo theo số sao
+      if (rating >= 4) {
+        alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${rating} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
+      } 
+      else {
+        // Dưới 3 sao (1 và 2 sao)
+        alert(`😡 Này! Đánh giá có ${rating} ⭐ thôi à? Học thì lười mà đánh giá thì khắt khe thế! Lần sau nhớ cho 5 sao nghe chưa! 👊`);
+      }      
       setShowRateModal(false);
       setComment("");
       

@@ -7,7 +7,7 @@ export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbxwDf9Yz_-Bc
 export const VIP_SHEET_URL = "https://script.google.com/macros/s/AKfycbzxQQd3QmPUtguwdfLjz4TuHiroQNrWYaDsL4syLrtjZMWguKtQQhoFsGI5xcT7q113/exec";
 
 export const API_ROUTING: Record<string, string> = {
-  "680988948882": DEFAULT_API_URL
+  "68686868": DEFAULT_API_URL
 };
 
 export const NEWS_DATA: NewsItem[] = [

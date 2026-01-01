@@ -31,20 +31,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   });
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const url = new URL(DEFAULT_API_URL);
-        url.searchParams.append("type", "getStats");
-        const resp = await fetch(url.toString());
-        const result = await resp.json();
-        if (result.status === "success") {
-          setStats(result.data);
-        }
-      } catch (e) {
-        console.error("Lỗi lấy thống kê:", e);
+   useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      // Thêm t=${Date.now()} để ép Server trả về dữ liệu mới nhất
+      const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
+      const result = await resp.json();
+      if (result.status === "success") {
+        setStats(result.data);
       }
-    };
-    fetchStats();
+    } catch (e) {
+      console.error("Lỗi lấy thống kê:", e);
+    }
+  };
+  fetchStats();
     
     const interval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);

@@ -83,7 +83,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         taikhoanapp: user?.isVip ? "VIP" : "FREE"
       };
       await fetch(DANHGIA_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-       alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
+      alert(`❤️ Cảm ơn bạn đã đánh giá! ❤️`);
       setShowRateModal(false);
       setComment("");
     } catch (e) { alert("Lỗi gửi đánh giá!"); } finally { setIsSubmittingRate(false); }
@@ -230,5 +230,4 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   );
 };
 
-export default LandingPage;     
-     
+export default LandingPage;

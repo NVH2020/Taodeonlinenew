@@ -163,15 +163,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             { label: "Nâng Cấp VIP", icon: "fas fa-gem", action: onOpenVip },
             { label: "Kho Tài Liệu", icon: "fas fa-folder-open", link: "https://www.facebook.com/hoctoanthayha.bg" }
 
-          ].map((btn, i) => (
-            <button key={i} onClick={btn.action || (() => window.open(btn.link, '_blank'))}
-              className="w-full flex-1 flex flex-col items-center justify-center gap-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2 text-center">
+                   ].map((btn, i) => (
+            <button 
+              key={i} 
+              onClick={btn.action || (() => window.open(btn.link, '_blank'))}
+              className="w-full flex-1 flex flex-col items-center justify-center gap-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase shadow-md border-b-4 border-indigo-900 hover:brightness-110 transition-all p-2 text-center"
+            >
               <i className={`${btn.icon} text-lg mb-1`}></i>
               <span className="leading-tight">{btn.label}</span>
             </button>
           ))}
         </div>
       </div>
+
 
       {/* MODAL THÔNG TIN (PHẦN BẠN CẦN SỬA) */}
       {showQuizModal && (

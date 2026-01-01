@@ -2,11 +2,12 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
-export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbws84WITc2-Z6elf72fsfXUnDGrUI8SB1z-VU58YK2BE60-X1TFOyHvobiDrqQQgObO-w/exec";
+export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbxwDf9Yz_-Bc7Nr5m3ZRJuqQGkQxbIJpu7Dl7XQMqSpaWCt04LYjRLNOpE22a258frS/exec";
 export const VIP_SHEET_URL = "https://script.google.com/macros/s/AKfycbzxQQd3QmPUtguwdfLjz4TuHiroQNrWYaDsL4syLrtjZMWguKtQQhoFsGI5xcT7q113/exec";
 
 export const API_ROUTING: Record<string, string> = {
+  "686868": "https://script.google.com/macros/s/AKfycbws84WITc2-Z6elf72fsfXUnDGrUI8SB1z-VU58YK2BE60-X1TFOyHvobiDrqQQgObO-w/exec"
   "680988948882": DEFAULT_API_URL
 };
 

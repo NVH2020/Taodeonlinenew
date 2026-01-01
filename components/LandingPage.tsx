@@ -99,7 +99,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       }));
 
       // 3. Thông báo và đóng Modal
-      alert(`Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
+      alert(`❤️Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
       setShowRateModal(false);
       setComment("");
       

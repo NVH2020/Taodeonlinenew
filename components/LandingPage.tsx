@@ -98,11 +98,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       // Xử lý thông báo theo số sao
       if (rating >= 4) {
         alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${rating} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
-      } 
-      else {
-        // Dưới 3 sao (1 và 2 sao)
-        alert(`😡 Này! Đánh giá có ${rating} ⭐ thôi à? Học thì lười mà đánh giá thì khắt khe thế! Lần sau nhớ cho 5 sao nghe chưa! 👊`);
-      }      
+      } else {
+        // Dưới 4 sao (1, 2, 3 sao)
+        alert(`😡 Này! Sao đánh giá có ${rating} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
+      }
+
       setShowRateModal(false);
       setComment("");
       

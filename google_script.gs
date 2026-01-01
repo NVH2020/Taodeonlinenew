@@ -43,7 +43,9 @@ function doGet(e) {
             name: quizData[i][2],
             score: parseFloat(quizData[i][6]) || 0,
             time: quizData[i][7] || "00:00",
-            phone: quizData[i][5] ? quizData[i][5].toString() : ""
+            phone: quizData[i][5] ? quizData[i][5].toString() : "",
+            stk: quizData[i][8] ? quizData[i][8].toString() : "",
+            bank: quizData[i][9] ? quizData[i][9].toString() : ""
           });
         }
         results.sort((a, b) => {

@@ -34,11 +34,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Sử dụng DANHGIA_URL và thêm timestamp để tránh cache
+        // Thêm t=${Date.now()} cực kỳ quan trọng để ép Server trả về dữ liệu mới nhất
         const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
         const result = await resp.json();
-        if (result.status === "success") {
-          setStats(result.data);
+        
+        if (result.status === "success" && result.data) {
+          // Đảm bảo cập nhật cả ratings và top10
+          setStats({
+            ratings: result.data.ratings || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+            top10: Array.isArray(result.data.top10) ? result.data.top10 : []
+          });
         }
       } catch (e) {
         console.error("Lỗi lấy thống kê:", e);
@@ -47,12 +52,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
     fetchStats();
     
-    const interval = setInterval(() => {
+    // Tự động làm mới bảng xếp hạng mỗi 2 phút (120000ms)
+    const statsInterval = setInterval(fetchStats, 120000);
+    
+    const imgInterval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
     }, 4000);
 
-    return () => clearInterval(interval);
-  }, []); 
+    return () => {
+      clearInterval(statsInterval);
+      clearInterval(imgInterval);
+    };
+  }, []);
 
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();

@@ -189,11 +189,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         {/* CỘT PHẢI: NÚT CHỨC NĂNG (LG 2 - Hẹp lại) */}
         <div className="lg:col-span-2 flex flex-col gap-3">
           {[
-            { label: "Vào Học Nhóm", icon: "fas fa-users", link: "https://www.facebook.com/groups/toanthpthaiduong" },
+            { label: "Trợ lý học tập", icon: "fas fa-headset", link: "https://new-chat-bot-two.vercel.app/" }
+            { label: "Vào Học Nhóm", icon: "fas fa-users", link: "https://www.facebook.com/hoctoanthayha.bg" },
             { label: user ? `SĐT: ${user.phoneNumber}` : "Đăng Nhập", icon: "fas fa-sign-in-alt", action: onOpenAuth },
             { label: "Nâng Cấp VIP", icon: "fas fa-gem", action: onOpenVip },
-            { label: "Kho Tài Liệu", icon: "fas fa-folder-open", link: "https://www.facebook.com/groups/toanthpthaiduong" },
-            { label: "Hỗ Trợ Online", icon: "fas fa-headset", link: "https://www.facebook.com/groups/toanthpthaiduong" }
+            { label: "Kho Tài Liệu", icon: "fas fa-folder-open", link: "https://www.facebook.com/hoctoanthayha.bg" },
+           
           ].map((btn, i) => (
             <button 
               key={i} 

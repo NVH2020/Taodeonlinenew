@@ -67,11 +67,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   };
 
   const handleRateSubmit = async () => {
+    if (isSubmittingRate) return;
     setIsSubmittingRate(true);
+
     try {
       const payload = {
         type: 'rating',
-        stars: rating,
+        stars: rating, // Sử dụng đúng biến rating từ state của bạn
         comment: comment,
         name: quizInfo.name || (user?.name || "Khách"),
         class: quizInfo.class || "Tự do",
@@ -79,17 +81,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         taikhoanapp: user?.isVip ? "VIP" : "FREE"
       };
 
+      // 1. Gửi dữ liệu sang Google Sheets qua API
       await fetch(DEFAULT_API_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(payload)
       });
-      
-      alert("Cảm ơn bạn đã đánh giá cho web ❤️");
+
+      // 2. CẬP NHẬT UI TỨC THÌ: Cộng thêm 1 vào thống kê hiện tại trên máy khách
+      // Việc này giúp học sinh thấy con số nhảy lên ngay lập tức, rất chuyên nghiệp.
+      setStats(prev => ({
+        ...prev,
+        ratings: {
+          ...prev.ratings,
+          [rating]: (prev.ratings[rating] || 0) + 1
+        }
+      }));
+
+      // 3. Thông báo và đóng Modal
+      alert(`Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
       setShowRateModal(false);
       setComment("");
+      
     } catch (e) {
-      alert("Gửi đánh giá thất bại!");
+      console.error("Lỗi gửi đánh giá:", e);
+      alert("Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!");
     } finally {
       setIsSubmittingRate(false);
     }

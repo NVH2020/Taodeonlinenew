@@ -137,14 +137,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       </div>
 
       {/* 2. Marquee thông báo */}
-      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1 px-4">
-      {/* Dòng 1: Chữ chạy ngang */}
-      <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest mb-2">
-      ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-    ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. ⭐Liên hệ: 0988948882 để tham gia nhóm ⭐Tạo Webapp nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
+  <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest">
+    ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. 
+    ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span className="text-yellow-300">End: 18:00 chủ nhật</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </div>
-      </div>
+</div>
+      ⭐
 
       {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -302,10 +304,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       )}
 
-      {showRateModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
-          <div className="bg-white w-full max-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá Web</h3>
+    {showRateModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    {/* Thêm max-w-md và w-full để nó co giãn nhưng không quá to trên PC */}
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl overflow-hidden">
+      
+      <h3 className="text-xl font-bold text-center mb-4">Đánh giá Web</h3>
+
             <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt đánh giá</p>
               {[5, 4, 3, 2, 1].map(star => {
@@ -330,13 +335,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               ))}
             </div>
             <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black text-sm outline-none h-24" placeholder="Nhập nhận xét..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
-            <div className="flex gap-3">
-              <button onClick={() => setShowRateModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-xs">Đóng</button>
-              <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg">{isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}</button>
-            </div>
-          </div>
-        </div>
-      )}
+             <div className="flex gap-3 mt-6">
+        <button 
+          onClick={() => setShowRateModal(false)}
+          className="flex-1 py-3 bg-gray-200 rounded-xl font-bold"
+        >
+          Hủy
+        </button>
+        <button 
+          onClick={handleRateSubmit}
+          disabled={isSubmittingRate}
+          className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200"
+        >
+          {isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     </div>
   );

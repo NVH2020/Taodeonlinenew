@@ -129,8 +129,8 @@ const App: React.FC = () => {
       {showVipModal && <VipModal user={user!} onClose={() => setShowVipModal(false)} onSuccess={() => { setUser(prev => prev ? {...prev, isVip: true} : null); setShowVipModal(false); }} />}
 
       <footer className="bg-slate-900 py-10 text-center text-slate-500 text-[10px] md:text-xs mt-10 px-4">
-        <p className="font-black text-slate-400 mb-2 uppercase tracking-widest">Phát triển bởi nhóm GV Toán. Admin Nguyễn Văn Hà</p>
-        <p>&copy; {new Date().getFullYear()} THPT Yên Dũng số 2 - Kiểm tra chuyên nghiệp.</p>
+        <p className="font-black text-slate-400 mb-2 uppercase tracking-widest">Phát triển bởi nhóm GV Toán. Admin: Nguyễn Văn Hà</p>
+        <p>&copy; {new Date().getFullYear()} Hệ thống ôn tập và kiểm tra chuyên nghiệp - chất lượng</p>
       </footer>
     </div>
   );

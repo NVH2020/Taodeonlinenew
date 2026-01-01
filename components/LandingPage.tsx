@@ -20,6 +20,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
+  const [isOtherSchool, setIsOtherSchool] = useState(false);
+  const [isOtherBank, setIsOtherBank] = useState(false);
+  const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
   
   const [showRateModal, setShowRateModal] = useState(false);
   const [rating, setRating] = useState(5);
@@ -97,7 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         }
       }));
 
-      alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} sao cho hệ thống! ❤️`);
+      alert(`❤️ Cảm ơn bạn đã đánh giá ${rating} ⭐ cho hệ thống! ❤️`);
       setShowRateModal(false);
       setComment("");
       
@@ -252,7 +255,35 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 <input type="text" placeholder="Lớp" className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.class} onChange={e=>setQuizInfo({...quizInfo, class: e.target.value})} />
                 <input required type="tel" placeholder="Số điện thoại" className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
               </div>
-              <input type="text" placeholder="Trường học (Không bắt buộc)" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.school} onChange={e=>setQuizInfo({...quizInfo, school: e.target.value})} />
+              {/* --- THÊM MỚI TẠI ĐÂY: Chọn trường học --- */}
+              {!isOtherSchool ? (
+                <select className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500"
+                  onChange={(e) => e.target.value === "Khác" ? setIsOtherSchool(true) : setQuizInfo({ ...quizInfo, school: e.target.value })}>
+                  <option value="">Chọn trường học</option>
+                  <option value="THPT YD1">THPT YD1</option>
+                  <option value="THPT YD2">THPT YD2</option>
+                  <option value="Khác">Trường khác (Nhập tay...)</option>
+                </select>
+              ) : (
+                <input autoFocus type="text" placeholder="Nhập tên trường của bạn" className="w-full p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 font-bold outline-none"
+                  onChange={e => setQuizInfo({ ...quizInfo, school: e.target.value })} />
+              )}
+
+              {/* --- THÊM MỚI TẠI ĐÂY: Thông tin ngân hàng --- */}
+              <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center">Thông tin Bank nhận thưởng</p>
+                <input type="text" placeholder="Số tài khoản" className="w-full p-4 bg-white rounded-2xl border-none font-bold outline-none" value={bankInfo.stk} onChange={e => setBankInfo({ ...bankInfo, stk: e.target.value })} />
+                {!isOtherBank ? (
+                  <select className="w-full p-4 bg-white rounded-2xl border-none font-bold outline-none" onChange={(e) => e.target.value === "Khác" ? setIsOtherBank(true) : setBankInfo({ ...bankInfo, bankName: e.target.value })}>
+                    <option value="">Chọn ngân hàng</option>
+                    <option value="Agribank">Agribank</option>
+                    <option value="MB Bank">MB Bank</option>
+                    <option value="Khác">Ngân hàng khác...</option>
+                  </select>
+                ) : (
+                  <input autoFocus type="text" placeholder="Tên ngân hàng" className="w-full p-4 bg-white rounded-2xl border-2 border-orange-200 font-bold outline-none" onChange={e => setBankInfo({ ...bankInfo, bankName: e.target.value })} />
+                )}
+              </div>
               <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">Bắt đầu Quiz ngay</button>
             </form>
             <button onClick={() => setShowQuizModal(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors text-2xl">✕</button>

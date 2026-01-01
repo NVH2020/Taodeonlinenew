@@ -82,7 +82,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       };
 
       // 1. Gửi dữ liệu sang Google Sheets qua API
-      await fetch(DEFAULT_API_URL, {
+      await fetch(DANHGIA_URL, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(payload)

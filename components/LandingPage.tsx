@@ -102,11 +102,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       {/* 1. Header: Nút chọn lớp & Quiz - Căn chỉnh đồng đều h-[60px] */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
-          <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg shrink-0 flex items-center justify-center h-[60px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
-            <span className="font-black text-sm uppercase flex items-center gap-2">
-              <i className="fas fa-edit"></i> Kiểm tra Online →
-            </span>
+          <div className="flex flex-col items-center shrink-0">
+            <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg flex items-center justify-center h-[60px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
+              <span className="font-black text-sm uppercase flex items-center gap-2">
+                <i className="fas fa-edit"></i> Kiểm tra Online →
+              </span>
+            </div>
+            <div className="md:hidden text-[8px] font-black text-red-500 mt-1 uppercase flex items-center gap-1">
+              <i className="fas fa-arrow-left"></i> Trên điện thoại vuốt sang trái
+            </div>
           </div>
+          
           {[
             {g: 9, icon: 'fas fa-graduation-cap'},
             {g: 10, icon: 'fas fa-school'},
@@ -134,10 +140,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 3. Khối nội dung chính (Layout hẹp 2 bên - giữa rộng) */}
+      {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: TOP QUIZ (LG 3) */}
+        {/* CỘT TRÁI: TOP QUIZ */}
         <div className="lg:col-span-3 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
@@ -162,7 +168,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT GIỮA: ẢNH CAROUSEL (LG 7 - Mở rộng) */}
+        {/* CỘT GIỮA: ẢNH CAROUSEL */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
@@ -174,7 +180,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT PHẢI: NÚT CHỨC NĂNG (LG 2 - Hẹp lại) */}
+        {/* CỘT PHẢI: NÚT CHỨC NĂNG */}
         <div className="lg:col-span-2 flex flex-col gap-3">
           {[
             { label: "Vào Học Nhóm", icon: "fas fa-users", link: "https://www.facebook.com/hoctoanthayha.bg" },
@@ -207,7 +213,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 5. Footer - Chỉ dùng Logo cho FB, TW, TG */}
+      {/* 5. Footer */}
       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">

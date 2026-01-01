@@ -8,7 +8,6 @@ export const VIP_SHEET_URL = "https://script.google.com/macros/s/AKfycbzxQQd3QmP
 
 export const API_ROUTING: Record<string, string> = {
   "680988948882": DEFAULT_API_URL
-  "686868": "https://script.google.com/macros/s/AKfycbxUImQg4lyqX2zT_9CRxPyvBqmnVY0MX6C8EX5ptwMQBwtxqNUvKrFRKZ7lki5dFtJZzQ/exec"
 };
 
 export const NEWS_DATA: NewsItem[] = [

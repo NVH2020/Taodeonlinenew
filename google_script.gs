@@ -3,14 +3,14 @@ const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 /**
  * Hàm xóa dữ liệu Quiz vào 23:59 Chủ Nhật hàng tuần.
- * (Bạn cần vào phần Kích hoạt (Triggers) trong Apps Script để cài đặt chạy hàm này tự động)
+ * Cài đặt trong Apps Script: Trình kích hoạt -> Chọn hàm này -> Theo thời gian -> Hàng tuần -> Chủ nhật -> 23h-00h.
  */
 function clearWeeklyQuizData() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName("ketquaQuiZ");
   if (sheet && sheet.getLastRow() > 1) {
     sheet.deleteRows(2, sheet.getLastRow() - 1);
-    console.log("Đã xóa dữ liệu ketquaQuiZ định kỳ hàng tuần.");
+    console.log("Hệ thống đã tự động dọn dẹp dữ liệu ketquaQuiZ.");
   }
 }
 
@@ -18,7 +18,6 @@ function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const type = e.parameter.type;
 
-  // 1. Lấy thống kê và TOP 10 thực tế
   if (type === 'getStats') {
     const stats = {
       ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
@@ -60,7 +59,6 @@ function doGet(e) {
     return createResponse("success", "Thành công", stats);
   }
 
-  // 2. Xác minh thí sinh
   const idnumber = e.parameter.idnumber;
   const sbd = e.parameter.sbd;
   const sheetList = ss.getSheetByName("danhsach");
@@ -76,7 +74,7 @@ function doGet(e) {
   const idxClass = headers.indexOf("class");
   const idxLimit = headers.indexOf("limit");
   const idxLimittab = headers.indexOf("limittab");
-  const idxTk = headers.indexOf("taikhoanapp"); // Cột G
+  const idxTk = headers.indexOf("taikhoanapp");
 
   let student = null;
   for (let i = 1; i < data.length; i++) {

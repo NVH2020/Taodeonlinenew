@@ -145,7 +145,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       style={{ display: 'inline-block', minWidth: '100%' }}
     >
       ⭐ ⭐ ⭐ ⭐ ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-      ⭐ ⭐ ⭐ ⭐ ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ ⭐ ⭐ ⭐ ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      ⭐ ⭐ ⭐ ⭐ ⭐   Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ ⭐ ⭐ ⭐ ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
   </div>
          </div>

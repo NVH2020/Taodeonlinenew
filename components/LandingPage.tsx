@@ -137,11 +137,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       </div>
 
       {/* 2. Marquee thông báo */}
-      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
-        <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest">
-          Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. Liên hệ: 0988948882 !!! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
+      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1 px-4">
+      {/* Dòng 1: Chữ chạy ngang */}
+      <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest mb-2">
+      ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+    ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. ⭐Liên hệ: 0988948882 để tham gia nhóm ⭐Tạo Webapp nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </div>
       </div>
 
       {/* 3. Khối nội dung chính */}

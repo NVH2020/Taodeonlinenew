@@ -56,6 +56,8 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
       className: student.class,
       school: student.school,
       phoneNumber: student.phoneNumber,
+      stk: student.stk || "", 
+      bank: student.bank || "",
       score, 
       totalTime: timeDisplay, 
       tabSwitches,

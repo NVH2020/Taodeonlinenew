@@ -166,3 +166,36 @@ function createResponse(status, message, data) {
   return ContentService.createTextOutput(JSON.stringify(output))
     .setMimeType(ContentService.MimeType.JSON);
 }
+// Hàm thực hiện việc xóa dữ liệu
+function resetWeeklyQuiz() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheetQuiz = ss.getSheetByName("ketquaQuiZ");
+  
+  if (sheetQuiz) {
+    const lastRow = sheetQuiz.getLastRow();
+    if (lastRow > 1) {
+      // Giữ lại hàng tiêu đề (hàng 1), xóa toàn bộ từ hàng 2
+      sheetQuiz.deleteRows(2, lastRow - 1);
+      console.log("Đã tự động reset bảng xếp hạng tuần vào đêm Chủ Nhật.");
+    }
+  }
+}
+
+// Hàm tạo Trigger tự động (Bạn chỉ cần chọn và nhấn Chạy hàm này 1 lần duy nhất)
+function createWeeklySundayTrigger() {
+  // Xóa các trigger cũ cùng tên để tránh chạy trùng lặp
+  const allTriggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < allTriggers.length; i++) {
+    if (allTriggers[i].getHandlerFunction() === 'resetWeeklyQuiz') {
+      ScriptApp.deleteTrigger(allTriggers[i]);
+    }
+  }
+  
+  // Tạo lịch: Chạy vào Chủ Nhật hàng tuần, trong khoảng từ 23h - 00h
+  ScriptApp.newTrigger('resetWeeklyQuiz')
+    .timeBased()
+    .onWeekDay(ScriptApp.WeekDay.SUNDAY)
+    .atHour(23)
+    .nearMinute(59) 
+    .create();
+}

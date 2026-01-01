@@ -32,26 +32,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
   useEffect(() => {
    useEffect(() => {
-  const fetchStats = async () => {
-    try {
-      // Thêm t=${Date.now()} để ép Server trả về dữ liệu mới nhất
-      const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
-      const result = await resp.json();
-      if (result.status === "success") {
-        setStats(result.data);
+ useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Sử dụng DANHGIA_URL và thêm timestamp để tránh cache
+        const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
+        const result = await resp.json();
+        if (result.status === "success") {
+          setStats(result.data);
+        }
+      } catch (e) {
+        console.error("Lỗi lấy thống kê:", e);
       }
-    } catch (e) {
-      console.error("Lỗi lấy thống kê:", e);
-    }
-  };
-  fetchStats();
+    };
+
+    fetchStats();
     
     const interval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
     }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
+    return () => clearInterval(interval);
+  }, []); // Chỉ chạy 1 lần khi load trang
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
     if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ họ tên và SĐT!");

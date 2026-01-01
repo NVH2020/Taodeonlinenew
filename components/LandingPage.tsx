@@ -158,7 +158,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     <span>TOP 10 QUIZ TUẦN</span>
   </div>
   <div className="font-bold lowercase first-letter:uppercase text-[10px] opacity-90">
-    ( End: 18:00 chủ nhật )
+    ( END: 18 : 00 chủ nhật )
   </div>
 </div>
             <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">

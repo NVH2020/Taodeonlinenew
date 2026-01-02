@@ -220,7 +220,6 @@ const handleRateSubmit = async () => {
       Đang tải dữ liệu...
     </div>
   )}
-</div>
   </div>
 </div>
 

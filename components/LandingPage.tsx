@@ -5,7 +5,8 @@ import { AppUser, Student } from '../types';
 
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";
-  return phone.slice(0, 2) + "xxx" + phone.slice(-4);
+  const p = phone.replace(/'/g, "");
+  return p.slice(0, 2) + "xxx" + p.slice(-4);
 };
 
 interface LandingPageProps {
@@ -19,7 +20,7 @@ interface LandingPageProps {
 const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip }) => {
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
-  const [quizInfo, setQuizInfo] = useState({ name: '', class: '', phone: '', schoolType: 'YD2', schoolOther: '' });
+  const [quizInfo, setQuizInfo] = useState({ name: '', class: '', phone: '', schoolType: 'THPT YD2', schoolOther: '' });
   const [bankInfo, setBankInfo] = useState({ stk: '', bankType: 'Agribank', bankOther: '' });
   
   const [showRateModal, setShowRateModal] = useState(false);
@@ -39,19 +40,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     "Đề khó quá nhưng mà cuốn thầy ơi! 📚"
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statsResp, topResp] = await Promise.all([
-          fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`),
-          fetch(`${DANHGIA_URL}?type=getTop10&t=${Date.now()}`)
-        ]);
+  // Hàm fetch dữ liệu tách biệt để tránh lỗi Failed to fetch do quá tải đồng thời
+  const fetchData = async () => {
+    // 1. Fetch Stats
+    try {
+      const statsResp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`, { cache: 'no-store' });
+      if (statsResp.ok) {
         const statsRes = await statsResp.json();
-        const topResData = await topResp.json();
         if (statsRes.status === "success") setStats(statsRes.data);
+      }
+    } catch (e) {
+      console.error("Lỗi fetch Stats:", e);
+    }
+
+    // 2. Fetch Top 10
+    try {
+      const topResp = await fetch(`${DANHGIA_URL}?type=getTop10&t=${Date.now()}`, { cache: 'no-store' });
+      if (topResp.ok) {
+        const topResData = await topResp.json();
         if (topResData.status === "success") setTop10(topResData.data);
-      } catch (e) { console.error("Error fetching data:", e); }
-    };
+      }
+    } catch (e) {
+      console.error("Lỗi fetch Top10:", e);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
     const interval = setInterval(() => setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length), 5000);
     return () => clearInterval(interval);
@@ -59,7 +73,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ thông tin!");
+    if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ thông tin thí sinh!");
     const finalSchool = quizInfo.schoolType === 'Khác' ? quizInfo.schoolOther : quizInfo.schoolType;
     const finalBank = bankInfo.bankType === 'Khác' ? bankInfo.bankOther : bankInfo.bankType;
     if (showQuizModal) {
@@ -84,16 +98,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         name: user?.name || "Khách", idNumber: user?.phoneNumber || "GUEST",
         taikhoanapp: user?.isVip ? "VIP" : "FREE"
       };
-      await fetch(DANHGIA_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-      alert("Cảm ơn bạn đã đánh giá! ❤️");
+      await fetch(DANHGIA_URL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: JSON.stringify(payload) 
+      });
+      alert("Hệ thống đã ghi nhận đánh giá của bạn. Cảm ơn bạn rất nhiều! ❤️");
       setShowRateModal(false);
-    } catch (e) { alert("Lỗi!"); } finally { setIsSubmittingRate(false); }
+      // Refresh stats
+      fetchData();
+    } catch (e) { 
+      alert("Gửi đánh giá thất bại. Vui lòng thử lại sau!"); 
+    } finally { 
+      setIsSubmittingRate(false); 
+    }
   };
 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
-      {/* 1. Header Buttons */}
+      {/* 1. Khối Nút Header - Menu chọn lớp & Quiz */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
           <div className="flex flex-col items-center shrink-0">
@@ -105,20 +129,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             </div>
           </div>
           {[9, 10, 11, 12].map(g => (
-            <button key={g} onClick={() => onSelectGrade(g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[120px] transition-transform active:scale-95">
+            <button key={g} onClick={() => onSelectGrade(g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[120px] transition-transform active:scale-95 hover:brightness-110">
               <i className="fas fa-graduation-cap"></i> LỚP {g}
             </button>
           ))}
-          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95">
+          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95 hover:brightness-110">
             <i className="fas fa-bolt"></i> QUIZ 10
           </button>
-          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95">
+          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95 hover:brightness-110">
             <i className="fas fa-brain"></i> QUIZ 20
           </button>
         </div>
       </div>
 
-      {/* 2. Marquee */}
+      {/* 2. Marquee Thông báo */}
       <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
         <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest">
           ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -128,10 +152,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* 3. Main Content Grid */}
+      {/* 3. Khối nội dung chính: Bảng Vàng - Carousel - Menu */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: TOP 10 */}
+        {/* CỘT TRÁI: BẢNG VÀNG TOP 10 */}
         <div className="lg:col-span-3 flex flex-col">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden h-full flex flex-col">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
@@ -151,7 +175,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                   </div>
                   <div className="text-right shrink-0">
                     <p className="font-black text-blue-600 text-sm">{item.score} đ</p>
-                    <p className="text-[9px] text-slate-400 font-bold">{item.time}</p>
+                    <p className="text-[9px] text-slate-400 font-bold tracking-tighter">{item.time}</p>
                   </div>
                 </div>
               )) : <p className="text-center p-10 text-slate-400 font-black text-[10px] uppercase">Đang cập nhật...</p>}
@@ -159,7 +183,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CỘT GIỮA: CAROUSEL */}
+        {/* CỘT GIỮA: CAROUSEL ẢNH */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white group">
             {IMAGES_CAROUSEL.map((img, idx) => (
@@ -183,8 +207,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               <i className="fas fa-th-large text-2xl mb-1"></i>
               <span>Ứng dụng khác</span>
             </button>
-            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-2xl shadow-2xl p-2 hidden group-hover:block z-50 animate-fade-in border border-slate-100">
-              <a href="https://new-chat-bot-two.vercel.app/" target="_blank" className="flex items-center gap-2 p-3 hover:bg-slate-50 rounded-xl text-slate-700 font-black text-[10px] uppercase transition-colors">
+            <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-2xl shadow-2xl p-2 hidden group-hover:block z-50 animate-fade-in border border-slate-100 overflow-hidden">
+              <a href="https://new-chat-bot-two.vercel.app/" target="_blank" className="flex items-center gap-2 p-3 hover:bg-slate-50 rounded-xl text-slate-700 font-black text-[10px] uppercase transition-colors border-b border-slate-50">
                 <i className="fas fa-robot text-blue-500"></i> Trợ lý AI
               </a>
               <a href="https://www.facebook.com/hoctoanthayha.bg" target="_blank" className="flex items-center gap-2 p-3 hover:bg-slate-50 rounded-xl text-slate-700 font-black text-[10px] uppercase transition-colors">
@@ -205,13 +229,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       </div>
 
-      {/* QUIZ MODAL - 2 PHẦN */}
+      {/* QUIZ MODAL - CHI TIẾT 2 PHẦN */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 animate-fade-in max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 className="text-2xl font-black text-orange-500 mb-8 uppercase text-center tracking-tighter">BẮT ĐẦU LUYỆN TẬP QUIZ</h2>
+            <h2 className="text-2xl font-black text-orange-500 mb-8 uppercase text-center tracking-tighter">LUYỆN TẬP QUIZ NGAY</h2>
             <form onSubmit={handleStartQuiz} className="space-y-8">
-              {/* PHẦN 1 */}
+              {/* PHẦN 1: THÔNG TIN THÍ SINH */}
               <div className="space-y-4">
                 <p className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-l-4 border-orange-500 pl-3">PHẦN 1: THÔNG TIN THÍ SINH</p>
                 <input required placeholder="Họ và tên đầy đủ" className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-2 border-transparent focus:border-orange-200 outline-none" value={quizInfo.name} onChange={e=>setQuizInfo({...quizInfo, name: e.target.value})} />
@@ -226,11 +250,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                     <option value="THPT YD2">THPT Yên Dũng 2</option>
                     <option value="Khác">Trường khác (Nhập tay)</option>
                   </select>
-                  {quizInfo.schoolType === 'Khác' && <input required placeholder="Nhập tên trường của bạn" className="w-full p-4 bg-white border-2 border-orange-100 rounded-2xl font-bold" value={quizInfo.schoolOther} onChange={e=>setQuizInfo({...quizInfo, schoolOther: e.target.value})} />}
+                  {quizInfo.schoolType === 'Khác' && <input required placeholder="Nhập tên trường của bạn" className="w-full p-4 bg-white border-2 border-orange-100 rounded-2xl font-bold mt-2" value={quizInfo.schoolOther} onChange={e=>setQuizInfo({...quizInfo, schoolOther: e.target.value})} />}
                 </div>
               </div>
 
-              {/* PHẦN 2 */}
+              {/* PHẦN 2: THÔNG TIN NHẬN THƯỞNG */}
               <div className="space-y-4">
                 <p className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-l-4 border-green-500 pl-3">PHẦN 2: THÔNG TIN NHẬN THƯỞNG</p>
                 <input placeholder="Số tài khoản (STK)" className="w-full p-4 bg-slate-50 rounded-2xl font-bold outline-none" value={bankInfo.stk} onChange={e=>setBankInfo({...bankInfo, stk: e.target.value})} />
@@ -244,7 +268,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                     <option value="BIDV">BIDV</option>
                     <option value="Khác">Khác (Nhập tay)</option>
                   </select>
-                  {bankInfo.bankType === 'Khác' && <input required placeholder="Nhập tên ngân hàng" className="w-full p-4 bg-white border-2 border-green-100 rounded-2xl font-bold" value={bankInfo.bankOther} onChange={e=>setBankInfo({...bankInfo, bankOther: e.target.value})} />}
+                  {bankInfo.bankType === 'Khác' && <input required placeholder="Nhập tên ngân hàng" className="w-full p-4 bg-white border-2 border-green-100 rounded-2xl font-bold mt-2" value={bankInfo.bankOther} onChange={e=>setBankInfo({...bankInfo, bankOther: e.target.value})} />}
                 </div>
               </div>
               <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 text-xl tracking-tighter">BẮT ĐẦU QUIZ NGAY</button>
@@ -259,6 +283,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
             <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá hệ thống</h3>
+            <div className="bg-slate-50 p-4 rounded-2xl space-y-1 mb-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Thống kê bình chọn</p>
+              {[5, 4, 3, 2, 1].map(s => {
+                const count = stats[s] || 0;
+                const total = Object.values(stats).reduce((a, b) => a + b, 0);
+                const percent = total > 0 ? (count / total) * 100 : 0;
+                return (
+                  <div key={s} className="flex items-center gap-2">
+                    <span className="text-[10px] font-black w-4">{s}★</span>
+                    <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-400" style={{ width: `${percent}%` }}></div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
             <div className="flex justify-center gap-3">
               {[1, 2, 3, 4, 5].map(star => (
                 <button key={star} onClick={() => setRating(star)} className="text-4xl transition-transform hover:scale-125 focus:outline-none">
@@ -272,14 +313,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             </select>
             {comment === "Tùy chỉnh" && <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm h-24 outline-none" placeholder="Cảm nghĩ của bạn..." onChange={e => setComment(e.target.value)}></textarea>}
             <div className="flex gap-3">
-              <button onClick={() => setShowRateModal(false)} className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xs tracking-widest">Đóng</button>
-              <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs shadow-lg tracking-widest active:scale-95">GỬI ĐÁNH GIÁ</button>
+              <button onClick={() => setShowRateModal(false)} className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-xs tracking-widest transition hover:bg-slate-200">Đóng</button>
+              <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs shadow-lg tracking-widest active:scale-95 hover:bg-indigo-700">GỬI ĐÁNH GIÁ</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Footer (Khôi phục logo cũ) */}
+      {/* Footer & Logo */}
       <footer className="mt-12 pt-10 pb-10 border-t border-slate-100 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
         <div className="max-w-xs mx-auto">
           <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
@@ -287,13 +328,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </button>
         </div>
         <div className="flex justify-center gap-10">
-          <a href="https://www.facebook.com/hoctoanthayha.bg" target="_blank" className="w-14 h-14 bg-[#1877F2] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform"><i className="fab fa-facebook-f"></i></a>
-          <a href="https://x.com/Math_teacher_Ha" target="_blank" className="w-14 h-14 bg-black rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform"><i className="fab fa-x-twitter"></i></a>
-          <a href="#" target="_blank" className="w-14 h-14 bg-[#229ED9] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform"><i className="fab fa-telegram-plane"></i></a>
+          <a href="https://www.facebook.com/hoctoanthayha.bg" target="_blank" rel="noreferrer" className="w-14 h-14 bg-[#1877F2] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform border-b-4 border-blue-900"><i className="fab fa-facebook-f"></i></a>
+          <a href="https://x.com/Math_teacher_Ha" target="_blank" rel="noreferrer" className="w-14 h-14 bg-black rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform border-b-4 border-slate-700"><i className="fab fa-x-twitter"></i></a>
+          <a href="https://zalo.me/0988948882" target="_blank" rel="noreferrer" className="w-14 h-14 bg-[#229ED9] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:rotate-12 transition-transform border-b-4 border-blue-600"><i className="fab fa-telegram-plane"></i></a>
         </div>
         <div className="text-slate-400 space-y-1">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">© 2025 HỆ THỐNG HỌC TOÁN TRỰC TUYẾN CHUYÊN NGHIỆP</p>
-            <p className="text-[9px] font-bold opacity-60 uppercase">Admin: Thầy Hà - THPT Yên Dũng số 2</p>
+            <p className="text-[9px] font-bold opacity-60 uppercase tracking-widest">Admin: Thầy Hà - THPT Yên Dũng số 2 - Bắc Giang</p>
         </div>
       </footer>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />

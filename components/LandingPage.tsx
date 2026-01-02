@@ -103,7 +103,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         mode: 'no-cors', 
         body: JSON.stringify(payload) 
       });
-      alert("Hệ thống đã ghi nhận đánh giá của bạn. Cảm ơn bạn rất nhiều! ❤️");
+       if (rating >= 4) {
+        alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${rating} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
+      } else {
+        // Dưới 4 sao (1, 2, 3 sao)
+        alert(`😡 Này! Sao đánh giá có ${rating} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
+      }
       setShowRateModal(false);
       // Refresh stats
       fetchData();
@@ -117,71 +122,96 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
-      {/* 1. Khối Nút Header - Menu chọn lớp & Quiz */}
+      {/* 1. Header: Nút chọn lớp & Quiz */}
       <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden">
         <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
-          <div className="flex flex-col items-center shrink-0">
-            <div className="bg-red-600 text-white px-6 rounded-2xl shadow-lg flex items-center justify-center h-[60px] border-b-4 border-red-800 animate-pulse">
-              <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
-            </div>
-            <div className="md:hidden text-[8px] font-black text-red-500 mt-1 flex items-center gap-1">
-              <i className="fas fa-arrow-left"></i> Vuốt sang trái để xem tiếp
-            </div>
-          </div>
-          {[9, 10, 11, 12].map(g => (
-            <button key={g} onClick={() => onSelectGrade(g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[120px] transition-transform active:scale-95 hover:brightness-110">
-              <i className="fas fa-graduation-cap"></i> LỚP {g}
+          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center h-[56px] whitespace-nowrap border-b-4 border-red-800 animate-pulse">
+            <span className="font-black text-sm uppercase">Kiểm tra Online →</span>
+            <span className="text-[8px] font-bold opacity-90 leading-tight">( Trên ĐT vuốt sang trái ⬅️ )</span>
+          </div>          
+          {[
+            {g: 9, icon: 'fas fa-graduation-cap'},
+            {g: 10, icon: 'fas fa-school'},
+            {g: 11, icon: 'fas fa-university'},
+            {g: 12, icon: 'fas fa-user-graduate'}
+          ].map(item => (
+            <button key={item.g} onClick={() => onSelectGrade(item.g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 active:scale-95 transition-all h-[60px] flex items-center justify-center gap-2 min-w-[120px]">
+              <i className={item.icon}></i> LỚP {item.g}
             </button>
           ))}
-          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95 hover:brightness-110">
+          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
             <i className="fas fa-bolt"></i> QUIZ 10
           </button>
-          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm h-[60px] flex items-center gap-2 min-w-[130px] transition-transform active:scale-95 hover:brightness-110">
+          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
             <i className="fas fa-brain"></i> QUIZ 20
           </button>
         </div>
       </div>
 
-      {/* 2. Marquee Thông báo */}
-      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1">
-        <div className="animate-marquee whitespace-nowrap text-white font-black uppercase text-[11px] tracking-widest">
-          ⭐ Chào mừng các bạn đến với Hệ thống học tập trực tuyến môn Toán ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-          ⭐ Ngân hàng câu hỏi sẽ thường xuyên được cập nhật để nâng cao hiệu quả ôn tập của học sinh. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          ⭐ Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
-      </div>
+      {/* 2. Marquee thông báo */}
+      <div className="bg-indigo-700 py-3 rounded-2xl overflow-hidden shadow-inner border-b-4 border-indigo-900 mx-1"> {/* PHẦN 1: CHỮ CHẠY - Dùng thẻ marquee để đảm bảo luôn hoạt động */} <marquee className="text-white font-black uppercase text-[11px] tracking-widest block w-full"> 
+      ⭐ ⭐ ⭐ ⭐ ⭐ Luyện tập chăm chỉ mỗi ngày để bứt phá điểm số! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+      ⭐ ⭐ ⭐ ⭐ ⭐   Liên hệ: 0988948882 để tham gia nhóm viết Webapp phục vụ công việc nhé ⭐ ⭐ ⭐ ⭐ ⭐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</marquee> {/* Khoảng cách nhỏ */} 
+<div className="h-2"></div>
+</div>
 
-      {/* 3. Khối nội dung chính: Bảng Vàng - Carousel - Menu */}
+      {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: BẢNG VÀNG TOP 10 */}
-        <div className="lg:col-span-3 flex flex-col">
-          <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden h-full flex flex-col">
-            <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
-               <i className="fas fa-crown text-yellow-300"></i> BẢNG VÀNG QUIZ TUẦN
-            </div>
-            <div className="p-3 space-y-3 flex-grow bg-slate-50 overflow-y-auto max-h-[550px] custom-scrollbar">
-              {top10.length > 0 ? top10.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition-shadow">
-                  <div className="flex gap-3 items-center min-w-0 flex-1">
-                    <span className="text-2xl shrink-0">
-                      {idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : (idx + 1)}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-black text-slate-800 text-[11px] truncate">{item.name}</p>
-                      <p className="text-[9px] text-slate-400 font-bold">{formatPhoneHidden(item.phone)}</p>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="font-black text-blue-600 text-sm">{item.score} đ</p>
-                    <p className="text-[9px] text-slate-400 font-bold tracking-tighter">{item.time}</p>
-                  </div>
-                </div>
-              )) : <p className="text-center p-10 text-slate-400 font-black text-[10px] uppercase">Đang cập nhật...</p>}
-            </div>
+       {/* 1. CẬP NHẬT CỘT TRÁI: TOP 10 QUIZ */}
+<div className="lg:col-span-3 flex flex-col">
+  <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
+    <div className="bg-blue-600 p-4 text-white font-black text-[11px] uppercase text-center flex items-center justify-center gap-2">
+       <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
+    </div>
+   {/* Phần hiển thị Top 10 trong LandingPage.tsx */}
+{/* Phần hiển thị Top 10 mới - Gọn và Rõ nét */}
+<div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
+  {stats.top10 && stats.top10.length > 0 ? (
+    stats.top10.map((item, idx) => {
+      // Hàm xử lý cắt bỏ phần GMT... chỉ lấy HH:mm:ss hoặc mm:ss
+      const formatTimeShort = (timeStr: any) => {
+        if (!timeStr) return "00:00";
+        const s = String(timeStr);
+        // Nếu chứa chuỗi GMT thì chỉ lấy phần thời gian ở đầu
+        if (s.includes("GMT")) return s.split(" ")[4] || s.slice(0, 8);
+        return s;
+      };
+
+      return (
+        <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm border-l-4 border-l-blue-500">
+          {/* Cột Trái: Thứ hạng và Tên (Tên có thể ẩn bớt để bảo mật) */}
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="font-black text-slate-800 text-[12px] truncate">
+              {idx + 1}. {item?.name ? item.name.split(' ').slice(-2).join(' ') : "Học sinh"} 
+            </span>
+            <span className="text-[11px] text-blue-600 font-bold">
+              {item?.phone || "09xxx****"}
+            </span>
+          </div>
+
+          {/* Cột Phải: Điểm và Thời gian (Ngang hàng, rõ nét) */}
+          <div className="text-right flex flex-col shrink-0 items-end justify-center ml-2">
+            <span className="font-black text-red-600 text-[13px] leading-none">
+              {(Number(item?.score) || 0).toFixed(1)} đ
+            </span>
+            <span className="text-[10px] text-slate-500 mt-1 font-bold bg-slate-100 px-2 py-0.5 rounded-md">
+              <i className="far fa-clock mr-1"></i>
+              {formatTimeShort(item?.time)}
+            </span>
           </div>
         </div>
+      );
+    })
+  ) : (
+    <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">
+      Đang tải dữ liệu...
+    </div>
+  )}
+  </div>
+</div>
+</div>
 
         {/* CỘT GIỮA: CAROUSEL ẢNH */}
         <div className="lg:col-span-7">

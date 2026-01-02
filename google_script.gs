@@ -3,16 +3,14 @@ const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 /**
  * Hàm xóa dữ liệu Quiz vào 23:59 Chủ Nhật hàng tuần.
- * Hướng dẫn: Trong Apps Script, chọn biểu tượng Đồng hồ (Trình kích hoạt) -> Thêm trình kích hoạt.
+ * Hướng dẫn: Trong Apps Script, chọn Trình kích hoạt (Biểu tượng đồng hồ) -> Thêm trình kích hoạt.
  * Chọn hàm: clearWeeklyQuizData | Sự kiện: Theo thời gian | Loại: Theo tuần | Ngày: Chủ nhật | Giờ: 23h-00h.
  */
 function clearWeeklyQuizData() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName("ketquaQuiZ");
   if (sheet && sheet.getLastRow() > 1) {
-    // Xóa từ dòng 2 đến hết
     sheet.deleteRows(2, sheet.getLastRow() - 1);
-    console.log("Dữ liệu ketquaQuiZ đã được dọn dẹp định kỳ.");
   }
 }
 
@@ -20,82 +18,77 @@ function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const type = e.parameter.type;
 
-  if (type === 'getStats') {
-    const stats = {
-      ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-      top10: []
-    };
-
-    const sheetRate = ss.getSheetByName("danhgia");
-    if (sheetRate) {
-      const rateData = sheetRate.getDataRange().getValues();
-      for (let i = 1; i < rateData.length; i++) {
-        const star = parseInt(rateData[i][1]);
-        if (star >= 1 && star <= 5) stats.ratings[star]++;
-      }
+  // 1. Lấy dữ liệu Top 10 từ sheet Top10Display
+  if (type === 'getTop10') {
+    const sheet = ss.getSheetByName("Top10Display");
+    if (!sheet) return createResponse("error", "Không tìm thấy sheet Top10Display");
+    const data = sheet.getDataRange().getValues();
+    const results = [];
+    for (let i = 1; i < data.length; i++) {
+      results.push({
+        rank: i,
+        name: data[i][0], // Cột A: Tên
+        score: data[i][1], // Cột B: Điểm
+        time: data[i][2], // Cột C: Thời gian
+        phone: data[i][6] ? data[i][6].toString() : "" // Cột G: SĐT
+      });
     }
+    return createResponse("success", "Thành công", results);
+  }
 
-    const sheetQuiz = ss.getSheetByName("ketquaQuiZ");
-    if (sheetQuiz) {
-      const quizData = sheetQuiz.getDataRange().getValues();
-      if (quizData.length > 1) {
-        const results = [];
-        for (let i = 1; i < quizData.length; i++) {
-          results.push({
-            name: quizData[i][2],
-            score: parseFloat(quizData[i][6]) || 0,
-            time: quizData[i][7] || "00:00",
-            phone: quizData[i][5] ? quizData[i][5].toString() : ""
-          });
-        }
-        results.sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return a.time.localeCompare(b.time);
-        });
-        stats.top10 = results.slice(0, 10).map((r, idx) => ({
-          rank: idx + 1,
-          ...r
-        }));
+  // 2. Lấy thống kê đánh giá
+  if (type === 'getStats') {
+    const stats = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const sheet = ss.getSheetByName("danhgia");
+    if (sheet) {
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        const star = parseInt(data[i][1]);
+        if (star >= 1 && star <= 5) stats[star]++;
       }
     }
     return createResponse("success", "Thành công", stats);
   }
 
+  // 3. Đăng nhập (Kiểm tra sheet thongtintk)
+  if (type === 'login') {
+    const phone = e.parameter.phone;
+    const pass = e.parameter.pass;
+    const sheet = ss.getSheetByName("thongtintk");
+    if (!sheet) return createResponse("error", "Hệ thống chưa có dữ liệu tài khoản");
+    const data = sheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][1].toString() === phone && data[i][2].toString() === pass) {
+        return createResponse("success", "Đăng nhập thành công", {
+          name: data[i][0],
+          phone: data[i][1],
+          isVip: data[i][3] === "VIP"
+        });
+      }
+    }
+    return createResponse("error", "Sai số điện thoại hoặc mật khẩu");
+  }
+
+  // 4. Xác minh thí sinh kiểm tra (Sheet danhsach)
   const idnumber = e.parameter.idnumber;
   const sbd = e.parameter.sbd;
   const sheetList = ss.getSheetByName("danhsach");
-  
   if (!sheetList) return createResponse("error", "Không tìm thấy sheet danhsach");
-
-  const data = sheetList.getDataRange().getValues();
-  const headers = data[0].map(h => h.toString().toLowerCase().trim());
-  
-  const idxSbd = headers.indexOf("sbd");
-  const idxId = headers.indexOf("idnumber");
-  const idxName = headers.indexOf("name");
-  const idxClass = headers.indexOf("class");
-  const idxLimit = headers.indexOf("limit");
-  const idxLimittab = headers.indexOf("limittab");
-  const idxTk = headers.indexOf("taikhoanapp"); // Cột G
-
-  let student = null;
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][idxId].toString().trim() === idnumber && data[i][idxSbd].toString().trim() === sbd) {
-      student = {
-        sbd: data[i][idxSbd].toString(),
-        name: data[i][idxName],
-        class: data[i][idxClass],
-        limit: parseInt(data[i][idxLimit]) || 1,
-        limittab: parseInt(data[i][idxLimittab]) || 3,
-        idnumber: data[i][idxId].toString(),
-        taikhoanapp: data[i][idxTk] || "Free"
-      };
-      break;
+  const dataList = sheetList.getDataRange().getValues();
+  for (let i = 1; i < dataList.length; i++) {
+    if (dataList[i][1].toString() === idnumber && dataList[i][0].toString() === sbd) {
+      return createResponse("success", "Xác minh thành công", {
+        sbd: dataList[i][0].toString(),
+        name: dataList[i][2],
+        class: dataList[i][3],
+        limit: dataList[i][4],
+        limittab: dataList[i][5],
+        idnumber: dataList[i][1].toString(),
+        taikhoanapp: dataList[i][6] || "Free"
+      });
     }
   }
-
-  if (!student) return createResponse("error", "Thông tin SBD hoặc ID không khớp!");
-  return createResponse("success", "Xác minh thành công", student);
+  return createResponse("error", "Thông tin SBD hoặc ID không khớp!");
 }
 
 function doPost(e) {
@@ -105,55 +98,66 @@ function doPost(e) {
 
   try {
     const data = JSON.parse(e.postData.contents);
-    
-    if (data.type === 'rating') {
-      let sheetRate = ss.getSheetByName("danhgia");
-      if (!sheetRate) {
-        sheetRate = ss.insertSheet("danhgia");
-        sheetRate.appendRow(["Timestamp", "sosao", "name", "class", "idNumber", "taikhoanapp"]);
-      }
-      sheetRate.appendRow([new Date(), data.stars, data.name, data.class, data.idNumber, data.taikhoanapp]);
+
+    // Lưu kết quả kiểm tra định kỳ (Sheet ketqua)
+    if (data.type === 'exam') {
+      let sheet = ss.getSheetByName("ketqua");
+      if (!sheet) sheet = ss.insertSheet("ketqua");
+      if (sheet.getLastRow() === 0) sheet.appendRow(["Timestamp", "Mã đề", "SBD", "Họ tên", "Lớp", "Điểm", "Thời gian", "Vi phạm", "Chi tiết"]);
+      sheet.appendRow([new Date(), data.examCode, "'" + data.sbd, data.name, data.className, data.score, data.totalTime, data.tabSwitches, JSON.stringify(data.details)]);
       return createResponse("success", "OK");
     }
 
-    if (data.type === 'quiz') {
-      let sheetQuiz = ss.getSheetByName("ketquaQuiZ");
-      if (!sheetQuiz) {
-        sheetQuiz = ss.insertSheet("ketquaQuiZ");
-        sheetQuiz.appendRow(["Timestamp", "maQuiZ", "name", "class", "school", "phoneNumber", "tongdiem", "fulltime", "sotk", "bank"]);
+    // Đăng ký tài khoản (Sheet thongtintk)
+    if (data.type === 'register') {
+      let sheet = ss.getSheetByName("thongtintk");
+      if (!sheet) {
+        sheet = ss.insertSheet("thongtintk");
+        sheet.appendRow(["Họ tên", "Số điện thoại", "Mật khẩu", "Trạng thái"]);
       }
-      sheetQuiz.appendRow([
-        data.timestamp,
-        data.examCode,
-        data.name,
-        data.className,
-        data.school || "",
-        data.phoneNumber || "",
-        data.score,
-        data.totalTime,
-        data.stk || "",
+      sheet.appendRow([data.name, "'" + data.phone, data.pass, "Free"]);
+      return createResponse("success", "Đăng ký thành công");
+    }
+
+    // Đăng ký VIP (Sheet thongtintk & Sheet VIP)
+    if (data.type === 'vip') {
+      let sheetVip = ss.getSheetByName("VIP");
+      if (!sheetVip) sheetVip = ss.insertSheet("VIP");
+      sheetVip.appendRow([new Date(), "'" + data.phone, "Yêu cầu nâng cấp"]);
+      return createResponse("success", "Đã gửi yêu cầu VIP");
+    }
+
+    // Đánh giá Web (Sheet danhgia)
+    if (data.type === 'rating') {
+      let sheet = ss.getSheetByName("danhgia");
+      if (!sheet) sheet = ss.insertSheet("danhgia");
+      sheet.appendRow([new Date(), data.stars, data.name, data.comment, "'" + data.idNumber, data.taikhoanapp]);
+      return createResponse("success", "Cảm ơn bạn đã đánh giá");
+    }
+
+    // Lưu kết quả Quiz (Sheet ketquaQuiZ)
+    if (data.type === 'quiz') {
+      let sheet = ss.getSheetByName("ketquaQuiZ");
+      if (!sheet) {
+        sheet = ss.insertSheet("ketquaQuiZ");
+        sheet.appendRow(["Timestamp", "Mã Quiz", "Họ tên", "Lớp", "Trường", "Số điện thoại", "Điểm", "Thời gian", "STK", "Bank"]);
+      }
+      sheet.appendRow([
+        new Date(), 
+        data.examCode, 
+        data.name, 
+        data.className, 
+        data.school, 
+        "'" + data.phoneNumber, 
+        data.score, 
+        data.totalTime, 
+        "'" + (data.stk || ""), 
         data.bank || ""
       ]);
-      return createResponse("success", "OK");
+      return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
-    let sheetResult = ss.getSheetByName("ketqua");
-    if (!sheetResult) sheetResult = ss.insertSheet("ketqua");
-    if (sheetResult.getLastRow() === 0) {
-      sheetResult.appendRow(["Timestamp", "makiemtra", "sbd", "name", "class", "tongdiem", "fulltime", "details"]);
-    }
-    sheetResult.appendRow([
-      data.timestamp,
-      data.examCode,
-      data.sbd,
-      data.name,
-      data.className,
-      data.score,
-      data.totalTime,
-      JSON.stringify(data.details)
-    ]);
-
-    return createResponse("success", "OK");
+    return createResponse("error", "Loại dữ liệu không hợp lệ");
   } catch (error) {
     return createResponse("error", error.message);
   } finally {

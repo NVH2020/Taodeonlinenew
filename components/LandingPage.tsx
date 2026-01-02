@@ -82,26 +82,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     }
     setShowQuizModal(null);
   };
- const handleRateSubmit = async () => {
-    if (isSubmittingRate) return;
-    setIsSubmittingRate(true);
+const handleRateSubmit = async () => {
+  if (isSubmittingRate) return;
+  setIsSubmittingRate(true);
 
-    try {
-      const payload = {
-        type: 'rating',
-        stars: rating, 
-        comment: comment,
-        name: quizInfo.name || (user?.name || "Khách"),
-        class: quizInfo.class || "Tự do",
-        idNumber: user?.phoneNumber || "GUEST",
-        taikhoanapp: user?.isVip ? "VIP" : "FREE"
-      };
+  try {
+    const payload = {
+      type: 'rating',
+      stars: rating, 
+      comment: comment,
+      name: quizInfo.name || (user?.name || "Khách"),
+      class: quizInfo.class || "Tự do",
+      // Đảm bảo idNumber và taikhoanapp luôn có giá trị
+      idNumber: user?.phoneNumber || "GUEST",
+      taikhoanapp: user?.isVip ? "VIP" : "FREE"
+    };
 
-      await fetch(DANHGIA_URL, {
-        method: 'POST',
-        // mode: 'no-cors',
-        body: JSON.stringify(payload)
-      });
+    await fetch(DANHGIA_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
 
       setStats(prev => ({
         ...prev,
@@ -176,30 +176,36 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     <div className="bg-blue-600 p-4 text-white font-black text-[11px] uppercase text-center flex items-center justify-center gap-2">
        <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
     </div>
-    <div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
-      {stats.top10.length > 0 ? stats.top10.map((item, idx) => (
-        <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all border-l-4 border-l-blue-400">
-          <div className="flex flex-col min-w-0 flex-1 pr-2">
-            <span className="font-black text-slate-800 text-[11px] truncate leading-tight">
-              {idx + 1}. {item.name}
-            </span>
-            <span className="text-[10px] text-blue-500 font-bold mt-0.5">
-              {item.phone}
-            </span>
-          </div>
-          <div className="text-right flex flex-col shrink-0 border-l border-slate-100 pl-2">
-            <span className="font-black text-red-600 text-[11px] leading-none">
-              {item.score.toFixed(1)} 
-            </span>
-            <span className="text-[9px] text-slate-400 mt-1 font-bold italic">
-              {item.time}
-            </span>
-          </div>
+   {/* Phần hiển thị Top 10 trong LandingPage.tsx */}
+<div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
+  {stats.top10 && stats.top10.length > 0 ? (
+    stats.top10.map((item, idx) => (
+      <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all border-l-4 border-l-blue-400">
+        <div className="flex flex-col min-w-0 flex-1 pr-2">
+          <span className="font-black text-slate-800 text-[11px] truncate leading-tight">
+            {idx + 1}. {item?.name || "Ẩn danh"}
+          </span>
+          <span className="text-[10px] text-blue-500 font-bold mt-0.5">
+            {item?.phone || "09xxx****"}
+          </span>
         </div>
-      )) : (
-        <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">Đang cập nhật...</div>
-      )}
+        <div className="text-right flex flex-col shrink-0 border-l border-slate-100 pl-2">
+          <span className="font-black text-red-600 text-[11px] leading-none">
+            {/* Chống lỗi toFixed: Ép kiểu số rồi mới dùng toFixed */}
+            {(Number(item?.score) || 0).toFixed(1)} đ
+          </span>
+          <span className="text-[9px] text-slate-400 mt-1 font-bold italic">
+            {item?.time || "00:00"}
+          </span>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">
+      Đang tải dữ liệu...
     </div>
+  )}
+</div>
   </div>
 </div>
 

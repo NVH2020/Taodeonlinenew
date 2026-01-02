@@ -37,25 +37,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
     top10: []
   });
-
- useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Thêm t=${Date.now()} để tránh bị Google lưu cache kết quả cũ
-        const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
-        const result = await resp.json();
-        if (result.status === "success") {
-          setStats(result.data);
-        }
-      } catch (e) {
-        console.error("Lỗi lấy thống kê:", e);
+const LandingPage: React.FC<LandingPageProps> = (...) => {
+// 1. Đưa hàm này ra ngoài useEffect để các hàm khác dùng được
+  const fetchStats = async () => {
+    try {
+      const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
+      const result = await resp.json();
+      if (result.status === "success") {
+        setStats(result.data);
       }
-    };
+    } catch (e) {
+      console.error("Lỗi lấy thống kê:", e);
+    }
+  };
 
-    fetchStats();
-    
-    // Cứ 30 giây tự cập nhật bảng xếp hạng 1 lần
-    const statsInterval = setInterval(fetchStats, 30000); 
+  useEffect(() => {
+    fetchStats(); // Gọi lần đầu khi load trang
+    const statsInterval = setInterval(fetchStats, 30000);
 
     const imgInterval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);

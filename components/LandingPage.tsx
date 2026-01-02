@@ -343,93 +343,12 @@ const handleRateSubmit = async () => {
               <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">Bắt đầu Quiz ngay</button>
             </form>
             <button onClick={() => setShowQuizModal(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors text-2xl">✕</button>
+            <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg">{isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}</button>
+         
           </div>
         </div>
-      )}
-       {showQuizModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl relative border border-slate-100">
-            <h2 className="text-2xl font-black text-orange-500 mb-6 uppercase tracking-tighter text-center">Thông tin luyện tập</h2>
-            <form onSubmit={handleStartQuiz} className="space-y-4">
-              <input required type="text" placeholder="Họ và tên" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.name} onChange={e=>setQuizInfo({...quizInfo, name: e.target.value})} />
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="Lớp" className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.class} onChange={e=>setQuizInfo({...quizInfo, class: e.target.value})} />
-                <input required type="tel" placeholder="Số điện thoại" className="p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
-              </div>
-              {/* --- THÊM MỚI TẠI ĐÂY: Chọn trường học --- */}
-              {!isOtherSchool ? (
-                <select className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500"
-                  onChange={(e) => e.target.value === "Khác" ? setIsOtherSchool(true) : setQuizInfo({ ...quizInfo, school: e.target.value })}>
-                  <option value="">Chọn trường học</option>
-                  <option value="THPT YD1">THPT YD1</option>
-                  <option value="THPT YD2">THPT YD2</option>
-                  <option value="Khác">Trường khác (Nhập tay...)</option>
-                </select>
-              ) : (
-                <input autoFocus type="text" placeholder="Nhập tên trường của bạn" className="w-full p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 font-bold outline-none"
-                  onChange={e => setQuizInfo({ ...quizInfo, school: e.target.value })} />
-              )}
-
-              {/* --- THÊM MỚI TẠI ĐÂY: Thông tin ngân hàng --- */}
-              <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
-                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center">Thông tin Bank nhận thưởng</p>
-                <input type="text" placeholder="Số tài khoản" className="w-full p-4 bg-white rounded-2xl border-none font-bold outline-none" value={bankInfo.stk} onChange={e => setBankInfo({ ...bankInfo, stk: e.target.value })} />
-                {!isOtherBank ? (
-                  <select className="w-full p-4 bg-white rounded-2xl border-none font-bold outline-none" onChange={(e) => e.target.value === "Khác" ? setIsOtherBank(true) : setBankInfo({ ...bankInfo, bankName: e.target.value })}>
-                    <option value="">Chọn ngân hàng</option>
-                    <option value="Agribank">Agribank</option>
-                    <option value="MB Bank">MB Bank</option>
-                    <option value="Khác">Ngân hàng khác...</option>
-                  </select>
-                ) : (
-                  <input autoFocus type="text" placeholder="Tên ngân hàng" className="w-full p-4 bg-white rounded-2xl border-2 border-orange-200 font-bold outline-none" onChange={e => setBankInfo({ ...bankInfo, bankName: e.target.value })} />
-                )}
-              </div>
-              <button className="w-full py-5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-black shadow-xl uppercase active:scale-95 border-b-4 border-orange-700 mt-4 text-xl tracking-tighter">Bắt đầu Quiz ngay</button>
-            </form>
-            <button onClick={() => setShowQuizModal(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors text-2xl">✕</button>
-          </div>
-        </div>
-      )}
-
-      {showRateModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
-          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-6">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Đánh giá ứng dụng</h3>
-            <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt</p>
-              {[5, 4, 3, 2, 1].map(star => {
-                const count = stats.ratings[star] || 0;
-                const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
-                return (
-                  <div key={star} className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold w-4 text-slate-600">{star}★</span>
-                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-yellow-400" style={{ width: `${percent}%` }}>
-                      </div>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-400 w-6 text-right">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-center gap-3">
-              {[1, 2, 3, 4, 5].map(star => (
-                <button key={star} onClick={() => setRating(star)} className="text-4xl transition-transform hover:scale-125 focus:outline-none">
-                  {star <= rating ? <span className="text-yellow-400">★</span> : <span className="text-slate-200">★</span>}
-                </button>
-              ))}
-            </div>
-            <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24" placeholder="Ý kiến của bạn..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
-            <div className="flex gap-3">
-              <button onClick={() => setShowRateModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase text-xs">Đóng</button>
-              <button onClick={handleRateSubmit} disabled={isSubmittingRate} className="flex-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs shadow-lg">{isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+      )}    
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }

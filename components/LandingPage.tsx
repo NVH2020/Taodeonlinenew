@@ -351,6 +351,23 @@ const handleRateSubmit = async () => {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-5">
             <h3 className="text-xl font-black text-slate-800 uppercase italic">Đánh giá hệ thống</h3>
+             <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt</p>
+              {[5, 4, 3, 2, 1].map(star => {
+                const count = stats.ratings[star] || 0;
+                const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold w-4 text-slate-600">{star}★</span>
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-400" style={{ width: `${percent}%` }}>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400 w-6 text-right">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
             
             <div className="flex flex-wrap justify-center gap-2">
               {FUN_COMMENTS.map((txt, i) => (

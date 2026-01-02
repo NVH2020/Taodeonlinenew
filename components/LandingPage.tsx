@@ -189,7 +189,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
           <div className="text-right flex flex-col shrink-0 border-l border-slate-100 pl-2">
             <span className="font-black text-red-600 text-[11px] leading-none">
-              {item.score.toFixed(1)} đ
+              {item.score.toFixed(1)} 
             </span>
             <span className="text-[9px] text-slate-400 mt-1 font-bold italic">
               {item.time}

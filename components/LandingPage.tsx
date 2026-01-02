@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL } from '../config';
 import { AppUser, Student } from '../types';
+const FUN_COMMENTS = [
+  "Đề hay và QuiZ quá thầy ơi! 🔥", 
+  "10 điểm không có nhưng! 💎", 
+  "App xịn, học toán cực cuốn 🤣", 
+  "Cảm ơn thầy vì những bộ đề chất lượng ❤️"
+];
 
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL } from '../config';
 import { AppUser, Student } from '../types';
-const FUN_COMMENTS = [
-  "Đề hay và QuiZ quá thầy ơi! 🔥", 
-  "10 điểm không có nhưng! 💎", 
-  "App xịn, học toán cực cuốn 🤣", 
-  "Cảm ơn thầy vì những bộ đề chất lượng ❤️"
-];
-
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";
   return phone.slice(0, 2) + "xxx" + phone.slice(-4);
@@ -22,6 +15,15 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip }) => {
+  const funnyComments = [
+    "Web tuyệt vời quá thầy ơi! 🔥",
+    "Giao diện xịn xò, học mãi không chán 😆",
+    "Thầy Hà dạy toán đỉnh nhất vịnh Bắc Bộ 📐",
+    "Làm Quiz xong thấy mình thông minh hẳn ra 🧠",
+    "Web mượt hơn cả người yêu cũ của em 🚀",
+    "Cảm ơn thầy đã tạo ra sân chơi bổ ích ạ! ❤️",
+    "Đề khó quá nhưng mà cuốn thầy ơi! 📚"
+  ];
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });

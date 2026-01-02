@@ -27,8 +27,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("Web tuyệt vời quá thầy ơi! 🔥");
   const [isSubmittingRate, setIsSubmittingRate] = useState(false);
-  const [stats, setStats] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
-  const [top10, setTop10] = useState<any[]>([]);
+  // Thay vì tách rời stats và top10, hãy gộp lại
+const [dataStats, setDataStats] = useState<{
+  ratings: Record<number, number>,
+  top10: any[]
+}>({
+  ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+  top10: []
+});
 
   const funnyComments = [
     "Web tuyệt vời quá thầy ơi! 🔥",
@@ -42,16 +48,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
   // Hàm fetch dữ liệu tách biệt để tránh lỗi Failed to fetch do quá tải đồng thời
   const fetchData = async () => {
-    // 1. Fetch Stats
-    try {
-      const statsResp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`, { cache: 'no-store' });
-      if (statsResp.ok) {
-        const statsRes = await statsResp.json();
-        if (statsRes.status === "success") setStats(statsRes.data);
+  try {
+    const resp = await fetch(`${DANHGIA_URL}?type=getStats&t=${Date.now()}`);
+    if (resp.ok) {
+      const res = await resp.json();
+      if (res.status === "success") {
+        // Cập nhật cả ratings và top10 cùng lúc từ API trả về
+        setDataStats({
+          ratings: res.data.ratings || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+          top10: res.data.top10 || []
+        });
       }
-    } catch (e) {
-      console.error("Lỗi fetch Stats:", e);
     }
+  } catch (e) {
+    console.error("Lỗi fetch dữ liệu:", e);
+  }
+};
 
     // 2. Fetch Top 10
     try {
@@ -168,8 +180,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
    {/* Phần hiển thị Top 10 trong LandingPage.tsx */}
 {/* Phần hiển thị Top 10 mới - Gọn và Rõ nét */}
 <div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
-  {stats.top10 && stats.top10.length > 0 ? (
-    stats.top10.map((item, idx) => {
+  {dataStats.top10 && dataStats.top10.length > 0 ? (
+  dataStats.top10.map((item, idx) => {
       // Hàm xử lý cắt bỏ phần GMT... chỉ lấy HH:mm:ss hoặc mm:ss
       const formatTimeShort = (timeStr: any) => {
         if (!timeStr) return "00:00";
@@ -205,10 +217,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       );
     })
   ) : (
-    <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">
-      Đang tải dữ liệu...
-    </div>
-  )}
+    return (
+       <div key={idx} ...> ... </div>
+    )
+  })
+) : (
+  <div className="p-10 text-center ...">Đang tải dữ liệu...</div>
+)}
   </div>
 </div>
 </div>

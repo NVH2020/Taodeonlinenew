@@ -2,12 +2,12 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbxUImQg4lyqX2zT_9CRxPyvBqmnVY0MX6C8EX5ptwMQBwtxqNUvKrFRKZ7lki5dFtJZzQ/exec";
-export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec";
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
+export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
 export const VIP_SHEET_URL = "https://script.google.com/macros/s/AKfycbzxQQd3QmPUtguwdfLjz4TuHiroQNrWYaDsL4syLrtjZMWguKtQQhoFsGI5xcT7q113/exec";
 
 export const API_ROUTING: Record<string, string> = {
-  "686868": DEFAULT_API_URL
+  "680988948882": DEFAULT_API_URL
 };
 
 export const NEWS_DATA: NewsItem[] = [

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ExamConfig, Student, ExamResult, Question, AppUser } from './types';
-import { API_ROUTING, DEFAULT_API_URL, VIP_SHEET_URL } from './config';
+import { API_ROUTING, DEFAULT_API_URL, VIP_SHEET_URL, DANHGIA_URL } from './config';
 import LandingPage from './components/LandingPage';
 import ExamPortal from './components/ExamPortal';
 import QuizInterface from './components/QuizInterface';
@@ -26,7 +26,7 @@ const App: React.FC = () => {
     setCurrentView('quiz');
   };
 
-  const handleStartQuizMode = (num: number, pts: number, quizStudent: Partial<Student>) => {
+  const handleStartQuizMode = (num: number, pts: number, quizStudent: any) => {
     const quizQuestions: Question[] = [];
     const usedIds = new Set<string | number>();
     for(let i=0; i<num; i++) {
@@ -41,6 +41,8 @@ const App: React.FC = () => {
       class: quizStudent.class || 'Tự do',
       school: quizStudent.school || 'Tự do',
       phoneNumber: quizStudent.phoneNumber,
+      stk: quizStudent.stk,
+      bank: quizStudent.bank,
       limit: 10, 
       limittab: 10, 
       idnumber: 'QUIZ', 
@@ -54,8 +56,14 @@ const App: React.FC = () => {
     setExamResult(result);
     setCurrentView('result');
     
-    // Luôn gửi kết quả về Server
-    const targetUrl = (activeStudent && API_ROUTING[activeStudent.idnumber]) || DEFAULT_API_URL;
+    // Luôn gửi kết quả về Server dựa trên phân loại Quiz hay Exam
+    let targetUrl = DEFAULT_API_URL;
+    if (result.type === 'quiz') {
+      targetUrl = DANHGIA_URL;
+    } else if (activeStudent && API_ROUTING[activeStudent.idnumber]) {
+      targetUrl = API_ROUTING[activeStudent.idnumber];
+    }
+
     try {
       await fetch(targetUrl, { 
         method: 'POST', 
@@ -76,20 +84,18 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 bg-slate-50">
-      {/* Header tối ưu cho Mobile */}
       <header className="bg-blue-800 text-white py-8 md:py-12 shadow-2xl text-center relative overflow-hidden border-b-8 border-blue-900 px-4">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="relative z-10">
           <h1 className="text-2xl md:text-5xl font-black uppercase tracking-tighter mb-2 drop-shadow-lg leading-tight">
-            HỆ THỐNG RA ĐỀ ONLINE <br className="md:hidden" /> MÔN TOÁN
+            HỆ THỐNG KIỂM TRA ONLINE <br className="md:hidden" /> MÔN TOÁN
           </h1>
-          <p className="text-sm md:text-lg opacity-90 font-bold tracking-wide max-w-2xl mx-auto">
-            Biên soạn bởi đội ngũ giáo viên Toán uy tín - chuyên nghiệp
+          <p className="text-sm md:text-lg opacity-90 font-black tracking-wide max-w-2xl mx-auto uppercase">
+            Học tập chuyên nghiệp - Kết quả bứt phá
           </p>
         </div>
       </header>
 
-      {/* Main Container tự xếp chồng trên Mobile */}
       <main className="flex-grow max-w-[1400px] mx-auto w-full p-4 md:p-10">
         <div className="flex flex-col gap-6">
             {currentView === 'landing' && (
@@ -123,14 +129,13 @@ const App: React.FC = () => {
       {showVipModal && <VipModal user={user!} onClose={() => setShowVipModal(false)} onSuccess={() => { setUser(prev => prev ? {...prev, isVip: true} : null); setShowVipModal(false); }} />}
 
       <footer className="bg-slate-900 py-10 text-center text-slate-500 text-[10px] md:text-xs mt-10 px-4">
-        <p className="font-black text-slate-400 mb-2 uppercase tracking-widest">Phát triển bởi nhóm GV Toán. Admin Nguyễn Văn Hà</p>
-        <p>&copy; {new Date().getFullYear()} Kiểm tra và học tập chuyên nghiệp. All rights reserved.</p>
+        <p className="font-black text-slate-400 mb-2 uppercase tracking-widest">Phát triển bởi nhóm GV Toán. Admin: Nguyễn Văn Hà</p>
+        <p>&copy; {new Date().getFullYear()} Hệ thống ôn tập và kiểm tra chuyên nghiệp - chất lượng</p>
       </footer>
     </div>
   );
 };
 
-// ... AuthModal và VipModal giữ nguyên
 const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u: AppUser) => void }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [phone, setPhone] = useState('');
@@ -142,7 +147,7 @@ const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u:
     setLoading(true);
     try {
       const payload = { type: 'register', phone, pass };
-      await fetch(VIP_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+      await fetch(DANHGIA_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
       onSuccess({ phoneNumber: phone, isVip: false });
     } catch (e) {
       alert("Đã xảy ra lỗi kết nối!");
@@ -157,13 +162,13 @@ const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u:
         <div className="p-10">
           <h2 className="text-3xl font-black text-slate-800 mb-2 uppercase tracking-tighter">{isLogin ? 'Đăng nhập' : 'Đăng ký'}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input required type="tel" placeholder="Số điện thoại" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={phone} onChange={e=>setPhone(e.target.value)} />
-            <input required type="password" placeholder="Mật khẩu" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={pass} onChange={e=>setPass(e.target.value)} />
+            <input required type="tel" placeholder="Số điện thoại" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-blue-500" value={phone} onChange={e=>setPhone(e.target.value)} />
+            <input required type="password" placeholder="Mật khẩu" className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-blue-500" value={pass} onChange={e=>setPass(e.target.value)} />
             <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg hover:bg-blue-700 transition active:scale-95 border-b-4 border-blue-800 uppercase">
               {loading ? 'ĐANG XỬ LÝ...' : (isLogin ? 'VÀO HỆ THỐNG' : 'TẠO TÀI KHOẢN')}
             </button>
           </form>
-          <button onClick={() => setIsLogin(!isLogin)} className="w-full mt-6 text-slate-400 font-bold hover:text-blue-600 transition text-sm">
+          <button onClick={() => setIsLogin(!isLogin)} className="w-full mt-6 text-slate-400 font-black hover:text-blue-600 transition text-sm">
             {isLogin ? 'Chưa có tài khoản? Đăng ký' : 'Đã có tài khoản? Đăng nhập'}
           </button>
         </div>
@@ -179,7 +184,7 @@ const VipModal = ({ user, onClose, onSuccess }: { user: AppUser, onClose: () => 
     setLoading(true);
     try {
       const payload = { type: 'vip', phone: user.phoneNumber };
-      await fetch(VIP_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+      await fetch(DANHGIA_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
       alert("Đã gửi yêu cầu nâng cấp VIP!");
       onSuccess();
     } catch (e) { alert("Lỗi!"); } finally { setLoading(false); }

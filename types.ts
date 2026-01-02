@@ -56,8 +56,6 @@ export interface Student {
   idnumber: string;
   taikhoanapp: string;
   phoneNumber?: string;
-  stk?: string;
-  bank?: string;
 }
 
 export interface UserAnswer {
@@ -88,8 +86,6 @@ export interface ExamResult {
   totalTime: string;
   tabSwitches?: number;
   details: UserAnswer[];
-  stk?: string;
-  bank?: string;
 }
 
 export interface NewsItem {

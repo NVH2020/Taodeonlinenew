@@ -170,36 +170,39 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       {/* 3. Khối nội dung chính */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* CỘT TRÁI: TOP QUIZ */}
-        <div className="lg:col-span-3 flex flex-col">
-          <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
-            <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex flex-col items-center justify-center gap-1">
-  <div className="flex items-center gap-2">
-    <i className="fas fa-crown text-yellow-300"></i>
-    <span>TOP 10 QUIZ TUẦN</span>
-  </div>
-  <div className="font-bold lowercase first-letter:uppercase text-[10px] opacity-90">
-    ( ⏱️: 18 : 00 chủ nhật )
-  </div>
-</div>
-            <div className="p-2 space-y-1 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
-              {stats.top10.length > 0 ? stats.top10.map((item) => (
-                <div key={item.rank} className="flex items-center justify-between p-2 bg-white rounded-xl border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
-                  <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-1">
-                    <span className="font-bold text-slate-800 text-[10px] truncate">{item.rank}. {item.name}</span>
-                    <span className="text-[9px] text-slate-400 font-bold">{formatPhoneHidden(item.phone)}</span>
-                  </div>
-                  <div className="text-right flex flex-col shrink-0">
-                    <span className="font-black text-blue-600 text-[10px] leading-none">{item.score.toFixed(1)} đ</span>
-                    <span className="text-[8px] text-slate-400 mt-0.5"><i className="far fa-clock mr-0.5"></i>{item.time}</span>
-                  </div>
-                </div>
-              )) : (
-                <div className="p-10 text-center text-slate-400 text-xs uppercase font-black">Đang cập nhật...</div>
-              )}
-            </div>
+       {/* 1. CẬP NHẬT CỘT TRÁI: TOP 10 QUIZ */}
+<div className="lg:col-span-3 flex flex-col">
+  <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden border-b-4 border-blue-200 h-full flex flex-col">
+    <div className="bg-blue-600 p-4 text-white font-black text-[11px] uppercase text-center flex items-center justify-center gap-2">
+       <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
+    </div>
+    <div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
+      {stats.top10.length > 0 ? stats.top10.map((item, idx) => (
+        <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all border-l-4 border-l-blue-400">
+          <div className="flex flex-col min-w-0 flex-1 pr-2">
+            <span className="font-black text-slate-800 text-[11px] truncate leading-tight">
+              {idx + 1}. {item.name}
+            </span>
+            <span className="text-[10px] text-blue-500 font-bold mt-0.5">
+              {item.phone}
+            </span>
+          </div>
+          <div className="text-right flex flex-col shrink-0 border-l border-slate-100 pl-2">
+            <span className="font-black text-red-600 text-[11px] leading-none">
+              {item.score.toFixed(1)} đ
+            </span>
+            <span className="text-[9px] text-slate-400 mt-1 font-bold italic">
+              {item.time}
+            </span>
           </div>
         </div>
+      )) : (
+        <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">Đang cập nhật...</div>
+      )}
+    </div>
+  </div>
+</div>
+
 
         {/* CỘT GIỮA: ẢNH CAROUSEL */}
         <div className="lg:col-span-7">
@@ -324,36 +327,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       )}
 
     {showRateModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    {/* Thêm max-w-md và w-full để nó co giãn nhưng không quá to trên PC */}
-    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl overflow-hidden">
+  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
+    <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-5">
+      <h3 className="text-xl font-black text-slate-800 uppercase italic">Đánh giá hệ thống</h3>
       
-      <h3 className="text-xl font-bold text-center mb-4">Đánh giá Web</h3>
+      {/* Thêm các nút nhận xét nhanh */}
+      <div className="flex flex-wrap justify-center gap-2">
+        {FUN_COMMENTS.map((txt, i) => (
+          <button 
+            key={i} 
+            type="button"
+            onClick={() => setComment(txt)}
+            className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all"
+          >
+            {txt}
+          </button>
+        ))}
+      </div>
 
-            <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">Tổng: {totalRatings} lượt đánh giá</p>
-              {[5, 4, 3, 2, 1].map(star => {
-                const count = stats.ratings[star] || 0;
-                const percent = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
-                return (
-                  <div key={star} className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold w-4 text-slate-600">{star}★</span>
-                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-yellow-400" style={{ width: `${percent}%` }}></div>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-400 w-6 text-right">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-center gap-3">
-              {[1, 2, 3, 4, 5].map(star => (
-                <button key={star} onClick={() => setRating(star)} className="text-4xl transition-transform hover:scale-125 focus:outline-none">
-                  {star <= rating ? <span className="text-yellow-400">★</span> : <span className="text-slate-200">★</span>}
-                </button>
-              ))}
-            </div>
-            <textarea className="w-full p-4 bg-slate-50 rounded-2xl border-none font-black text-sm outline-none h-24" placeholder="Nhập nhận xét..." value={comment} onChange={e => setComment(e.target.value)}></textarea>
+      <textarea 
+        className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24" 
+        placeholder="Gõ thêm ý kiến của bạn tại đây..." 
+        value={comment} 
+        onChange={e => setComment(e.target.value)}
+      ></textarea>
+
              <div className="flex gap-3 mt-6">
         <button 
           onClick={() => setShowRateModal(false)}
@@ -368,9 +366,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         >
           {isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}
         </button>
-      </div>
-
-    </div>
+     </div>
   </div>
 )}
 

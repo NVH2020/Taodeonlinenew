@@ -75,34 +75,46 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   };
 
   const handleRateSubmit = async () => {
-    if (isSubmittingRate) return;
-    setIsSubmittingRate(true);
-    try {
-      const payload = {
-        type: 'rating',
-        stars: rating,
-        comment: comment,
-        name: user?.name || quizInfo.name || "Khách",
-        class: user?.class || quizInfo.class || "Tự do",
-        idNumber: user?.phoneNumber || "GUEST",
-        taikhoanapp: user?.isVip ? "VIP" : "FREE"
-      };
+  if (isSubmittingRate) return;
+  setIsSubmittingRate(true);
 
-      await fetch(DANHGIA_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
+  try {
+    const payload = {
+      type: 'rating',
+      stars: rating, 
+      comment: comment,
+      name: quizInfo.name || (user?.name || "Khách"),
+      class: quizInfo.class || "Tự do",
+      // Đảm bảo idNumber và taikhoanapp luôn có giá trị
+      idNumber: user?.phoneNumber || "GUEST",
+      taikhoanapp: user?.isVip ? "VIP" : "FREE"
+    };
 
+    await fetch(DANHGIA_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+      setStats(prev => ({
+        ...prev,
+        ratings: {
+          ...prev.ratings,
+          [rating]: (prev.ratings[rating] || 0) + 1
+        }
+      }));
+      // Xử lý thông báo theo số sao
       if (rating >= 4) {
-        alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${rating} ⭐.`);
+        alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${rating} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
       } else {
-        alert(`😡 Cảm ơn đã góp ý! Lần sau nhớ cho 5 sao nhé!`);
+        // Dưới 4 sao (1, 2, 3 sao)
+        alert(`😡 Này! Sao đánh giá có ${rating} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
       }
 
       setShowRateModal(false);
       setComment("");
-      setTimeout(fetchStats, 1500); // Tải lại stats sau khi gửi
+      
     } catch (e) {
+      console.error("Lỗi gửi đánh giá:", e);
       alert("Có lỗi xảy ra khi gửi đánh giá!");
     } finally {
       setIsSubmittingRate(false);

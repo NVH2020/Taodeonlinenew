@@ -277,6 +277,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       </footer>
 
       {/* Modals */}
+      {/* 5. Modals */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl relative border border-slate-100 animate-fade-in">
@@ -287,7 +288,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 <input type="text" placeholder="Lớp" className="p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.class} onChange={e=>setQuizInfo({...quizInfo, class: e.target.value})} />
                 <input required type="tel" placeholder="Số điện thoại" className="p-4 bg-slate-50 rounded-2xl border-none font-black outline-none focus:ring-2 focus:ring-orange-500" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
               </div>
-              {/* --- THÊM MỚI TẠI ĐÂY: Chọn trường học --- */}
+
               {!isOtherSchool ? (
                 <select className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold outline-none focus:ring-2 focus:ring-orange-500"
                   onChange={(e) => e.target.value === "Khác" ? setIsOtherSchool(true) : setQuizInfo({ ...quizInfo, school: e.target.value })}>
@@ -301,7 +302,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                   onChange={e => setQuizInfo({ ...quizInfo, school: e.target.value })} />
               )}
 
-              {/* --- THÊM MỚI TẠI ĐÂY: Thông tin ngân hàng --- */}
               <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
                 <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center">Thông tin Bank nhận thưởng</p>
                 <input type="text" placeholder="Số tài khoản" className="w-full p-4 bg-white rounded-2xl border-none font-bold outline-none" value={bankInfo.stk} onChange={e => setBankInfo({ ...bankInfo, stk: e.target.value })} />
@@ -326,49 +326,49 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
       )}
 
-    {showRateModal && (
-  <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
-    <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-5">
-      <h3 className="text-xl font-black text-slate-800 uppercase italic">Đánh giá hệ thống</h3>
-      
-      {/* Thêm các nút nhận xét nhanh */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {FUN_COMMENTS.map((txt, i) => (
-          <button 
-            key={i} 
-            type="button"
-            onClick={() => setComment(txt)}
-            className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all"
-          >
-            {txt}
-          </button>
-        ))}
-      </div>
+      {showRateModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-lg">
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border border-slate-100 text-center space-y-5">
+            <h3 className="text-xl font-black text-slate-800 uppercase italic">Đánh giá hệ thống</h3>
+            
+            <div className="flex flex-wrap justify-center gap-2">
+              {FUN_COMMENTS.map((txt, i) => (
+                <button 
+                  key={i} 
+                  type="button"
+                  onClick={() => setComment(txt)}
+                  className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all"
+                >
+                  {txt}
+                </button>
+              ))}
+            </div>
 
-      <textarea 
-        className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24" 
-        placeholder="Gõ thêm ý kiến của bạn tại đây..." 
-        value={comment} 
-        onChange={e => setComment(e.target.value)}
-      ></textarea>
+            <textarea 
+              className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-24" 
+              placeholder="Gõ thêm ý kiến của bạn tại đây..." 
+              value={comment} 
+              onChange={e => setComment(e.target.value)}
+            ></textarea>
 
-             <div className="flex gap-3 mt-6">
-        <button 
-          onClick={() => setShowRateModal(false)}
-          className="flex-1 py-3 bg-gray-200 rounded-xl font-bold"
-        >
-          Hủy
-        </button>
-        <button 
-          onClick={handleRateSubmit}
-          disabled={isSubmittingRate}
-          className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200"
-        >
-          {isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}
-        </button>
-     </div>
-  </div>
-)}
+            <div className="flex gap-3 mt-6">
+              <button 
+                onClick={() => setShowRateModal(false)}
+                className="flex-1 py-3 bg-gray-200 rounded-xl font-bold"
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={handleRateSubmit}
+                disabled={isSubmittingRate}
+                className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200"
+              >
+                {isSubmittingRate ? "Đang gửi..." : "Gửi đánh giá"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     </div>
@@ -376,3 +376,5 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 };
 
 export default LandingPage;
+
+

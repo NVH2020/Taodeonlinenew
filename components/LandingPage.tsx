@@ -177,29 +177,44 @@ const handleRateSubmit = async () => {
        <i className="fas fa-crown text-yellow-300"></i> TOP 10 QUIZ TUẦN
     </div>
    {/* Phần hiển thị Top 10 trong LandingPage.tsx */}
+{/* Phần hiển thị Top 10 mới - Gọn và Rõ nét */}
 <div className="p-2 space-y-1.5 flex-grow bg-slate-50 overflow-y-auto max-h-[420px] custom-scrollbar">
   {stats.top10 && stats.top10.length > 0 ? (
-    stats.top10.map((item, idx) => (
-      <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all border-l-4 border-l-blue-400">
-        <div className="flex flex-col min-w-0 flex-1 pr-2">
-          <span className="font-black text-slate-800 text-[11px] truncate leading-tight">
-            {idx + 1}. {item?.name || "Ẩn danh"}
-          </span>
-          <span className="text-[10px] text-blue-500 font-bold mt-0.5">
-            {item?.phone || "09xxx****"}
-          </span>
+    stats.top10.map((item, idx) => {
+      // Hàm xử lý cắt bỏ phần GMT... chỉ lấy HH:mm:ss hoặc mm:ss
+      const formatTimeShort = (timeStr: any) => {
+        if (!timeStr) return "00:00";
+        const s = String(timeStr);
+        // Nếu chứa chuỗi GMT thì chỉ lấy phần thời gian ở đầu
+        if (s.includes("GMT")) return s.split(" ")[4] || s.slice(0, 8);
+        return s;
+      };
+
+      return (
+        <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm border-l-4 border-l-blue-500">
+          {/* Cột Trái: Thứ hạng và Tên (Tên có thể ẩn bớt để bảo mật) */}
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="font-black text-slate-800 text-[12px] truncate">
+              {idx + 1}. {item?.name ? item.name.split(' ').slice(-2).join(' ') : "Học sinh"} 
+            </span>
+            <span className="text-[11px] text-blue-600 font-bold">
+              {item?.phone || "09xxx****"}
+            </span>
+          </div>
+
+          {/* Cột Phải: Điểm và Thời gian (Ngang hàng, rõ nét) */}
+          <div className="text-right flex flex-col shrink-0 items-end justify-center ml-2">
+            <span className="font-black text-red-600 text-[13px] leading-none">
+              {(Number(item?.score) || 0).toFixed(1)} đ
+            </span>
+            <span className="text-[10px] text-slate-500 mt-1 font-bold bg-slate-100 px-2 py-0.5 rounded-md">
+              <i className="far fa-clock mr-1"></i>
+              {formatTimeShort(item?.time)}
+            </span>
+          </div>
         </div>
-        <div className="text-right flex flex-col shrink-0 border-l border-slate-100 pl-2">
-          <span className="font-black text-red-600 text-[11px] leading-none">
-            {/* Chống lỗi toFixed: Ép kiểu số rồi mới dùng toFixed */}
-            {(Number(item?.score) || 0).toFixed(1)} đ
-          </span>
-          <span className="text-[9px] text-slate-400 mt-1 font-bold italic">
-            {item?.time || "00:00"}
-          </span>
-        </div>
-      </div>
-    ))
+      );
+    })
   ) : (
     <div className="p-10 text-center text-slate-400 text-[10px] uppercase font-black italic">
       Đang tải dữ liệu...

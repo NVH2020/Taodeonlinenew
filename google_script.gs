@@ -3,8 +3,6 @@ const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 /**
  * Hàm xóa dữ liệu Quiz vào 23:59 Chủ Nhật hàng tuần.
- * Hướng dẫn: Trong Apps Script, chọn Trình kích hoạt (Biểu tượng đồng hồ) -> Thêm trình kích hoạt.
- * Chọn hàm: clearWeeklyQuizData | Sự kiện: Theo thời gian | Loại: Theo tuần | Ngày: Chủ nhật | Giờ: 23h-00h.
  */
 function clearWeeklyQuizData() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -27,10 +25,10 @@ function doGet(e) {
     for (let i = 1; i < data.length; i++) {
       results.push({
         rank: i,
-        name: data[i][0], // Cột A: Tên
-        score: data[i][1], // Cột B: Điểm
-        time: data[i][2], // Cột C: Thời gian
-        phone: data[i][6] ? data[i][6].toString() : "" // Cột G: SĐT
+        name: data[i][0], // Cột A
+        score: data[i][1], // Cột B
+        time: data[i][2], // Cột C
+        phone: data[i][6] ? data[i][6].toString() : "" // Cột G
       });
     }
     return createResponse("success", "Thành công", results);
@@ -50,7 +48,7 @@ function doGet(e) {
     return createResponse("success", "Thành công", stats);
   }
 
-  // 3. Đăng nhập (Kiểm tra sheet thongtintk)
+  // 3. Đăng nhập
   if (type === 'login') {
     const phone = e.parameter.phone;
     const pass = e.parameter.pass;
@@ -69,7 +67,7 @@ function doGet(e) {
     return createResponse("error", "Sai số điện thoại hoặc mật khẩu");
   }
 
-  // 4. Xác minh thí sinh kiểm tra (Sheet danhsach)
+  // 4. Xác minh thí sinh
   const idnumber = e.parameter.idnumber;
   const sbd = e.parameter.sbd;
   const sheetList = ss.getSheetByName("danhsach");
@@ -99,65 +97,48 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
 
-    // Lưu kết quả kiểm tra định kỳ (Sheet ketqua)
-    if (data.type === 'exam') {
-      let sheet = ss.getSheetByName("ketqua");
-      if (!sheet) sheet = ss.insertSheet("ketqua");
-      if (sheet.getLastRow() === 0) sheet.appendRow(["Timestamp", "Mã đề", "SBD", "Họ tên", "Lớp", "Điểm", "Thời gian", "Vi phạm", "Chi tiết"]);
-      sheet.appendRow([new Date(), data.examCode, "'" + data.sbd, data.name, data.className, data.score, data.totalTime, data.tabSwitches, JSON.stringify(data.details)]);
-      return createResponse("success", "OK");
-    }
+    // Xử lý mất số 0 bằng cách thêm dấu '
+    const formatPhone = (p) => p ? "'" + p.toString() : "";
 
-    // Đăng ký tài khoản (Sheet thongtintk)
     if (data.type === 'register') {
       let sheet = ss.getSheetByName("thongtintk");
       if (!sheet) {
         sheet = ss.insertSheet("thongtintk");
         sheet.appendRow(["Họ tên", "Số điện thoại", "Mật khẩu", "Trạng thái"]);
       }
-      sheet.appendRow([data.name, "'" + data.phone, data.pass, "Free"]);
+      sheet.appendRow([data.name, formatPhone(data.phone), data.pass, "Free"]);
       return createResponse("success", "Đăng ký thành công");
     }
 
-    // Đăng ký VIP (Sheet thongtintk & Sheet VIP)
     if (data.type === 'vip') {
-      let sheetVip = ss.getSheetByName("VIP");
-      if (!sheetVip) sheetVip = ss.insertSheet("VIP");
-      sheetVip.appendRow([new Date(), "'" + data.phone, "Yêu cầu nâng cấp"]);
+      let sheet = ss.getSheetByName("VIP");
+      if (!sheet) sheet = ss.insertSheet("VIP");
+      sheet.appendRow([new Date(), formatPhone(data.phone), "Yêu cầu nâng cấp VIP"]);
       return createResponse("success", "Đã gửi yêu cầu VIP");
     }
 
-    // Đánh giá Web (Sheet danhgia)
     if (data.type === 'rating') {
       let sheet = ss.getSheetByName("danhgia");
       if (!sheet) sheet = ss.insertSheet("danhgia");
-      sheet.appendRow([new Date(), data.stars, data.name, data.comment, "'" + data.idNumber, data.taikhoanapp]);
-      return createResponse("success", "Cảm ơn bạn đã đánh giá");
+      sheet.appendRow([new Date(), data.stars, data.name, data.comment, formatPhone(data.idNumber), data.taikhoanapp]);
+      return createResponse("success", "OK");
     }
 
-    // Lưu kết quả Quiz (Sheet ketquaQuiZ)
     if (data.type === 'quiz') {
       let sheet = ss.getSheetByName("ketquaQuiZ");
-      if (!sheet) {
-        sheet = ss.insertSheet("ketquaQuiZ");
-        sheet.appendRow(["Timestamp", "Mã Quiz", "Họ tên", "Lớp", "Trường", "Số điện thoại", "Điểm", "Thời gian", "STK", "Bank"]);
-      }
-      sheet.appendRow([
-        new Date(), 
-        data.examCode, 
-        data.name, 
-        data.className, 
-        data.school, 
-        "'" + data.phoneNumber, 
-        data.score, 
-        data.totalTime, 
-        "'" + (data.stk || ""), 
-        data.bank || ""
-      ]);
-      return createResponse("success", "Lưu kết quả Quiz thành công");
+      if (!sheet) sheet = ss.insertSheet("ketquaQuiZ");
+      sheet.appendRow([new Date(), data.examCode, data.name, data.className, data.school, formatPhone(data.phoneNumber), data.score, data.totalTime, formatPhone(data.stk), data.bank]);
+      return createResponse("success", "OK");
     }
 
-    return createResponse("error", "Loại dữ liệu không hợp lệ");
+    if (data.type === 'exam') {
+      let sheet = ss.getSheetByName("ketqua");
+      if (!sheet) sheet = ss.insertSheet("ketqua");
+      sheet.appendRow([new Date(), data.examCode, formatPhone(data.sbd), data.name, data.className, data.score, data.totalTime, JSON.stringify(data.details)]);
+      return createResponse("success", "OK");
+    }
+
+    return createResponse("error", "Type not found");
   } catch (error) {
     return createResponse("error", error.message);
   } finally {

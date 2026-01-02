@@ -222,6 +222,7 @@ const handleRateSubmit = async () => {
   )}
   </div>
 </div>
+</div>
 
 
         {/* CỘT GIỮA: ẢNH CAROUSEL */}

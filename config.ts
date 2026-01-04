@@ -2,13 +2,13 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
+// URL API duy nhất cho toàn bộ hệ thống
 export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
-export const DANHGIA_URL = "https://script.google.com/macros/s/AKfycbyCSAcEhcz_aaoEKGl2rJmZsmKfIBVyV_yWGKpvfHBvY-G1z4iDSHYv-tAE3PKJeY4/exec";
-export const VIP_SHEET_URL = "https://script.google.com/macros/s/AKfycbzxQQd3QmPUtguwdfLjz4TuHiroQNrWYaDsL4syLrtjZMWguKtQQhoFsGI5xcT7q113/exec";
+export const DANHGIA_URL = DEFAULT_API_URL; 
+export const VIP_SHEET_URL = DEFAULT_API_URL;
 
 export const API_ROUTING: Record<string, string> = {
-  "680988948882": DEFAULT_API_URL,
-  "686868": "https://script.google.com/macros/s/AKfycbxUJ0BSLPVL0wtNk4ujr49WMa-Z287nhAQ8AZHOmiBBPhnD6WAxaKLBJqX8EfNNLcJX/exec"
+  "680988948882": DEFAULT_API_URL
 };
 
 export const NEWS_DATA: NewsItem[] = [
@@ -26,7 +26,7 @@ export const IMAGES_CAROUSEL = [
 export const TOPICS_DATA: Record<number, Topic[]> = {
   7: [{ id: 701, name: "Toán lớp 7" }],
   8: [{ id: 801, name: "Toán lớp 8" }],
-  9:  [
+  9: [
     { id: 901, name: "01. Phương trình và hệ phương trình bậc nhất" },
     { id: 902, name: "02. Phương trình bậc hai một ẩn số" },
     { id: 903, name: "03. Hệ thức lượng trong tam giác vuông" },
@@ -69,37 +69,10 @@ export const TOPICS_DATA: Record<number, Topic[]> = {
   ]
 };
 
-// Loại 45 phút : MCQ = 12 (0.5đ); TF = 2 (1đ, 1 câu mức 3); SA = 4 (0.5đ, 1 câu mức 3, 1 câu mức 4)
-const CONFIG_45P: FixedConfig = {
-  duration: 45,
-  numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0],
-  numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0],
-  numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1]
-};
-
-// Loại 90 phút : MCQ = 12 (0.25đ); TF = 4 (1đ, 2 câu mức 3); SA = 6 (0.5đ, 1 câu mức 3, 1 câu mức 4)
-const CONFIG_90P: FixedConfig = {
-  duration: 90,
-  numMC: [12], scoreMC: 0.25, mcL3: [0], mcL4: [0],
-  numTF: [4], scoreTF: 1, tfL3: [2], tfL4: [0],
-  numSA: [6], scoreSA: 0.5, saL3: [1], saL4: [1]
-};
-
+// Cấu hình mã đề mặc định (sẽ được bổ sung bởi dữ liệu từ sheet matran)
 export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
-  9: [
-    { code: "TD_45_K9", name: "Tự do 45 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K9", name: "Tự do 90 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_90P }
-  ],
-  10: [
-    { code: "TD_45_K10", name: "Tự do 45 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K10", name: "Tự do 90 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_90P }
-  ],
-  11: [
-    { code: "TD_45_K11", name: "Tự do 45 phút (10+11)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K11", name: "Tự do 90 phút (10+11)", topics: 'manual', fixedConfig: CONFIG_90P }
-  ],
-  12: [
-    { code: "TD_45_K12", name: "Tự do 45 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K12", name: "Tự do 90 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_90P }
-  ]
+  9: [{ code: "TD_45_K9", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  10: [{ code: "TD_45_K10", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  11: [{ code: "TD_45_K11", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  12: [{ code: "TD_45_K12", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }]
 };

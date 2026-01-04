@@ -3,12 +3,13 @@ import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
 // URL API duy nhất cho toàn bộ hệ thống
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec";
 export const DANHGIA_URL = DEFAULT_API_URL; 
 export const VIP_SHEET_URL = DEFAULT_API_URL;
 
 export const API_ROUTING: Record<string, string> = {
   "680988948882": DEFAULT_API_URL
+  "9999": "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec"
 };
 
 export const NEWS_DATA: NewsItem[] = [

@@ -2,14 +2,13 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
-// URL API duy nhất cho toàn bộ hệ thống
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec";
+// URL API duy nhất làm nguồn gốc cho toàn bộ ứng dụng
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
 export const DANHGIA_URL = DEFAULT_API_URL; 
 export const VIP_SHEET_URL = DEFAULT_API_URL;
 
 export const API_ROUTING: Record<string, string> = {
   "680988948882": DEFAULT_API_URL
-  "9999": "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec"
 };
 
 export const NEWS_DATA: NewsItem[] = [
@@ -70,10 +69,9 @@ export const TOPICS_DATA: Record<number, Topic[]> = {
   ]
 };
 
-// Cấu hình mã đề mặc định (sẽ được bổ sung bởi dữ liệu từ sheet matran)
 export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
-  9: [{ code: "TD_45_K9", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  10: [{ code: "TD_45_K10", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  11: [{ code: "TD_45_K11", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  12: [{ code: "TD_45_K12", name: "Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }]
+  9: [{ code: "TD_45_K9", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  10: [{ code: "TD_45_K10", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  11: [{ code: "TD_45_K11", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
+  12: [{ code: "TD_45_K12", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }]
 };

@@ -73,5 +73,12 @@ export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
   9: [{ code: "TD_45_K9", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
   10: [{ code: "TD_45_K10", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
   11: [{ code: "TD_45_K11", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  12: [{ code: "TD_45_K12", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }]
+  12: [{ code: "TD_45_K12", 
+        name: "Đề Tự do 45 phút", 
+        topics: [1001, 1101, 1204], 
+        fixedConfig: { 
+          duration: 45, 
+          numMC: [4, 4, 4], scoreMC: 0.5, mcL3: [0, 0, 0], mcL4: [0, 0, 0], 
+          numTF: [0, 1, 1], scoreTF: 1, tfL3: [0, 0, 1], tfL4: [0, 0, 0], 
+          numSA: [1, 1, 2], scoreSA: 0.5, saL3: [0, 1, 0], saL4: [0, 0, 1] } }]
 };

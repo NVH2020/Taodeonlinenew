@@ -4,6 +4,9 @@ import { Question, Student, ExamCodeDefinition } from '../types';
 import { API_ROUTING, DEFAULT_API_URL, TOPICS_DATA, EXAM_CODES } from '../config';
 import { pickQuestionsSmart } from '../questions';
 
+/**
+ * Thành phần Cổng thông tin xác minh và chọn mã đề thi
+ */
 interface ExamPortalProps {
   grade: number;
   onBack: () => void;
@@ -19,7 +22,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   const [selectedTopics, setSelectedTopics] = useState<number[]>([]);
   const [dynamicCodes, setDynamicCodes] = useState<ExamCodeDefinition[]>([]);
 
-  // Tự động tải mã hệ thống chung cho khối lớp này khi vào trang
+  // Tự động tải mã hệ thống chung cho khối lớp này
   useEffect(() => {
     const fetchSystemCodes = async () => {
       try {
@@ -35,10 +38,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     fetchSystemCodes();
   }, [grade]);
 
-  // Kết hợp mã đề cố định và mã đề động
+  // Kết hợp mã đề mặc định và mã đề động từ Ma trận
   const allAvailableCodes = useMemo(() => {
     const defaults = EXAM_CODES[grade] || [];
-    // Loại bỏ mã trùng lặp nếu có
     const combined = [...defaults];
     dynamicCodes.forEach(dc => {
       if (!combined.find(c => c.code === dc.code)) combined.push(dc);
@@ -48,8 +50,11 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 
   const currentCodeDef = useMemo(() => allAvailableCodes.find(c => c.code === selectedCode), [selectedCode, allAvailableCodes]);
 
+  /**
+   * Xác minh thí sinh và tải danh sách mã đề của giáo viên
+   */
   const handleVerify = async () => {
-    if (!idInput || !sbdInput) return alert("Vui lòng nhập đầy đủ ID và SBD!");
+    if (!idInput || !sbdInput) return alert("Vui lòng nhập đầy đủ ID Giáo viên và Số báo danh!");
     setIsVerifying(true);
     setVerifiedStudent(null);
     
@@ -69,11 +74,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
         const matrixUrl = new URL(targetUrl);
         matrixUrl.searchParams.append("type", "getExamCodes");
         matrixUrl.searchParams.append("idnumber", idInput.trim());
-        matrixUrl.searchParams.append("grade", grade.toString());
         const mResp = await fetch(matrixUrl.toString());
         const mResult = await mResp.json();
         if (mResult.status === "success") {
-          // Gộp thêm mã đề riêng vào danh sách hiện có
           setDynamicCodes(prev => {
             const newCodes = [...prev];
             mResult.data.forEach((dc: ExamCodeDefinition) => {
@@ -88,6 +91,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     } catch (e) { alert("Lỗi kết nối máy chủ!"); } finally { setIsVerifying(false); }
   };
 
+  /**
+   * Tính toán số lượng câu hỏi cần lấy cho mỗi chuyên đề
+   */
   const resolveCounts = (configValues: number[], targetTopics: number[]) => {
     if (configValues.length === targetTopics.length) return configValues;
     const total = configValues[0] || 0;
@@ -96,10 +102,13 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     );
   };
 
+  /**
+   * Bắt đầu vào thi
+   */
   const handleStart = () => {
-    if (!verifiedStudent || !selectedCode) return alert("Vui lòng chọn mã đề!");
+    if (!verifiedStudent || !selectedCode) return alert("Vui lòng xác minh thí sinh và chọn mã đề!");
     const fc = currentCodeDef?.fixedConfig;
-    if (!fc) return alert("Lỗi cấu hình đề thi!");
+    if (!fc) return alert("Cấu hình đề thi bị lỗi!");
 
     const finalConfig = { 
       id: selectedCode, title: currentCodeDef.name, time: fc.duration, 
@@ -107,7 +116,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     };
 
     const topicsToPick = currentCodeDef.topics === 'manual' ? selectedTopics : (currentCodeDef.topics as number[]);
-    if (topicsToPick.length === 0) return alert("Vui lòng chọn ít nhất 1 chuyên đề!");
+    if (topicsToPick.length === 0) return alert("Vui lòng chọn phạm vi chuyên đề!");
 
     const questions = pickQuestionsSmart(
       topicsToPick,
@@ -115,79 +124,146 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       { mc3: resolveCounts(fc.mcL3, topicsToPick), mc4: resolveCounts(fc.mcL4, topicsToPick), tf3: resolveCounts(fc.tfL3, topicsToPick), tf4: resolveCounts(fc.tfL4, topicsToPick), sa3: resolveCounts(fc.saL3, topicsToPick), sa4: resolveCounts(fc.saL4, topicsToPick) }
     );
 
-    if (questions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi cho lựa chọn này!");
+    if (questions.length === 0) return alert("Ngân hàng đề hiện chưa đủ câu hỏi cho cấu hình này!");
     onStart(finalConfig, verifiedStudent, questions);
   };
 
+  // Xác định xem tài khoản có phải VIP không
+  const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
+
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-fade-in border border-slate-100 font-sans">
-      <div className="bg-blue-700 p-8 text-white flex justify-between items-center shadow-lg">
-        <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Xác Minh & Chọn Đề</h2>
-        <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full transition font-black border border-white/40">Quay lại</button>
+    <div className="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-fade-in border border-slate-100 font-sans">
+      {/* Header */}
+      <div className="bg-blue-700 p-8 text-white flex justify-between items-center shadow-lg border-b-8 border-blue-900">
+        <div>
+          <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Xác Minh Danh Tính</h2>
+          <p className="text-blue-100 text-sm font-bold uppercase tracking-widest opacity-80">Thiết lập cấu hình bài làm của bạn</p>
+        </div>
+        <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-8 py-3 rounded-full transition font-black border border-white/40 flex items-center gap-2 active:scale-95">
+          <i className="fas fa-arrow-left"></i> QUAY LẠI
+        </button>
       </div>
 
       <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Cột 1: Thông tin thí sinh */}
         <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2"><i className="fas fa-id-card text-blue-600"></i> THÍ SINH</h3>
-          <div className="bg-slate-50 p-6 rounded-[2rem] space-y-4 border border-slate-100 shadow-inner">
-            <input type="text" placeholder="ID Giáo viên" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
-            <input type="text" placeholder="Số báo danh" className="w-full p-4 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 font-black outline-none uppercase" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
-            <button onClick={handleVerify} disabled={isVerifying} className="w-full py-4 bg-blue-700 text-white rounded-2xl font-black shadow-lg hover:bg-blue-800 transition active:scale-95 uppercase">
-              {isVerifying ? 'ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
+          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Thí Sinh</h3>
+          <div className="bg-slate-50 p-6 rounded-[2.5rem] space-y-4 border border-slate-200 shadow-inner">
+            <div className="relative">
+              <i className="fas fa-user-tie absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+              <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase placeholder:text-slate-300" value={idInput} onChange={e => setIdInput(e.target.value)} />
+            </div>
+            <div className="relative">
+              <i className="fas fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+              <input type="text" placeholder="SỐ BÁO DANH" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase placeholder:text-slate-300" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
+            </div>
+            <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-blue-700 text-white rounded-2xl font-black shadow-xl hover:bg-blue-800 transition active:scale-95 uppercase tracking-tighter text-lg border-b-4 border-blue-900">
+              {isVerifying ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-id-badge mr-2"></i>}
+              {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
             </button>
             
             {verifiedStudent && (
-              <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl text-xs font-black text-slate-700 space-y-2 animate-fade-in">
-                <p><i className="fas fa-user text-emerald-600 mr-2"></i> {verifiedStudent.name}</p>
-                <p><i className="fas fa-school text-emerald-600 mr-2"></i> Lớp: {verifiedStudent.class}</p>
-                <p><i className="fas fa-hashtag text-emerald-600 mr-2"></i> SBD: {verifiedStudent.sbd}</p>
-                <p><i className="fas fa-gem text-emerald-600 mr-2"></i> {verifiedStudent.taikhoanapp}</p>
+              <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-3 animate-fade-in shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i className="fas fa-user"></i></div>
+                  <span className="truncate">{verifiedStudent.name}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0"><i className="fas fa-school"></i></div>
+                  <span>Lớp: {verifiedStudent.class}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0"><i className="fas fa-id-card"></i></div>
+                  <span>SBD: {verifiedStudent.sbd}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0"><i className="fas fa-redo"></i></div>
+                  <span>Số lần thi: {verifiedStudent.limit}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 shrink-0"><i className="fas fa-external-link-square-alt"></i></div>
+                  <span>Số lần chuyển tab: {verifiedStudent.limittab}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><i className="fas fa-gem"></i></div>
+                  <span className={`${isVip ? 'bg-amber-400 text-white px-3 py-1 rounded-full shadow-sm animate-pulse' : 'text-slate-500'}`}>
+                    Tài khoản: {verifiedStudent.taikhoanapp}
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </div>
 
+        {/* Cột 2: Chọn mã đề */}
         <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2"><i className="fas fa-list-ol text-blue-600"></i> MÃ ĐỀ THI</h3>
+          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Đề Thi</h3>
           <div className="space-y-4">
-            <select className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl font-black text-blue-700 focus:ring-2 focus:ring-blue-600 shadow-sm outline-none border-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
-              <option value="">-- CHỌN MÃ ĐỀ --</option>
-              {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
-            </select>
+            <div className="relative">
+              <select className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-black text-blue-800 focus:ring-4 focus:ring-blue-100 shadow-sm outline-none appearance-none" value={selectedCode} onChange={e => setSelectedCode(e.target.value)}>
+                <option value="">-- CHỌN MÃ ĐỀ --</option>
+                {allAvailableCodes.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+              </select>
+              <i className="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"></i>
+            </div>
+            
             {currentCodeDef?.fixedConfig && (
-              <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem] shadow-inner space-y-2">
-                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Thông số đề thi</p>
-                 <p className="text-sm font-black text-blue-800 uppercase">{currentCodeDef.fixedConfig.duration} PHÚT</p>
-                 <p className="text-xs font-bold text-blue-700">{currentCodeDef.fixedConfig.numMC.reduce((a,b)=>a+b,0)} MCQ | {currentCodeDef.fixedConfig.numTF.reduce((a,b)=>a+b,0)} Đúng/Sai</p>
+              <div className="p-8 bg-blue-50 border border-blue-100 rounded-[2.5rem] shadow-inner space-y-4 text-center transform transition-all">
+                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Cấu hình đề thi</p>
+                 <div className="flex justify-center gap-4">
+                    <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-blue-100">
+                      <p className="text-2xl font-black text-blue-700">{currentCodeDef.fixedConfig.duration}</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase">Phút</p>
+                    </div>
+                    <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-blue-100">
+                      <p className="text-2xl font-black text-blue-700">{currentCodeDef.fixedConfig.numMC.reduce((a,b)=>a+b,0) + currentCodeDef.fixedConfig.numTF.reduce((a,b)=>a+b,0) + currentCodeDef.fixedConfig.numSA.reduce((a,b)=>a+b,0)}</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase">Câu</p>
+                    </div>
+                 </div>
+                 <div className="pt-2">
+                   <p className="text-[11px] font-bold text-blue-600 bg-blue-100/50 py-2 rounded-full px-4 inline-block">
+                     MCQ: {currentCodeDef.fixedConfig.numMC.reduce((a,b)=>a+b,0)} | 
+                     TF: {currentCodeDef.fixedConfig.numTF.reduce((a,b)=>a+b,0)} | 
+                     SA: {currentCodeDef.fixedConfig.numSA.reduce((a,b)=>a+b,0)}
+                   </p>
+                 </div>
               </div>
             )}
           </div>
         </div>
 
+        {/* Cột 3: Chuyên đề */}
         <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2"><i className="fas fa-book text-blue-600"></i> CHUYÊN ĐỀ</h3>
-          <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 h-[350px] overflow-y-auto shadow-inner no-scrollbar">
+          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Phạm Vi</h3>
+          <div className="bg-slate-50 rounded-[2.5rem] p-6 border border-slate-200 h-[400px] overflow-y-auto shadow-inner no-scrollbar">
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-6">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-1">Phạm vi khối {grade}</p>
-                <div className="grid grid-cols-1 gap-2">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2 mb-4">Lựa chọn chuyên đề lớp {grade}</p>
+                {/* Lưới chuyên đề đều nhau */}
+                <div className="grid grid-cols-1 gap-3">
                   {TOPICS_DATA[grade]?.map(t => (
-                    <label key={t.id} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-transparent hover:border-blue-200 cursor-pointer transition shadow-sm group">
-                      <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-700 mt-0.5 accent-blue-600" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
-                      <span className="text-[11px] font-black text-slate-600 leading-tight group-hover:text-blue-700">{t.name}</span>
+                    <label key={t.id} className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer group shadow-sm min-h-[70px] ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white hover:border-blue-100'}`}>
+                      <div className="relative shrink-0 mt-1">
+                        <input type="checkbox" className="hidden" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedTopics.includes(t.id) ? 'bg-white border-white text-blue-600' : 'bg-slate-50 border-slate-200 group-hover:border-blue-300'}`}>
+                          {selectedTopics.includes(t.id) && <i className="fas fa-check text-xs"></i>}
+                        </div>
+                      </div>
+                      <span className={`text-[11px] font-black leading-tight flex-1 pt-0.5 ${selectedTopics.includes(t.id) ? 'text-white' : 'text-slate-600 group-hover:text-blue-700'}`}>{t.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="p-4 space-y-3">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phạm vi định sẵn:</p>
+              <div className="p-4 space-y-4">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Danh sách chuyên đề định sẵn:</p>
                 {(currentCodeDef?.topics as number[])?.map(tid => {
                    const g = Math.floor(tid / 100);
                    const topic = TOPICS_DATA[g]?.find(t => t.id === tid);
                    return topic ? (
-                     <div key={tid} className="p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
-                       <p className="text-[11px] font-black text-blue-800 leading-tight">{topic.name}</p>
+                     <div key={tid} className="p-5 bg-white rounded-3xl border border-blue-50 shadow-sm flex items-center gap-4">
+                       <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shrink-0">{tid}</div>
+                       <p className="text-[11px] font-black text-blue-900 leading-tight">{topic.name}</p>
                      </div>
                    ) : null;
                 })}
@@ -197,9 +273,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
         </div>
       </div>
 
-      <div className="p-8 border-t bg-slate-50/50 flex justify-end">
-        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full sm:w-auto px-20 py-5 bg-blue-700 text-white rounded-2xl font-black text-2xl hover:bg-blue-800 transition shadow-2xl disabled:opacity-50 active:scale-95 uppercase border-b-4 border-blue-900">
-          <i className="fas fa-play-circle mr-3"></i> VÀO THI NGAY
+      {/* Footer Start Button */}
+      <div className="p-10 border-t bg-slate-50 flex justify-center">
+        <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-2xl py-6 bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-[2rem] font-black text-2xl hover:scale-[1.02] transition-all shadow-2xl disabled:opacity-50 disabled:grayscale active:scale-95 uppercase tracking-tighter border-b-8 border-blue-950 flex items-center justify-center gap-4 group">
+          <i className="fas fa-play-circle text-4xl group-hover:rotate-12 transition-transform"></i> BẮT ĐẦU LÀM BÀI NGAY
         </button>
       </div>
     </div>
@@ -207,3 +284,5 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 };
 
 export default ExamPortal;
+
+// *End

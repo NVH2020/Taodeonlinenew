@@ -92,8 +92,7 @@ function doGet(e) {
               }
             });
           } catch(err) {
-            // Fallback nếu có lỗi định dạng JSON ở một dòng nào đó
-            console.error("Lỗi dòng " + (i+1) + ": " + err.message);
+            console.error("Lỗi parse dòng " + (i+1) + ": " + err.message);
           }
         }
       }
@@ -119,7 +118,7 @@ function doGet(e) {
           });
         }
       }
-      return createResponse("error", "Không tìm thấy thí sinh");
+      return createResponse("error", "Không tìm thấy thí sinh với ID " + idNumber + " và SBD " + sbd);
     }
 
     return createResponse("error", "Yêu cầu không hợp lệ");

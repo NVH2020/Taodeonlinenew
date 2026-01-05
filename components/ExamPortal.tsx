@@ -22,7 +22,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   const [selectedTopics, setSelectedTopics] = useState<number[]>([]);
   const [dynamicCodes, setDynamicCodes] = useState<ExamCodeDefinition[]>([]);
 
-  // Tự động tải mã hệ thống chung cho khối lớp này
+  // Tải mã hệ thống chung cho khối lớp này khi vào
   useEffect(() => {
     const fetchSystemCodes = async () => {
       try {
@@ -38,7 +38,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     fetchSystemCodes();
   }, [grade]);
 
-  // Kết hợp mã đề mặc định và mã đề động từ Ma trận
+  // Kết hợp mã đề cố định và mã đề động từ Ma trận
   const allAvailableCodes = useMemo(() => {
     const defaults = EXAM_CODES[grade] || [];
     const combined = [...defaults];
@@ -51,31 +51,35 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   const currentCodeDef = useMemo(() => allAvailableCodes.find(c => c.code === selectedCode), [selectedCode, allAvailableCodes]);
 
   /**
-   * Xác minh thí sinh và tải danh sách mã đề của giáo viên
+   * Xác minh thí sinh và tải mã đề theo Ma trận giáo viên
    */
   const handleVerify = async () => {
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đầy đủ ID Giáo viên và Số báo danh!");
     setIsVerifying(true);
     setVerifiedStudent(null);
     
-    const targetUrl = API_ROUTING[idInput] || DEFAULT_API_URL;
+    // Tìm URL API theo ID giáo viên, nếu không có dùng mặc định
+    const targetUrl = API_ROUTING[idInput.trim()] || DEFAULT_API_URL;
+    
     try {
       // 1. Xác minh thí sinh
       const url = new URL(targetUrl);
       url.searchParams.append("idnumber", idInput.trim());
       url.searchParams.append("sbd", sbdInput.trim());
+      
       const resp = await fetch(url.toString());
       const result = await resp.json();
       
       if (result.status === "success") {
         setVerifiedStudent(result.data);
         
-        // 2. Tải mã đề từ Ma trận riêng của Giáo viên này
+        // 2. Tải mã đề từ Ma trận (Sheet matran) theo cấu trúc ảnh của giáo viên
         const matrixUrl = new URL(targetUrl);
         matrixUrl.searchParams.append("type", "getExamCodes");
         matrixUrl.searchParams.append("idnumber", idInput.trim());
         const mResp = await fetch(matrixUrl.toString());
         const mResult = await mResp.json();
+        
         if (mResult.status === "success") {
           setDynamicCodes(prev => {
             const newCodes = [...prev];
@@ -88,12 +92,14 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       } else {
         alert("Xác minh thất bại: " + result.message);
       }
-    } catch (e) { alert("Lỗi kết nối máy chủ!"); } finally { setIsVerifying(false); }
+    } catch (e) { 
+      console.error(e);
+      alert("Lỗi kết nối máy chủ xác minh!"); 
+    } finally { 
+      setIsVerifying(false); 
+    }
   };
 
-  /**
-   * Tính toán số lượng câu hỏi cần lấy cho mỗi chuyên đề
-   */
   const resolveCounts = (configValues: number[], targetTopics: number[]) => {
     if (configValues.length === targetTopics.length) return configValues;
     const total = configValues[0] || 0;
@@ -102,9 +108,6 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     );
   };
 
-  /**
-   * Bắt đầu vào thi
-   */
   const handleStart = () => {
     if (!verifiedStudent || !selectedCode) return alert("Vui lòng xác minh thí sinh và chọn mã đề!");
     const fc = currentCodeDef?.fixedConfig;
@@ -128,7 +131,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     onStart(finalConfig, verifiedStudent, questions);
   };
 
-  // Xác định xem tài khoản có phải VIP không
+  // Trạng thái VIP hiển thị nổi bật màu vàng
   const isVip = verifiedStudent?.taikhoanapp?.toUpperCase().includes("VIP");
 
   return (
@@ -136,8 +139,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       {/* Header */}
       <div className="bg-blue-700 p-8 text-white flex justify-between items-center shadow-lg border-b-8 border-blue-900">
         <div>
-          <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Xác Minh Danh Tính</h2>
-          <p className="text-blue-100 text-sm font-bold uppercase tracking-widest opacity-80">Thiết lập cấu hình bài làm của bạn</p>
+          <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Cổng Thi Trực Tuyến</h2>
+          <p className="text-blue-100 text-sm font-bold uppercase tracking-widest opacity-80">Xác minh danh tính & Chọn mã đề</p>
         </div>
         <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-8 py-3 rounded-full transition font-black border border-white/40 flex items-center gap-2 active:scale-95">
           <i className="fas fa-arrow-left"></i> QUAY LẠI
@@ -147,33 +150,33 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Cột 1: Thông tin thí sinh */}
         <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Thí Sinh</h3>
+          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Xác Minh</h3>
           <div className="bg-slate-50 p-6 rounded-[2.5rem] space-y-4 border border-slate-200 shadow-inner">
             <div className="relative">
-              <i className="fas fa-user-tie absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-              <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase placeholder:text-slate-300" value={idInput} onChange={e => setIdInput(e.target.value)} />
+              <i className="fas fa-chalkboard-teacher absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+              <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
             </div>
             <div className="relative">
-              <i className="fas fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-              <input type="text" placeholder="SỐ BÁO DANH" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase placeholder:text-slate-300" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
+              <i className="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+              <input type="text" placeholder="SỐ BÁO DANH" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
             </div>
             <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-blue-700 text-white rounded-2xl font-black shadow-xl hover:bg-blue-800 transition active:scale-95 uppercase tracking-tighter text-lg border-b-4 border-blue-900">
-              {isVerifying ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-id-badge mr-2"></i>}
-              {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
+              {isVerifying ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double mr-2"></i>}
+              {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH'}
             </button>
             
             {verifiedStudent && (
-              <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-3 animate-fade-in shadow-sm">
+              <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-4 animate-fade-in shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i className="fas fa-user"></i></div>
                   <span className="truncate">{verifiedStudent.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0"><i className="fas fa-school"></i></div>
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0"><i className="fas fa-graduation-cap"></i></div>
                   <span>Lớp: {verifiedStudent.class}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0"><i className="fas fa-id-card"></i></div>
+                  <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0"><i className="fas fa-hashtag"></i></div>
                   <span>SBD: {verifiedStudent.sbd}</span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -186,7 +189,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><i className="fas fa-gem"></i></div>
-                  <span className={`${isVip ? 'bg-amber-400 text-white px-3 py-1 rounded-full shadow-sm animate-pulse' : 'text-slate-500'}`}>
+                  <span className={`${isVip ? 'text-amber-500 font-black animate-pulse bg-amber-50 px-2 py-0.5 rounded' : 'text-slate-500'}`}>
                     Tài khoản: {verifiedStudent.taikhoanapp}
                   </span>
                 </div>
@@ -209,22 +212,22 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
             
             {currentCodeDef?.fixedConfig && (
               <div className="p-8 bg-blue-50 border border-blue-100 rounded-[2.5rem] shadow-inner space-y-4 text-center transform transition-all">
-                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Cấu hình đề thi</p>
+                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Cấu hình đề</p>
                  <div className="flex justify-center gap-4">
                     <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-blue-100">
                       <p className="text-2xl font-black text-blue-700">{currentCodeDef.fixedConfig.duration}</p>
                       <p className="text-[9px] font-black text-slate-400 uppercase">Phút</p>
                     </div>
                     <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-blue-100">
-                      <p className="text-2xl font-black text-blue-700">{currentCodeDef.fixedConfig.numMC.reduce((a,b)=>a+b,0) + currentCodeDef.fixedConfig.numTF.reduce((a,b)=>a+b,0) + currentCodeDef.fixedConfig.numSA.reduce((a,b)=>a+b,0)}</p>
+                      <p className="text-2xl font-black text-blue-700">{(currentCodeDef.fixedConfig.numMC?.reduce((a,b)=>a+b,0)||0) + (currentCodeDef.fixedConfig.numTF?.reduce((a,b)=>a+b,0)||0) + (currentCodeDef.fixedConfig.numSA?.reduce((a,b)=>a+b,0)||0)}</p>
                       <p className="text-[9px] font-black text-slate-400 uppercase">Câu</p>
                     </div>
                  </div>
                  <div className="pt-2">
                    <p className="text-[11px] font-bold text-blue-600 bg-blue-100/50 py-2 rounded-full px-4 inline-block">
-                     MCQ: {currentCodeDef.fixedConfig.numMC.reduce((a,b)=>a+b,0)} | 
-                     TF: {currentCodeDef.fixedConfig.numTF.reduce((a,b)=>a+b,0)} | 
-                     SA: {currentCodeDef.fixedConfig.numSA.reduce((a,b)=>a+b,0)}
+                     TN: {currentCodeDef.fixedConfig.numMC?.reduce((a,b)=>a+b,0)||0} • 
+                     Đ/S: {currentCodeDef.fixedConfig.numTF?.reduce((a,b)=>a+b,0)||0} • 
+                     TL: {currentCodeDef.fixedConfig.numSA?.reduce((a,b)=>a+b,0)||0}
                    </p>
                  </div>
               </div>
@@ -239,10 +242,10 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2 mb-4">Lựa chọn chuyên đề lớp {grade}</p>
-                {/* Lưới chuyên đề đều nhau */}
+                {/* Lưới chuyên đề đều nhau - Grid Layout */}
                 <div className="grid grid-cols-1 gap-3">
                   {TOPICS_DATA[grade]?.map(t => (
-                    <label key={t.id} className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer group shadow-sm min-h-[70px] ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white hover:border-blue-100'}`}>
+                    <label key={t.id} className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer group shadow-sm min-h-[74px] ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white hover:border-blue-100'}`}>
                       <div className="relative shrink-0 mt-1">
                         <input type="checkbox" className="hidden" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
                         <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedTopics.includes(t.id) ? 'bg-white border-white text-blue-600' : 'bg-slate-50 border-slate-200 group-hover:border-blue-300'}`}>
@@ -276,7 +279,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       {/* Footer Start Button */}
       <div className="p-10 border-t bg-slate-50 flex justify-center">
         <button onClick={handleStart} disabled={!verifiedStudent || !selectedCode} className="w-full max-w-2xl py-6 bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-[2rem] font-black text-2xl hover:scale-[1.02] transition-all shadow-2xl disabled:opacity-50 disabled:grayscale active:scale-95 uppercase tracking-tighter border-b-8 border-blue-950 flex items-center justify-center gap-4 group">
-          <i className="fas fa-play-circle text-4xl group-hover:rotate-12 transition-transform"></i> BẮT ĐẦU LÀM BÀI NGAY
+          <i className="fas fa-play-circle text-4xl group-hover:rotate-12 transition-transform"></i> BẮT ĐẦU LÀM BÀI
         </button>
       </div>
     </div>

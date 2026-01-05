@@ -9,7 +9,7 @@ export const VIP_SHEET_URL = DEFAULT_API_URL;
 
 export const API_ROUTING: Record<string, string> = {
   "9999": DEFAULT_API_URL,
-  "680988948882": DEFAULT_API_URL
+  "68686868": DEFAULT_API_URL
 };
 
 export const NEWS_DATA: NewsItem[] = [

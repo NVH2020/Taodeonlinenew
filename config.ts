@@ -8,7 +8,7 @@ export const DANHGIA_URL = DEFAULT_API_URL;
 export const VIP_SHEET_URL = DEFAULT_API_URL;
 
 export const API_ROUTING: Record<string, string> = {
-  "680988948882": DEFAULT_API_URL
+  "9999": DEFAULT_API_URL
 };
 
 export const NEWS_DATA: NewsItem[] = [

@@ -22,7 +22,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   const [selectedTopics, setSelectedTopics] = useState<number[]>([]);
   const [dynamicCodes, setDynamicCodes] = useState<ExamCodeDefinition[]>([]);
 
-  // Tải mã hệ thống chung cho khối lớp này khi vào
+  // Tải mã hệ thống chung cho khối lớp này
   useEffect(() => {
     const fetchSystemCodes = async () => {
       try {
@@ -51,7 +51,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   const currentCodeDef = useMemo(() => allAvailableCodes.find(c => c.code === selectedCode), [selectedCode, allAvailableCodes]);
 
   /**
-   * Xác minh thí sinh và tải mã đề theo Ma trận giáo viên
+   * Xác minh thí sinh
    */
   const handleVerify = async () => {
     if (!idInput || !sbdInput) return alert("Vui lòng nhập đầy đủ ID Giáo viên và Số báo danh!");
@@ -62,8 +62,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
     const targetUrl = API_ROUTING[idInput.trim()] || DEFAULT_API_URL;
     
     try {
-      // 1. Xác minh thí sinh
+      // 1. Xác minh thí sinh (Dùng type verifyStudent tường minh)
       const url = new URL(targetUrl);
+      url.searchParams.append("type", "verifyStudent");
       url.searchParams.append("idnumber", idInput.trim());
       url.searchParams.append("sbd", sbdInput.trim());
       
@@ -139,8 +140,8 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       {/* Header */}
       <div className="bg-blue-700 p-8 text-white flex justify-between items-center shadow-lg border-b-8 border-blue-900">
         <div>
-          <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Cổng Thi Trực Tuyến</h2>
-          <p className="text-blue-100 text-sm font-bold uppercase tracking-widest opacity-80">Xác minh danh tính & Chọn mã đề</p>
+          <h2 className="text-3xl font-black mb-1 tracking-tighter uppercase">Xác Minh Danh Tính</h2>
+          <p className="text-blue-100 text-sm font-bold uppercase tracking-widest opacity-80">Thiết lập bài làm của bạn</p>
         </div>
         <button onClick={onBack} className="bg-white/20 hover:bg-white/30 px-8 py-3 rounded-full transition font-black border border-white/40 flex items-center gap-2 active:scale-95">
           <i className="fas fa-arrow-left"></i> QUAY LẠI
@@ -162,7 +163,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
             </div>
             <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-blue-700 text-white rounded-2xl font-black shadow-xl hover:bg-blue-800 transition active:scale-95 uppercase tracking-tighter text-lg border-b-4 border-blue-900">
               {isVerifying ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double mr-2"></i>}
-              {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH'}
+              {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
             </button>
             
             {verifiedStudent && (
@@ -189,7 +190,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><i className="fas fa-gem"></i></div>
-                  <span className={`${isVip ? 'text-amber-500 font-black animate-pulse bg-amber-50 px-2 py-0.5 rounded' : 'text-slate-500'}`}>
+                  <span className={`${isVip ? 'text-amber-500 font-black animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200' : 'text-slate-500'}`}>
                     Tài khoản: {verifiedStudent.taikhoanapp}
                   </span>
                 </div>
@@ -242,7 +243,6 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2 mb-4">Lựa chọn chuyên đề lớp {grade}</p>
-                {/* Lưới chuyên đề đều nhau - Grid Layout */}
                 <div className="grid grid-cols-1 gap-3">
                   {TOPICS_DATA[grade]?.map(t => (
                     <label key={t.id} className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer group shadow-sm min-h-[74px] ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white hover:border-blue-100'}`}>

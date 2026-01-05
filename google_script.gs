@@ -1,5 +1,5 @@
 
-// Cấu hình ID Spreadsheet
+// Cấu hình ID Spreadsheet - Hãy đảm bảo ID này chính xác
 const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 /**
@@ -7,74 +7,51 @@ const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
  */
 function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const type = e.parameter.type;
+  const params = e.parameter;
+  const type = params.type;
 
   try {
-    // 1. Lấy dữ liệu Top 10 từ sheet Top10Display
-    if (type === 'getTop10') {
-      const sheet = ss.getSheetByName("Top10Display");
-      if (!sheet) return createResponse("error", "Sheet Top10Display không tồn tại");
+    // 1. Xác minh thí sinh (Sửa lỗi: dùng type tường minh)
+    if (type === 'verifyStudent') {
+      const idNumber = params.idnumber;
+      const sbd = params.sbd;
+      const sheet = ss.getSheetByName("danhsach");
+      if (!sheet) return createResponse("error", "Sheet danhsach không tồn tại");
       const data = sheet.getDataRange().getValues();
-      const results = [];
-      for (let i = 1; i < data.length && results.length < 10; i++) {
-        if (!data[i][0]) continue;
-        results.push({
-          rank: results.length + 1,
-          name: data[i][0].toString(),
-          score: data[i][1],
-          time: data[i][2],
-          phone: data[i][6] ? data[i][6].toString().replace(/'/g, "") : ""
-        });
-      }
-      return createResponse("success", "OK", results);
-    }
-
-    // 2. Lấy thống kê đánh giá sao
-    if (type === 'getStats') {
-      const stats = { total: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-      const sheet = ss.getSheetByName("danhgia");
-      if (sheet) {
-        const data = sheet.getDataRange().getValues();
-        stats.total = data.length - 1;
-        for (let i = 1; i < data.length; i++) {
-          const star = parseInt(data[i][1]);
-          if (star >= 1 && star <= 5) stats[star]++;
+      for (let i = 1; i < data.length; i++) {
+        // Cột A: idNumber (0), Cột B: SBD (1)
+        if (data[i][0].toString().trim() === idNumber.trim() && data[i][1].toString().trim() === sbd.trim()) {
+          return createResponse("success", "OK", {
+            name: data[i][2],      // Cột C
+            class: data[i][3],     // Cột D
+            limit: data[i][4],     // Cột E (Số lần thi)
+            limittab: data[i][5],  // Cột F (Giới hạn tab)
+            taikhoanapp: data[i][6], // Cột G (Loại TK)
+            idnumber: idNumber,
+            sbd: sbd
+          });
         }
       }
-      return createResponse("success", "OK", stats);
+      return createResponse("error", "Thí sinh không tồn tại trên hệ thống!");
     }
 
-    // 3. Kiểm tra mật khẩu Quiz nhận quà (H2 sheet danhsach)
-    if (type === 'checkQuizPass') {
-      const passInput = e.parameter.pass;
-      const sheet = ss.getSheetByName("danhsach");
-      const dbPass = sheet.getRange("H2").getValue().toString().trim();
-      return (passInput === dbPass) ? createResponse("success", "Valid") : createResponse("error", "Sai pass");
-    }
-
-    // 4. Lấy mã đề từ ma trận (Sheet matran) theo cấu trúc ảnh người dùng cung cấp
+    // 2. Lấy mã đề từ Ma trận (Sheet matran - Cấu trúc A-Q)
     if (type === 'getExamCodes') {
-      const teacherId = e.parameter.idnumber;
+      const teacherId = params.idnumber;
       const sheet = ss.getSheetByName("matran");
       if (!sheet) return createResponse("error", "Sheet matran không tồn tại");
       const data = sheet.getDataRange().getValues();
-      const codes = [];
+      const results = [];
 
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
-        // Lọc theo ID Giáo viên (Cột A)
-        if (row[0].toString() === teacherId || row[0].toString() === "SYSTEM") {
+        // Cột A: idNumber
+        if (row[0].toString().trim() === teacherId.trim() || row[0].toString() === "SYSTEM") {
           try {
-            // Cấu trúc cột dựa trên ảnh:
-            // A: idNumber, B: makiemtra, C: name, D: topics, E: duration
-            // F: numMC, G: scoreMC, H: mcL3, I: mcL4
-            // J: numTF, K: scoreTF, L: tfL3, M: tfL4
-            // N: numSA, O: scoreSA, P: saL3, Q: saL4
-            
-            codes.push({
-              code: row[1].toString(), // Cột B
-              name: row[2].toString(), // Cột C
-              topics: JSON.parse(row[3]), // Cột D (mảng JSON)
+            results.push({
+              code: row[1].toString(), // Cột B: makiemtra
+              name: row[2].toString(), // Cột C: name
+              topics: JSON.parse(row[3]), // Cột D: topics (JSON)
               fixedConfig: {
                 duration: parseInt(row[4]), // Cột E
                 numMC: JSON.parse(row[5]),  // Cột F
@@ -92,43 +69,64 @@ function doGet(e) {
               }
             });
           } catch(err) {
-            console.error("Lỗi parse dòng " + (i+1) + ": " + err.message);
+            console.error("Lỗi parse dữ liệu dòng " + (i+1));
           }
         }
       }
-      return createResponse("success", "OK", codes);
+      return createResponse("success", "OK", results);
     }
 
-    // 5. Xác minh thí sinh (Sheet danhsach)
-    if (e.parameter.idnumber && e.parameter.sbd) {
-      const idNumber = e.parameter.idnumber;
-      const sbd = e.parameter.sbd;
+    // 3. Kiểm tra mật khẩu Quiz (Sheet danhsach - ô H2)
+    if (type === 'checkQuizPass') {
+      const passInput = params.pass;
       const sheet = ss.getSheetByName("danhsach");
+      const dbPass = sheet.getRange("H2").getValue().toString().trim();
+      if (passInput === dbPass) return createResponse("success", "Hợp lệ");
+      return createResponse("error", "Mật khẩu không chính xác");
+    }
+
+    // 4. Lấy dữ liệu Top 10
+    if (type === 'getTop10') {
+      const sheet = ss.getSheetByName("Top10Display");
+      if (!sheet) return createResponse("error", "Sheet Top10Display không tìm thấy");
       const data = sheet.getDataRange().getValues();
-      for (let i = 1; i < data.length; i++) {
-        if (data[i][0].toString() === idNumber && data[i][1].toString() === sbd) {
-          return createResponse("success", "OK", {
-            name: data[i][2],
-            class: data[i][3],
-            limit: data[i][4],     // Số lần thi
-            limittab: data[i][5],  // Số lần chuyển tab
-            taikhoanapp: data[i][6],
-            idnumber: idNumber,
-            sbd: sbd
-          });
+      const topData = [];
+      for (let i = 1; i < data.length && topData.length < 10; i++) {
+        if (!data[i][0]) continue;
+        topData.push({
+          rank: topData.length + 1,
+          name: data[i][0].toString(),
+          score: data[i][1],
+          time: data[i][2],
+          phone: data[i][6] ? data[i][6].toString() : ""
+        });
+      }
+      return createResponse("success", "OK", topData);
+    }
+
+    // 5. Thống kê đánh giá
+    if (type === 'getStats') {
+      const stats = { total: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      const sheet = ss.getSheetByName("danhgia");
+      if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        stats.total = data.length - 1;
+        for (let i = 1; i < data.length; i++) {
+          const star = parseInt(data[i][1]);
+          if (star >= 1 && star <= 5) stats[star]++;
         }
       }
-      return createResponse("error", "Không tìm thấy thí sinh với ID " + idNumber + " và SBD " + sbd);
+      return createResponse("success", "OK", stats);
     }
 
-    return createResponse("error", "Yêu cầu không hợp lệ");
+    return createResponse("error", "Tham số type không hợp lệ");
   } catch (err) {
     return createResponse("error", err.toString());
   }
 }
 
 /**
- * Xử lý yêu cầu POST (Lưu kết quả/Đánh giá)
+ * Xử lý yêu cầu POST
  */
 function doPost(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -141,22 +139,22 @@ function doPost(e) {
     if (data.type === 'rating') {
       let sheet = ss.getSheetByName("danhgia") || ss.insertSheet("danhgia");
       sheet.appendRow([new Date(), data.stars, data.name, data.comment, formatStr(data.idNumber), data.taikhoanapp]);
-      return createResponse("success", "OK");
+      return createResponse("success", "Gửi đánh giá thành công");
     }
 
     if (data.type === 'quiz') {
       let sheet = ss.getSheetByName("ketquaQuiZ") || ss.insertSheet("ketquaQuiZ");
       sheet.appendRow([new Date(), data.examCode, data.name, data.className, data.school, formatStr(data.phoneNumber), data.score, data.totalTime, formatStr(data.stk), data.bank]);
-      return createResponse("success", "OK");
+      return createResponse("success", "Lưu kết quả Quiz thành công");
     }
 
     if (data.type === 'exam') {
       let sheet = ss.getSheetByName("ketqua") || ss.insertSheet("ketqua");
       sheet.appendRow([new Date(), data.examCode, formatStr(data.sbd), data.name, data.className, data.score, data.totalTime, JSON.stringify(data.details)]);
-      return createResponse("success", "OK");
+      return createResponse("success", "Lưu kết quả thi thành công");
     }
 
-    return createResponse("error", "Type không xác định");
+    return createResponse("error", "Dữ liệu POST không hợp lệ");
   } catch (err) {
     return createResponse("error", err.toString());
   } finally {
@@ -164,9 +162,6 @@ function doPost(e) {
   }
 }
 
-/**
- * Tạo JSON Response
- */
 function createResponse(status, message, data) {
   const out = { status, message };
   if (data) out.data = data;

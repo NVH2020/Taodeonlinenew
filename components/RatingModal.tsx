@@ -95,13 +95,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose }) => {
             <div className="py-8 text-center animate-fade-in">
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star size={32} fill="currentColor" />
-              </div>
-              if (stars >= 4) {
-              fireConfetti(); // Pháo hoa bằng emoji nổ tung!
-              alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${stars} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
-              } else {
-             alert(`😡 Này! Sao đánh giá có ${stars} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
-               }
+              </div>              
               <p className="font-bold text-gray-900">Cảm ơn bạn đã đánh giá!</p>
             </div>
           )}

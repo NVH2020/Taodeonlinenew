@@ -218,7 +218,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         <div className="lg:col-span-2 flex flex-col gap-3">           
           <button 
   onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} 
-  className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[11px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all"
+  className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[11px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[160px] transition-all"
 >
   <i className="fas fa-headset text-xl mb-1"></i>
   <span>Trợ lý học tập</span>

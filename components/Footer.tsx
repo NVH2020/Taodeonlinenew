@@ -5,20 +5,7 @@ import RatingModal from './RatingModal';
 
 const Footer: React.FC = () => {
   const [isRatingOpen, setIsRatingOpen] = useState(false);
-  const fireConfetti = () => {
-  const emojis = ['🎉', '✨', '⭐', '❤️', '🔥'];
-  for (let i = 0; i < 40; i++) {
-    const confetti = document.createElement('div');
-    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-    confetti.className = 'confetti-piece';
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.animationDelay = Math.random() * 2 + 's';
-    document.body.appendChild(confetti);
-    
-    // Xóa emoji sau khi rơi xong để nhẹ máy
-    setTimeout(() => confetti.remove(), 5000);
-  }
-};
+
 
   return (
     <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">

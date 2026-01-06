@@ -259,13 +259,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
           </button>
 
-          <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
-          </button>
+          {/* NÚT ĐĂNG NHẬP BIẾN THỂ */}
+  <button 
+    onClick={onOpenAuth} 
+    className={`w-full flex-1 rounded-2xl font-black text-[10px] uppercase border-b-4 p-2 transition-all 
+      ${user?.vip === 'Vip1' 
+        ? 'vip1-sparkle text-white border-orange-700' 
+        : 'bg-indigo-600 text-white border-indigo-900'}`}
+  >
+    <i className={`fas ${user ? 'fa-user-check' : 'fa-sign-in-alt'} text-lg`}></i><br/>
+    {user ? `${user.phoneNumber} [${user.vip}]` : "Đăng Nhập"}
+  </button>
 
-          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
-            <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP
-          </button>
+
+            {/* NÚT NÂNG CẤP VIP */}
+  <button 
+    onClick={onOpenVip} 
+    className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2 hover:scale-105 active:scale-95 transition-transform"
+  >
+    <i className="fas fa-gem text-lg"></i><br/>
+    {user?.vip === 'Vip1' ? "QUYỀN LỢI VIP" : "Nâng Cấp VIP"}
+  </button>
+</div>
+
         </div>
       </div>
       {/* 5.MODAL CHỌN MÔN (2 CỘT) */}

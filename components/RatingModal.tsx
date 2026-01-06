@@ -53,7 +53,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose }) => {
       onClose();
       // Reset lại trạng thái để lần sau mở ra vẫn đánh giá được
       setTimeout(() => setHasRated(false), 300);
-    }, 2000); // Tăng lên 2s để các em kịp nhìn thông báo cảm ơn
+    }, 3000); // Tăng lên 3s để các em kịp nhìn thông báo cảm ơn
   };
 
   return (
@@ -125,7 +125,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose }) => {
               <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <Star size={40} fill="currentColor" />
               </div>              
-              <p className="font-black text-gray-900 uppercase tracking-tighter text-xl">Bạn quá tuyệt vời! ❤️</p>
+              <p className="font-black text-gray-900 uppercase tracking-tighter text-xl">Bạn quá tuyệt vời ❤️</p>
               <p className="text-gray-500 font-bold text-sm">Cảm ơn em đã đóng góp ý kiến nhé!</p>
             </div>
           )}

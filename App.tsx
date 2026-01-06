@@ -8,6 +8,25 @@ import ResultView from './components/ResultView';
 import Footer from './components/Footer'; // Đã thêm import Footer
 import { getRandomQuizQuestion } from './questionquiz';
 import { AppProvider } from './contexts/AppContext';
+function App() {
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const [showVip, setShowVip] = useState(false);
+  const [view, setView] = useState<'landing' | 'portal' | 'quiz'>('landing');
+  const [selectedGrade, setSelectedGrade] = useState<number>(10);
+
+  return (
+    <div className="App">
+      {view === 'landing' && (
+        <LandingPage 
+          user={user}
+          onOpenAuth={() => setShowAuth(true)}
+          onOpenVip={() => setShowVip(true)}
+          onSelectGrade={(g) => { setSelectedGrade(g); setView('portal'); }}
+          onSelectQuiz={() => setView('quiz')}
+        />
+      )}
+
 
 const App: React.FC = () => {
   

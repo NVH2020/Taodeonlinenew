@@ -34,6 +34,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
   const [accountInfo, setAccountInfo] = useState({ phone: '', pass: '' });
   const [accountVipInfo, setAccountVipInfo] = useState({ phone: '', pass: '', vip: '' });
+  const [loading, setLoading] = useState(false);
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
   const [serverPassword, setServerPassword] = useState("");  
   const [isOtherSchool, setIsOtherSchool] = useState(false);
@@ -47,6 +48,61 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
         top10: []
   });
+  const handleRegister = async () => {
+  if (!accountInfo.phone || !accountInfo.pass) {
+    alert("Vui lòng nhập đủ thông tin!");
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const payload = {
+      type: 'register',
+      phone: accountInfo.phone,
+      pass: accountInfo.pass
+    };
+
+    await fetch(DANHGIA_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Dùng no-cors để tránh lỗi Google Script
+      body: JSON.stringify(payload)
+    });
+
+    alert("Đăng ký thành công!");
+    // Sau khi đăng ký xong, có thể set dữ liệu sang phần VIP để sẵn sàng nâng cấp
+    setAccountVipInfo({ ...accountVipInfo, phone: accountInfo.phone, pass: accountInfo.pass });
+    
+  } catch (error) {
+    alert("Có lỗi xảy ra khi gửi dữ liệu!");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// 3. Hàm xử lý GỬI VIP (về sheet VIP)
+const handleUpgradeVip = async (vipType: string) => {
+  setLoading(true);
+  try {
+    const payload = {
+      type: 'vip_upgrade',
+      phone: accountVipInfo.phone,
+      pass: accountVipInfo.pass,
+      vip: vipType // ví dụ: 'VIP1', 'VIP_PRO'
+    };
+
+    await fetch(DANHGIA_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload)
+    });
+
+    alert("Yêu cầu nâng cấp VIP đã được gửi!");
+  } catch (error) {
+    alert("Lỗi nâng cấp!");
+  } finally {
+    setLoading(false);
+  }
+};
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
     if (quizMode === 'gift' && inputPassword !== serverPassword) return alert("Mật khẩu Quà QuiZ không chính xác!.Liên hệ: 0988.948.882 để được giải đáp!");

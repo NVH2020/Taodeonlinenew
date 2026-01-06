@@ -15,12 +15,6 @@ export const NEWS_DATA: NewsItem[] = [
   { title: "Cấu trúc đề thi tốt nghiệp THPT mới nhất", link: "https://vneconomy.vn" },
   { title: "Lịch thi học sinh giỏi cấp tỉnh Bắc Ninh", link: "https://bacninh.edu.vn" }
 ];
-export const VIP_BENEFITS = [
-  "Làm bài kiểm tra không giới hạn số lượt",
-  "Tải tài liệu PDF đề thi miễn phí",
-  "Mở khóa toàn bộ chuyên đề nâng cao",
-  "Hỗ trợ giải bài tập 24/7 từ trợ lý AI"
-];
 
 export const IMAGES_CAROUSEL = [
   "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200",

@@ -5,10 +5,6 @@ export interface TrueFalseStatement {
   text: string;
   a: boolean;
 }
-export interface AppUser {
-  phoneNumber: string;
-  vip: string;
-}
 
 export interface Question {
   id: number | string;
@@ -99,4 +95,10 @@ export interface ExamResult {
 export interface NewsItem {
   title: string;
   link: string;
+}
+
+export interface AppUser {
+  phoneNumber: string;
+  isVip: boolean;
+  name?: string;
 }

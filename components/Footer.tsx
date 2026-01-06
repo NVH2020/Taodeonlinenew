@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-8">
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold text-white mb-2">❤️ THẦY HÀ ❤️ BẮC NINH ❤️</h2>
-            <p className="text-gray-400">⭐Đồng hành cùng các em trên con đường chinh phục tri thức.</p>
+            <p className="text-gray-400">⭐ Đồng hành cùng các em trên con đường chinh phục tri thức.</p>
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-4">

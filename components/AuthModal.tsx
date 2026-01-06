@@ -8,40 +8,51 @@ interface AuthModalProps {
 
 const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u: any) => void }) => {
   const [isRegisterMode, setIsRegisterMode] = useState(false); // Chuyển đổi giữa Đăng nhập/Đăng ký
-  // Sử dụng đúng biến bạn đã khai
-  const [accountInfo, setAccountInfo] = useState({ phone: '', pass: '' });
-  const [loading, setLoading] = useState(false);
+ // 1. Khai báo các biến như bạn yêu cầu
+const [accountInfo, setAccountInfo] = useState({ phone: '', pass: '' });
+const [accountVipInfo, setAccountVipInfo] = useState({ phone: '', pass: '', vip: '' });
+const [loading, setLoading] = useState(false);
 
-  const handleAuthSubmit = async (isRegisterMode: boolean) => {
+// 2. Hàm xử lý Xác minh (Đăng ký & Đăng nhập)
+const handleAuthSubmit = async (mode: 'login' | 'register') => {
+  if (!accountInfo.phone || !accountInfo.pass) {
+    alert("Em vui lòng nhập đầy đủ SĐT và mật khẩu nhé!");
+    return;
+  }
+  
   setLoading(true);
   try {
-    // 1. Tạo đường dẫn có chứa dữ liệu (Sử dụng GET để vượt qua lỗi CORS)
-    const type = isRegisterMode ? 'register' : 'checkLogin';
-    const finalUrl = `${DANHGIA_URL}?type=${type}&phone=${accountInfo.phone}&pass=${accountInfo.pass}`;
-
-    // 2. Gọi fetch và chờ kết quả
-    const response = await fetch(finalUrl);
+    const type = mode === 'register' ? 'register' : 'checkLogin';
+    // Gửi yêu cầu qua GET để nhận phản hồi Đúng/Sai từ Google
+    const response = await fetch(`${DANHGIA_URL}?type=${type}&phone=${accountInfo.phone}&pass=${accountInfo.pass}`);
     const result = await response.json();
 
-    // 3. XỬ LÝ KẾT QUẢ TRẢ VỀ
     if (result.status === "success") {
       alert(result.message);
-      if (!isRegisterMode) {
-        // CHỈ KHI ĐÚNG PASS MỚI CHẠY DÒNG NÀY
+      
+      if (mode === 'login') {
+        // ĐĂNG NHẬP THÀNH CÔNG: Lưu thông tin vào accountVipInfo để sẵn sàng nâng cấp
+        setAccountVipInfo({ 
+          phone: result.data.phone, 
+          pass: accountInfo.pass, 
+          vip: result.data.vip 
+        });
+        
+        // Gọi hàm onSuccess của App để vào giao diện chính
         onSuccess({
           phoneNumber: result.data.phone,
           vip: result.data.vip
         });
       } else {
+        // ĐĂNG KÝ THÀNH CÔNG: Chuyển về tab Đăng nhập
         setIsRegisterMode(false);
       }
     } else {
-      // NẾU SAI PASS HOẶC TRÙNG SĐT, NÓ SẼ HIỆN LỖI Ở ĐÂY VÀ DỪNG LẠI
-      alert("Thông báo từ hệ thống: " + result.message);
+      // ĐÂY LÀ CHỖ CHẶN: Nếu sai pass hoặc trùng SĐT, nó sẽ hiện lỗi và KHÔNG cho vào
+      alert("⚠️ " + result.message);
     }
   } catch (error) {
-    console.error("Lỗi:", error);
-    alert("Không thể xác thực. Em kiểm tra lại kết nối mạng nhé!");
+    alert("Lỗi kết nối. Em kiểm tra mạng hoặc thử lại nhé!");
   } finally {
     setLoading(false);
   }

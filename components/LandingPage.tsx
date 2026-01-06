@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, CLASS_ID } from '../config';
+import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
 import { AppUser, Student } from '../types';
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";

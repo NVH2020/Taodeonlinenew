@@ -6,6 +6,8 @@ import LandingPage from './components/LandingPage';
 import ExamPortal from './components/ExamPortal';
 import QuizInterface from './components/QuizInterface';
 import ResultView from './components/ResultView';
+import Footer from './components/Footer';
+import RatingModal from './components/RatingModal';
 import { getRandomQuizQuestion } from './questionquiz';
 
 const App: React.FC = () => {
@@ -21,6 +23,7 @@ const App: React.FC = () => {
   });
   const [showAuth, setShowAuth] = useState(false);
   const [showVipModal, setShowVipModal] = useState(false);
+  const [showRateModal, setShowRateModal] = useState(false);
 
   useEffect(() => {
     if (user) localStorage.setItem('app_user_v2', JSON.stringify(user));
@@ -99,8 +102,11 @@ const App: React.FC = () => {
         )}
       </main>
 
+      {currentView === 'landing' && <Footer onOpenRate={() => setShowRateModal(true)} />}
+
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={(u) => { setUser(u); setShowAuth(false); }} />}
       {showVipModal && <VipModal user={user!} onClose={() => setShowVipModal(false)} />}
+      {showRateModal && <RatingModal onClose={() => setShowRateModal(false)} userName={user?.name} />}
     </div>
   );
 };
@@ -192,3 +198,5 @@ const VipModal = ({ user, onClose }: { user: AppUser, onClose: () => void }) => 
 };
 
 export default App;
+
+// *End

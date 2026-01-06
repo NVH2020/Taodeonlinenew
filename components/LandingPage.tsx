@@ -141,7 +141,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             </button>
           ))}
           <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
-            <i className="fas fa-bolt"></i> QUIZ 
+            <i className="fas fa-gift"></i> SĂN QUÀ 
           </button>          
         </div>
       </div>

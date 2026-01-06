@@ -19,7 +19,7 @@ const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u:
     // Tạo Payload gửi đi
     const payload = {
       type: isRegisterMode ? 'register' : 'login',
-      phone: accountInfo.phone,
+      phone: "'" + accountInfo.phone,
       pass: accountInfo.pass
     };
 

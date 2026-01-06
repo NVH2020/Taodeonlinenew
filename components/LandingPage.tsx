@@ -244,9 +244,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
           </button>
 
-          <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
-          </button>
+          <button onClick={onOpenAuth} className={`... ${user ? 'bg-green-500' : 'bg-indigo-600'}`}>
+  <i className={`${user ? 'fas fa-user-check' : 'fas fa-sign-in-alt'}`}></i>
+  <br/>
+  {user ? `SBD: ${user.phoneNumber}` : "Đăng Nhập"}
+</button>
 
           <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP

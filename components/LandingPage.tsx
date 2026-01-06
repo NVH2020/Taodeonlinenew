@@ -124,11 +124,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               <span className="font-black text-sm uppercase flex items-center gap-2">
                 <i className="fas fa-edit"></i> Kiểm tra và QuiZ ⇄
               </span>
-            </div>
-            <div className="md:hidden text-[8px] font-black text-red-500 mt-1 uppercase flex items-center gap-1">
-              <i className="fas fa-arrow-left"></i> Trên điện thoại vuốt sang trái
-            </div>
+            </div>            
           </div>
+           <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
+            <i className="fas fa-gift"></i> SĂN QUÀ 
+          </button>     
           
           {[
             {g: 9, icon: 'fas fa-user-graduate'},
@@ -140,9 +140,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               <i className={item.icon}></i> LỚP {item.g}
             </button>
           ))}
-          <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
-            <i className="fas fa-bolt"></i> QUIZ 
-          </button>          
+              
         </div>
       </div>
      </div>
@@ -152,7 +150,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   <div className="bg-indigo-700 py-1.5 rounded-full overflow-hidden shadow-lg border-b-4 border-indigo-900 w-full max-w-4xl relative">
     <div className="overflow-hidden bg-blue-600/20 py-1.5 backdrop-blur-sm">  
       <div  
-        className="whitespace-nowrap text-white font-bold uppercase text-[10px] tracking-widest inline-block"
+        className="whitespace-nowrap text-white font-bold uppercase text-[18px] tracking-widest inline-block"
         style={{
           animation: 'marquee-simple 20s linear infinite',
           display: 'inline-block',
@@ -207,9 +205,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* 3.CAROUSEL */}
+        {/* 3.Ảnh Trung Tâm */}
         <div className="lg:col-span-7">
-          <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+          <div className="relative h-64 md:h-full min-h-[200px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
               <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg ? 'opacity-100' : 'opacity-0'}`} alt="Carousel" />
             ))}
@@ -217,13 +215,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
         </div>
 
         {/* 4. CỘT PHẢI ACTIONS */}
-        <div className="lg:col-span-2 flex flex-col gap-3">
-           <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
-          </button>
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-headset text-lg"></i><br/>Trợ lý học tập
-          </button>
+        <div className="lg:col-span-2 flex flex-col gap-3">           
+          <button 
+  onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} 
+  className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[11px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all"
+>
+  <i className="fas fa-headset text-xl mb-1"></i>
+  <span>Trợ lý học tập</span>
+</button>
           <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
           </button>
@@ -308,7 +307,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                   <i className="fas fa-gamepad text-xl"></i> Chơi Tự Do
                 </button>
                 <button onClick={() => setQuizMode('gift')} className="py-4 bg-orange-500 text-white rounded-2xl font-bold uppercase flex items-center justify-center gap-2 hover:brightness-110 shadow-lg shadow-orange-200">
-                  <i className="fas fa-gift text-xl"></i> Săn Quà QuiZ
+                  <i className="fas fa-gift text-xl"></i>Quà QuiZ
                 </button>
                 <button onClick={() => setShowQuizModal(null)} className="mt-2 text-slate-400 text-sm font-bold">Để sau</button>
               </div>

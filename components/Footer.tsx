@@ -2,16 +2,31 @@ import React, { useState } from 'react';
 import { Facebook, Twitter, MessageCircle, Send, Star } from 'lucide-react';
 import RatingModal from './RatingModal';
 
+
 const Footer: React.FC = () => {
   const [isRatingOpen, setIsRatingOpen] = useState(false);
+  const fireConfetti = () => {
+  const emojis = ['🎉', '✨', '⭐', '❤️', '🔥'];
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement('div');
+    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    confetti.className = 'confetti-piece';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(confetti);
+    
+    // Xóa emoji sau khi rơi xong để nhẹ máy
+    setTimeout(() => confetti.remove(), 5000);
+  }
+};
 
   return (
     <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-8">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl font-bold text-white mb-2">THẦY HÀ - BẮC NINH</h2>
-            <p className="text-gray-400">Đồng hành cùng các em trên con đường chinh phục tri thức.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">❤️ THẦY HÀ ❤️ BẮC NINH ❤️</h2>
+            <p className="text-gray-400">⭐Đồng hành cùng các em trên con đường chinh phục tri thức.</p>
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-4">

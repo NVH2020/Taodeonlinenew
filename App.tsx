@@ -10,6 +10,7 @@ import { getRandomQuizQuestion } from './questionquiz';
 import { AppProvider } from './contexts/AppContext';
 
 const App: React.FC = () => {
+  
   const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result'>('landing');
   const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
   const [activeExam, setActiveExam] = useState<any>(null);
@@ -19,6 +20,33 @@ const App: React.FC = () => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showVipModal, setShowVipModal] = useState(false);
+  // AuthModal.tsx
+
+const [showAuth, setShowAuth] = useState(false);
+
+const [user, setUser] = useState<any>(null);
+
+
+
+// Truyền vào LandingPage props: 
+
+// onOpenAuth={() => setShowAuth(true)}
+
+// user={user}
+
+
+
+{showAuth && (
+
+  <AuthModal 
+
+    onClose={() => setShowAuth(false)} 
+
+    onSuccess={(userData) => setUser(userData)} 
+
+  />
+
+)}
 
   const handleStartExam = (config: any, student: Student, selectedQuestions: Question[]) => {
     setActiveExam(config);

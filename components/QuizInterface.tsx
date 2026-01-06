@@ -19,7 +19,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
       answer: q.type === 'true-false' ? [undefined, undefined, undefined, undefined] : null 
     }))
   );
-  const [timeLeft, setTimeLeft] = useState(config.time * 60);
+  const TOTAL_TIME = config.time * 60; // giây
+  const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
+  
   const [tabSwitches, setTabSwitches] = useState(0);
   const hasFinished = useRef(false);
 
@@ -44,23 +46,27 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
       }
     });
 
-    const elapsedSeconds = config.time * 60 - timeLeft;
+    const elapsedSeconds = TOTAL_TIME - timeLeft;
     const timeDisplay = formatTime(elapsedSeconds);
 
     onFinish({ 
-      type: isQuizMode ? 'quiz' : 'exam',
-      timestamp: new Date().toISOString(), 
-      examCode: config.id, 
-      sbd: student.sbd, 
-      name: student.name, 
-      className: student.class,
-      school: student.school,
-      phoneNumber: student.phoneNumber,
-      score, 
-      totalTime: timeDisplay, 
-      tabSwitches,
-      details: answers 
-    });
+    type: isQuizMode ? 'quiz' : 'exam',
+    timestamp: new Date().toISOString(), 
+    examCode: "'" + config.id, 
+    sbd: "'" + student.sbd, 
+    name: student.name, 
+    className: student.class,
+    school: student.school,
+    phoneNumber: "'" + student.phoneNumber,   
+    score, 
+    totalTime: elapsedSeconds, // timeDisplay
+       // THÊM 2 DÒNG NÀY VÀO ĐÂY:
+    stk: "'" + student.stk || "",
+    bank: student.bank || "",
+    // -----------------------
+    tabSwitches,
+    details: answers 
+  });
   }, [answers, config, questions, student, timeLeft, tabSwitches, isQuizMode, onFinish]);
 
   useEffect(() => {

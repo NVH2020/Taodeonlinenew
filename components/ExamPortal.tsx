@@ -155,7 +155,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
           <div className="bg-slate-50 p-6 rounded-[2.5rem] space-y-4 border border-slate-200 shadow-inner">
             <div className="relative">
               <i className="fas fa-chalkboard-teacher absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-              <input type="text" placeholder="ID GIÁO VIÊN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
+              <input type="text" placeholder="ID BẢN QUYỀN(GV CẤP)" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
             </div>
             <div className="relative">
               <i className="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
@@ -226,9 +226,9 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
                  </div>
                  <div className="pt-2">
                    <p className="text-[11px] font-bold text-blue-600 bg-blue-100/50 py-2 rounded-full px-4 inline-block">
-                     TN: {currentCodeDef.fixedConfig.numMC?.reduce((a,b)=>a+b,0)||0} • 
-                     Đ/S: {currentCodeDef.fixedConfig.numTF?.reduce((a,b)=>a+b,0)||0} • 
-                     TL: {currentCodeDef.fixedConfig.numSA?.reduce((a,b)=>a+b,0)||0}
+                     TN: {currentCodeDef.fixedConfig.numMC?.reduce((a,b)=>a+b,0)||0} ; 
+                     Đ/S: {currentCodeDef.fixedConfig.numTF?.reduce((a,b)=>a+b,0)||0} ; 
+                     TLN: {currentCodeDef.fixedConfig.numSA?.reduce((a,b)=>a+b,0)||0}
                    </p>
                  </div>
               </div>
@@ -238,7 +238,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 
         {/* Cột 3: Chuyên đề */}
         <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Phạm Vi</h3>
+          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Phạm Vi Kiến Thức</h3>
           <div className="bg-slate-50 rounded-[2.5rem] p-6 border border-slate-200 h-[400px] overflow-y-auto shadow-inner no-scrollbar">
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-6">

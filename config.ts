@@ -2,16 +2,14 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
-// URL API duy nhất làm nguồn gốc cho toàn bộ ứng dụng
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwZYM9wi2DoKfj5V_V-3c8fXtJbrJX0p3LxDY0zL8Op19ZXJQY5XXOak7WhRPvfGPH4/exec";
-export const DANHGIA_URL = DEFAULT_API_URL; 
-export const VIP_SHEET_URL = DEFAULT_API_URL;
-
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec";
+export const DANHGIA_URL = DEFAULT_API_URL;
 export const API_ROUTING: Record<string, string> = {
-  "9999": DEFAULT_API_URL,
-  "680988948882": DEFAULT_API_URL
+  "680988948882": DEFAULT_API_URL,
+  "9999": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec",
+  "68686868": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec"
 };
-
+export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Khác"];
 export const NEWS_DATA: NewsItem[] = [
   { title: "Thông tin tuyển sinh lớp 10 năm 2025", link: "https://moet.gov.vn" },
   { title: "Cấu trúc đề thi tốt nghiệp THPT mới nhất", link: "https://vneconomy.vn" },
@@ -23,11 +21,26 @@ export const IMAGES_CAROUSEL = [
   "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200",
   "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200"
 ];
+export const ADMIN_CONFIG = {  
+  quizPassword: "66668888",
+  schools: [
+    "THPT Yên Dũng số 2",
+    "THPT Yên Dũng số 1",
+    "THPT Lạng Giang số 1",
+    "Khác"
+  ],
+  banks: ["Vietcombank", "Agribank", "MB Bank", "Khác"],
+  CLASS_ID: CLASS_ID
+};
+export const OTHER_APPS = [
+  { label: "Nhóm Zalo hỗ trợ", icon: "fab fa-comment", link: "https://zalo.me/0988948882" },
+  { label: "Kênh Youtube Toán", icon: "fab fa-youtube", link: "https://youtube.com/..." },
+  { label: "Máy tính Online", icon: "fas fa-calculator", link: "https://www.desmos.com/scientific" },
+  { label: "Từ điển Toán học", icon: "fas fa-language", link: "https://..." }
+];
 
 export const TOPICS_DATA: Record<number, Topic[]> = {
-  7: [{ id: 701, name: "Toán lớp 7" }],
-  8: [{ id: 801, name: "Toán lớp 8" }],
-  9: [
+    9:  [
     { id: 901, name: "01. Phương trình và hệ phương trình bậc nhất" },
     { id: 902, name: "02. Phương trình bậc hai một ẩn số" },
     { id: 903, name: "03. Hệ thức lượng trong tam giác vuông" },
@@ -70,9 +83,37 @@ export const TOPICS_DATA: Record<number, Topic[]> = {
   ]
 };
 
+// Loại 45 phút : MCQ = 12 (0.5đ); TF = 2 (1đ, 1 câu mức 3); SA = 4 (0.5đ, 1 câu mức 3, 1 câu mức 4)
+const CONFIG_45P: FixedConfig = {
+  duration: 45,
+  numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0],
+  numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0],
+  numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1]
+};
+
+// Loại 90 phút : MCQ = 12 (0.25đ); TF = 4 (1đ, 2 câu mức 3); SA = 6 (0.5đ, 1 câu mức 3, 1 câu mức 4)
+const CONFIG_90P: FixedConfig = {
+  duration: 90,
+  numMC: [12], scoreMC: 0.25, mcL3: [0], mcL4: [0],
+  numTF: [4], scoreTF: 1, tfL3: [2], tfL4: [0],
+  numSA: [6], scoreSA: 0.5, saL3: [1], saL4: [1]
+};
+
 export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
-  9: [{ code: "TD_45_K9", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  10: [{ code: "TD_45_K10", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  11: [{ code: "TD_45_K11", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }],
-  12: [{ code: "TD_45_K12", name: "Đề Tự do 45 phút", topics: 'manual', fixedConfig: { duration: 45, numMC: [12], scoreMC: 0.5, mcL3: [0], mcL4: [0], numTF: [2], scoreTF: 1, tfL3: [1], tfL4: [0], numSA: [4], scoreSA: 0.5, saL3: [1], saL4: [1] } }]
+  9: [
+    { code: "TD_45_K9", name: "Tự do 45 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_45P },
+    { code: "TD_90_K9", name: "Tự do 90 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_90P }
+  ],
+  10: [
+    { code: "TD_45_K10", name: "Tự do 45 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_45P },
+    { code: "TD_90_K10", name: "Tự do 90 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_90P }
+  ],
+  11: [
+    { code: "TD_45_K11", name: "Tự do 45 phút (10+11)", topics: 'manual', fixedConfig: CONFIG_45P },
+    { code: "TD_90_K11", name: "Tự do 90 phút (10+11)", topics: 'manual', fixedConfig: CONFIG_90P }
+  ],
+  12: [
+    { code: "TD_45_K12", name: "Tự do 45 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_45P },
+    { code: "TD_90_K12", name: "Tự do 90 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_90P }
+  ]
 };

@@ -170,7 +170,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       0% { transform: translate(0, 0); }
       100% { transform: translate(-100%, 0); }
     }
-  `}</style>
+    @keyframes sparkle {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.vip1-sparkle {
+  background: linear-gradient(-45deg, #f1c40f, #f39c12, #e67e22, #f1c40f);
+  background-size: 400% 400%;
+  animation: sparkle 3s ease infinite;
+  box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+  border: 2px solid #fff !important;
+}
+  `}
+  
+  </style>
 </div>  
     </div>
 

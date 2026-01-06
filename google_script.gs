@@ -11,7 +11,7 @@ function doGet(e) {
   const type = params.type;
 
   try {
-    // 1. Xác minh thí sinh (Sửa lỗi: dùng type tường minh)
+    // 1. Xác minh thí sinh
     if (type === 'verifyStudent') {
       const idNumber = params.idnumber;
       const sbd = params.sbd;
@@ -19,14 +19,13 @@ function doGet(e) {
       if (!sheet) return createResponse("error", "Sheet danhsach không tồn tại");
       const data = sheet.getDataRange().getValues();
       for (let i = 1; i < data.length; i++) {
-        // Cột A: idNumber (0), Cột B: SBD (1)
         if (data[i][0].toString().trim() === idNumber.trim() && data[i][1].toString().trim() === sbd.trim()) {
           return createResponse("success", "OK", {
-            name: data[i][2],      // Cột C
-            class: data[i][3],     // Cột D
-            limit: data[i][4],     // Cột E (Số lần thi)
-            limittab: data[i][5],  // Cột F (Giới hạn tab)
-            taikhoanapp: data[i][6], // Cột G (Loại TK)
+            name: data[i][2],
+            class: data[i][3],
+            limit: data[i][4],
+            limittab: data[i][5],
+            taikhoanapp: data[i][6],
             idnumber: idNumber,
             sbd: sbd
           });
@@ -35,48 +34,44 @@ function doGet(e) {
       return createResponse("error", "Thí sinh không tồn tại trên hệ thống!");
     }
 
-    // 2. Lấy mã đề từ Ma trận (Sheet matran - Cấu trúc A-Q)
+    // 2. Lấy mã đề từ Ma trận
     if (type === 'getExamCodes') {
       const teacherId = params.idnumber;
       const sheet = ss.getSheetByName("matran");
       if (!sheet) return createResponse("error", "Sheet matran không tồn tại");
       const data = sheet.getDataRange().getValues();
       const results = [];
-
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
-        // Cột A: idNumber
         if (row[0].toString().trim() === teacherId.trim() || row[0].toString() === "SYSTEM") {
           try {
             results.push({
-              code: row[1].toString(), // Cột B: makiemtra
-              name: row[2].toString(), // Cột C: name
-              topics: JSON.parse(row[3]), // Cột D: topics (JSON)
+              code: row[1].toString(),
+              name: row[2].toString(),
+              topics: JSON.parse(row[3]),
               fixedConfig: {
-                duration: parseInt(row[4]), // Cột E
-                numMC: JSON.parse(row[5]),  // Cột F
-                scoreMC: parseFloat(row[6]),// Cột G
-                mcL3: JSON.parse(row[7]),   // Cột H
-                mcL4: JSON.parse(row[8]),   // Cột I
-                numTF: JSON.parse(row[9]),  // Cột J
-                scoreTF: parseFloat(row[10]),// Cột K
-                tfL3: JSON.parse(row[11]),  // Cột L
-                tfL4: JSON.parse(row[12]),  // Cột M
-                numSA: JSON.parse(row[13]), // Cột N
-                scoreSA: parseFloat(row[14]),// Cột O
-                saL3: JSON.parse(row[15]),  // Cột P
-                saL4: JSON.parse(row[16])   // Cột Q
+                duration: parseInt(row[4]),
+                numMC: JSON.parse(row[5]),
+                scoreMC: parseFloat(row[6]),
+                mcL3: JSON.parse(row[7]),
+                mcL4: JSON.parse(row[8]),
+                numTF: JSON.parse(row[9]),
+                scoreTF: parseFloat(row[10]),
+                tfL3: JSON.parse(row[11]),
+                tfL4: JSON.parse(row[12]),
+                numSA: JSON.parse(row[13]),
+                scoreSA: parseFloat(row[14]),
+                saL3: JSON.parse(row[15]),
+                saL4: JSON.parse(row[16])
               }
             });
-          } catch(err) {
-            console.error("Lỗi parse dữ liệu dòng " + (i+1));
-          }
+          } catch(err) {}
         }
       }
       return createResponse("success", "OK", results);
     }
 
-    // 3. Kiểm tra mật khẩu Quiz (Sheet danhsach - ô H2)
+    // 3. Kiểm tra mật khẩu Quiz
     if (type === 'checkQuizPass') {
       const passInput = params.pass;
       const sheet = ss.getSheetByName("danhsach");
@@ -104,19 +99,28 @@ function doGet(e) {
       return createResponse("success", "OK", topData);
     }
 
-    // 5. Thống kê đánh giá
+    // 5. Thống kê đánh giá chi tiết
     if (type === 'getStats') {
-      const stats = { total: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      const counts = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
       const sheet = ss.getSheetByName("danhgia");
+      let total = 0;
+      let sum = 0;
       if (sheet) {
         const data = sheet.getDataRange().getValues();
-        stats.total = data.length - 1;
         for (let i = 1; i < data.length; i++) {
           const star = parseInt(data[i][1]);
-          if (star >= 1 && star <= 5) stats[star]++;
+          if (star >= 1 && star <= 5) {
+            counts[star.toString()]++;
+            sum += star;
+            total++;
+          }
         }
       }
-      return createResponse("success", "OK", stats);
+      return createResponse("success", "OK", {
+        average: total > 0 ? (sum / total).toFixed(1) : "5.0",
+        total: total,
+        counts: counts
+      });
     }
 
     return createResponse("error", "Tham số type không hợp lệ");
@@ -167,5 +171,3 @@ function createResponse(status, message, data) {
   if (data) out.data = data;
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
-
-// *End

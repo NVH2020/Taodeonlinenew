@@ -7,53 +7,47 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onOpenRate }) => {
   return (
-    <footer className="mt-12 pt-12 pb-10 border-t border-slate-100 text-center space-y-8 bg-white rounded-t-[4rem] shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.05)] font-sans">
-      <div className="max-w-xs mx-auto px-4">
-        <button 
-          onClick={onOpenRate} 
-          className="w-full py-5 bg-blue-700 text-white rounded-full font-black text-sm shadow-2xl hover:translate-y-[-5px] hover:shadow-blue-200 transition-all border-b-8 border-blue-950 uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 group"
-        >
-          <i className="fas fa-star text-yellow-300 group-hover:rotate-[360deg] transition-transform duration-500"></i>
-          <span>ĐÁNH GIÁ HỆ THỐNG</span>
-        </button>
+    <footer className="mt-20 bg-[#0f172a] text-white pt-20 pb-16 font-sans px-8 md:px-16 border-t-4 border-blue-900">
+      <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+        
+        {/* Left Side: Brand & Slogan */}
+        <div className="space-y-4 max-w-2xl">
+          <h2 className="text-4xl font-black tracking-tighter uppercase italic text-blue-400">Toán Thầy Hà - Bắc Ninh</h2>
+          <p className="text-slate-400 font-bold text-lg leading-relaxed">Đồng hành cùng các em trên con đường chinh phục tri thức và bứt phá điểm số.</p>
+        </div>
+
+        {/* Right Side: Socials & Rate Button */}
+        <div className="flex flex-wrap items-center gap-8">
+          <div className="flex gap-5">
+            <a href="https://facebook.com/hoctoanthayha.bg" target="_blank" className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-2xl hover:bg-blue-600 transition-all hover:scale-110 shadow-2xl border border-slate-700">
+              <i className="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://zalo.me/0988948882" target="_blank" className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-sm font-black hover:bg-blue-500 transition-all hover:scale-110 shadow-2xl border border-slate-700 uppercase">
+              Zalo
+            </a>
+            <a href="https://t.me/" target="_blank" className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-2xl hover:bg-blue-400 transition-all hover:scale-110 shadow-2xl border border-slate-700">
+              <i className="fab fa-telegram-plane"></i>
+            </a>
+          </div>
+
+          <button 
+            onClick={onOpenRate} 
+            className="flex items-center gap-4 bg-slate-800 hover:bg-slate-700 px-10 py-4.5 rounded-full border-2 border-yellow-500/50 transition-all group active:scale-95 shadow-[0_0_30px_rgba(234,179,8,0.2)]"
+          >
+            <i className="fas fa-star text-yellow-400 text-xl group-hover:rotate-[360deg] transition-transform duration-700"></i>
+            <span className="font-black text-sm uppercase tracking-[0.2em] text-yellow-400">Đánh giá web</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex justify-center gap-8">
-        <a 
-          href="https://www.facebook.com/hoctoanthayha.bg" 
-          target="_blank" 
-          rel="noreferrer" 
-          className="w-14 h-14 bg-[#1877F2] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:scale-110 hover:-rotate-6 transition-all border-b-4 border-[#0e4da1]"
-        >
-          <i className="fab fa-facebook-f"></i>
-        </a>
-        <a 
-          href="https://zalo.me/0988948882" 
-          target="_blank" 
-          rel="noreferrer" 
-          className="w-14 h-14 bg-[#0068FF] rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:scale-110 hover:rotate-6 transition-all border-b-4 border-[#0047b3]"
-        >
-          <i className="fas fa-comment-dots"></i>
-        </a>
-        <a 
-          href="tel:0988948882" 
-          className="w-14 h-14 bg-emerald-500 rounded-2xl text-white flex items-center justify-center text-2xl shadow-lg hover:scale-110 hover:-rotate-6 transition-all border-b-4 border-emerald-700"
-        >
-          <i className="fas fa-phone-alt"></i>
-        </a>
-      </div>
-
-      <div className="space-y-2 px-6">
-        <p className="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">
-          © 2025 HỆ THỐNG HỌC TOÁN TRỰC TUYẾN CHUYÊN NGHIỆP
-        </p>
-        <p className="text-[10px] font-bold text-slate-400 uppercase">
-          Thiết kế bởi <span className="text-blue-600">Thầy Hà - THPT Yên Dũng số 2</span>
-        </p>
-        <div className="flex justify-center items-center gap-2 pt-2 opacity-50">
-          <div className="w-1 h-1 rounded-full bg-slate-400"></div>
-          <p className="text-[8px] font-bold text-slate-400 uppercase">Bắc Ninh • Việt Nam</p>
-          <div className="w-1 h-1 rounded-full bg-slate-400"></div>
+      <div className="max-w-[1400px] mx-auto mt-20 pt-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="space-y-1 text-center md:text-left">
+           <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">© 2025 TOANTHAYHA.BACNINH • ALL RIGHTS RESERVED</p>
+           <p className="text-[10px] font-bold text-slate-600">Thiết kế chuyên nghiệp bởi Thầy Hà - THPT Yên Dũng số 2</p>
+        </div>
+        <div className="flex gap-10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <a href="#" className="hover:text-blue-400 transition-colors">Điều khoản sử dụng</a>
+          <a href="#" className="hover:text-blue-400 transition-colors">Chính sách bảo mật</a>
         </div>
       </div>
     </footer>
@@ -61,5 +55,3 @@ const Footer: React.FC<FooterProps> = ({ onOpenRate }) => {
 };
 
 export default Footer;
-
-// *End

@@ -36,6 +36,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [serverPassword, setServerPassword] = useState("");  
   const [isOtherSchool, setIsOtherSchool] = useState(false);
   const [isOtherClass, setIsOtherClass] = useState(false);
+  const [showVipOptions, setShowVipOptions] = useState(false);
+  const [showVipBenefits, setShowVipBenefits] = useState(false); // Modal hiện bảng quyền lợi
+
+  const handleVipClick = () => {
+  setShowVipOptions(true);
+};
   
   // State cho Modal chọn môn
   const [showSubjectModal, setShowSubjectModal] = useState(false);
@@ -248,13 +254,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               ))}
             </div>
           </div>
-
-         
-
-          <button onClick={onOpenVip} className="  className="px-4 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
-            <i className="fas fa-gem text-lg"></i>
-<span>Nâng Cấp VIP</span>
-          </button>
+          <button 
+  onClick={handleVipClick}
+  className="px-4 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all"
+>
+  <i className="fas fa-gem text-lg"></i>
+  <span>Nâng Cấp VIP</span>
+</button>
         </div>
       </div>
 
@@ -298,11 +304,69 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       )}
         
   {/* 6.MODAL QUIZ (Sửa lỗi step-by-step) */}
+      {/* 1. Modal lựa chọn 2 nút */}
+{showVipOptions && (
+  <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm text-center shadow-2xl relative animate-in fade-in zoom-in duration-300">
+      <h3 className="text-xl font-black text-slate-800 mb-6 uppercase">Em muốn thực hiện gì?</h3>
+      
+      <div className="flex flex-col gap-4">
+        {/* Nút Quyền Lợi */}
+        <button 
+          onClick={() => { setShowVipBenefits(true); setShowVipOptions(false); }}
+          className="w-full py-4 bg-blue-500 text-white rounded-2xl font-black border-b-4 border-blue-700 active:translate-y-1 transition-all uppercase"
+        >
+          <i className="fas fa-list-check mr-2"></i> Quyền lợi VIP
+        </button>
+
+        {/* Nút Đăng Ký Ngay - Dẫn đến link Form */}
+        <a 
+          href="LINK_FORM_CUA_BAN_TAI_DAY" 
+          target="_blank" 
+          className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black border-b-4 border-orange-700 active:translate-y-1 transition-all uppercase block"
+        >
+          <i className="fas fa-paper-plane mr-2"></i> Đăng ký VIP ngay
+        </a>
+      </div>
+
+      <button onClick={() => setShowVipOptions(false)} className="mt-6 text-slate-400 font-bold hover:text-red-500 transition">Đóng</button>
+    </div>
+  </div>
+)}
+
+{/* 2. Modal Bảng Quyền lợi VIP */}
+{showVipBenefits && (
+  <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4">
+    <div className="bg-white rounded-[2rem] p-8 w-full max-w-md relative animate-in slide-in-from-bottom-4 duration-300">
+      <h3 className="text-2xl font-black text-orange-600 mb-4 uppercase text-center italic">Đặc quyền VIP</h3>
+      <ul className="space-y-3 mb-6">
+        <li className="flex items-center gap-3 font-bold text-slate-700">
+          <i className="fas fa-check-circle text-green-500 text-xl"></i> Mở khóa toàn bộ kho đề thi 10, 11, 12.
+        </li>
+        <li className="flex items-center gap-3 font-bold text-slate-700">
+          <i className="fas fa-check-circle text-green-500 text-xl"></i> Xem lời giải chi tiết (Video + File PDF).
+        </li>
+        <li className="flex items-center gap-3 font-bold text-slate-700">
+          <i className="fas fa-check-circle text-green-500 text-xl"></i> Không giới hạn lượt làm Quiz mỗi ngày.
+        </li>
+        <li className="flex items-center gap-3 font-bold text-slate-700">
+          <i className="fas fa-check-circle text-green-500 text-xl"></i> Hỗ trợ trực tiếp từ Thầy qua Zalo VIP.
+        </li>
+      </ul>
+      <button 
+        onClick={() => setShowVipBenefits(false)}
+        className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold uppercase"
+      >
+        Đã hiểu
+      </button>
+    </div>
+  </div>
+)}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 overflow-y-auto max-h-[90vh]">
             <h2 className="text-2xl font-black text-orange-500 mb-6 uppercase text-center">
-              {quizMode === 'gift' ? '🎁 Chế độ Quà QuiZ' : quizMode === 'free' ? '🎮 QuiZ Tự Do' : '🚀 Chọn chế độ chơi'}
+              {quizMode === 'gift' ? '🎁 Nhận Quà QuiZ' : quizMode === 'free' ? '🎮 QuiZ Tự Do' : '🚀 QuiZ Tự Do'}
             </h2>
 
             {!quizMode ? (

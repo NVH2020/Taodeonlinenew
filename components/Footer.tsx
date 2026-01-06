@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-8">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl font-bold text-white mb-2">NHÓM TOÁN</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">THẦY HÀ - BẮC NINH</h2>
             <p className="text-gray-400">Đồng hành cùng các em trên con đường chinh phục tri thức.</p>
           </div>
 
@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} toanthayha.bacninh. All rights reserved.</p>
+          <p>Liên hệ thầy Hà để tham gia nhóm học tập. Phone: 0988.948.882. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
              <span className="hover:text-white cursor-pointer transition-colors">Điều khoản sử dụng</span>
              <span className="hover:text-white cursor-pointer transition-colors">Chính sách bảo mật</span>

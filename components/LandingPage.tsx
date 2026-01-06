@@ -48,73 +48,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
         top10: []
   });
-  const handleRegister = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
-  
-  setLoading(true);
-  try {
-    const payload = {
-      type: 'register',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    };
-
-    await fetch(DANHGIA_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Dùng no-cors để tránh lỗi Google Script
-      body: JSON.stringify(payload)
-    });
-
-    alert("Đăng ký thành công!");
-    // Sau khi đăng ký xong, có thể set dữ liệu sang phần VIP để sẵn sàng nâng cấp
-    setAccountVipInfo({ ...accountVipInfo, phone: accountInfo.phone, pass: accountInfo.pass });
-    
-  } catch (error) {
-    alert("Có lỗi xảy ra khi gửi dữ liệu!");
-  } finally {
-    setLoading(false);
-  }
-};
-  const handleLogin = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
-
-  setLoading(true);
-  try {
-    // Dùng URLSearchParams để tạo query string
-    const params = new URLSearchParams({
-      type: 'checkLogin',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    });
-
-    // Gọi bằng phương thức GET để nhận được phản hồi JSON
-    const response = await fetch(`${DANHGIA_URL}?${params.toString()}`);
-    const result = await response.json();
-
-    if (result.status === "success") {
-      alert("Đăng nhập thành công!");
-      onSuccess({
-        phoneNumber: result.data.phone,
-        vip: result.data.vip // Sẽ nhận được Vip0 hoặc Vip1 từ Sheet
-      });
-    } else {
-      // NẾU SAI PASS, NÓ SẼ CHẠY VÀO ĐÂY
-      alert("Lỗi: " + result.message);
-    }
-  } catch (error) {
-    alert("Không thể kết nối máy chủ để xác minh!");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// 3. Hàm xử lý GỬI VIP (về sheet VIP)
+  // 3. Hàm xử lý GỬI VIP (về sheet VIP)
 const handleUpgradeVip = async (vipType: string) => {
   setLoading(true);
   try {

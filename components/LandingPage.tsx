@@ -218,6 +218,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
         {/* 4. CỘT PHẢI ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">
+           <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
+            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
+          </button>
           <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-headset text-lg"></i><br/>Trợ lý học tập
           </button>
@@ -225,7 +228,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
           </button>
           
-          {/* Dropdown Ứng dụng khác */}
+
+
+          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
+            <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
+          </button>
+                    {/* Dropdown Ứng dụng khác */}
           <div className="relative group w-full flex-1">
             <button className="w-full h-full bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-teal-800 p-2">
               <i className="fas fa-th text-lg"></i><br/>Ứng dụng khác
@@ -240,13 +248,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
             </div>
           </div>
 
-          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
-            <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
-          </button>
-
-          <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
-          </button>
+         
 
           <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP

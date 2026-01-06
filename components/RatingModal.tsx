@@ -6,6 +6,20 @@ interface RatingModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+  const fireConfetti = () => {
+  const emojis = ['🎉', '✨', '⭐', '❤️', '🔥'];
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement('div');
+    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    confetti.className = 'confetti-piece';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(confetti);
+    
+    // Xóa emoji sau khi rơi xong để nhẹ máy
+    setTimeout(() => confetti.remove(), 5000);
+  }
+};
 
 const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose }) => {
   const { ratingData, addRating } = useApp();
@@ -82,6 +96,12 @@ const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose }) => {
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star size={32} fill="currentColor" />
               </div>
+              if (stars >= 4) {
+              fireConfetti(); // Pháo hoa bằng emoji nổ tung!
+              alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${stars} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
+              } else {
+             alert(`😡 Này! Sao đánh giá có ${stars} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
+               }
               <p className="font-bold text-gray-900">Cảm ơn bạn đã đánh giá!</p>
             </div>
           )}

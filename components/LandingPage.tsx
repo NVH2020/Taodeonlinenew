@@ -214,28 +214,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* 4. CỘT PHẢI ACTIONS */}
+         {/* 4. CỘT PHẢI ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">           
           <button 
   onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} 
-  className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[11px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[160px] transition-all"
->
+  className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
   <i className="fas fa-headset text-xl mb-1"></i>
   <span>Trợ lý học tập</span>
 </button>
-          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
+          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')}   className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
+            <i className="fas fa-users text-lg"></i>
+<span>Đăng ký học Toán</span>
           </button>
           
 
 
-          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
-            <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
+          <button onClick={() => setShowSubjectModal(true)}   className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
+            <i className="fas fa-graduation-cap text-lg"></i>
+<span>Chọn môn học</span>
           </button>
                     {/* Dropdown Ứng dụng khác */}
           <div className="relative group w-full flex-1">
-            <button className="w-full h-full bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-teal-800 p-2">
-              <i className="fas fa-th text-lg"></i><br/>Ứng dụng khác
+            <button   className="px-4 bg-blue-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
+              <i className="fas fa-th text-lg"></i>
+<span>Ứng dụng khác</span>
             </button>
             <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-2xl shadow-2xl border hidden group-hover:block z-[100] p-2">
               {OTHER_APPS.map((app, idx) => (
@@ -249,11 +251,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
          
 
-          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
-            <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP
+          <button onClick={onOpenVip} className="  className="px-4 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-[16px] shrink-0 hover:brightness-110 h-[70px] uppercase whitespace-nowrap flex flex-col items-center justify-center leading-tight min-w-[130px] transition-all">
+            <i className="fas fa-gem text-lg"></i>
+<span>Nâng Cấp VIP</span>
           </button>
         </div>
       </div>
+
       {/* 5.MODAL CHỌN MÔN (2 CỘT) */}
       {showSubjectModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">

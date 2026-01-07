@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
+import { IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
 import { AppUser, Student } from '../types';
-const formatPhoneHidden = (phone: string) => {
-  if (!phone || phone.length < 7) return "09xxx****";
-  return phone.slice(0, 2) + "xxx" + phone.slice(-4);
-};
 
 interface LandingPageProps {
   onSelectGrade: (grade: number) => void;
@@ -14,135 +10,68 @@ interface LandingPageProps {
   onOpenVip: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip }) => {
-  // 1. Khai báo dữ liệu môn học
+const LandingPage: React.FC<LandingPageProps> = ({
+  onSelectGrade,
+  onSelectQuiz,
+  user,
+  onOpenAuth,
+  onOpenVip
+}) => {
+
   const SUBJECTS = ["Toán học", "Vật lí", "Hóa học", "Sinh học", "Văn học", "Lịch sử", "Địa lí", "Tin học", "Tiếng Anh", "GDKT&PL", "CNCN", "CNNN", "Khác"];
   const LEVELS = ["THPT", "THCS", "Tiểu học", "Đại học", "Cao học", "Trên cao học"];
+
   const REDIRECT_LINKS: Record<string, string> = {
     "Toán học-THPT": "https://www.facebook.com/hoctoanthayha.bg",
     "Vật lí-THCS": "https://twitter.com/Math_teacher_Ha",
     "default": "https://www.facebook.com/hoctoanthayha.bg"
   };
 
-  // 2. Các State quản lý
-  const [isOtherBank, setIsOtherBank] = useState(false); 
- 
+  const [isOtherBank, setIsOtherBank] = useState(false);
   const [quizMode, setQuizMode] = useState<'free' | 'gift' | null>(null);
-  const [inputPassword, setInputPassword] = useState('');  
+  const [inputPassword, setInputPassword] = useState('');
   const [currentImg, setCurrentImg] = useState(0);
-  const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
+  const [showQuizModal, setShowQuizModal] = useState<{ num: number, pts: number } | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
-  const [accountInfo, setAccountInfo] = useState({ phone: '', pass: '' });
-  const [accountVipInfo, setAccountVipInfo] = useState({ phone: '', pass: '', vip: '' });
-  const [loading, setLoading] = useState(false);
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
-  const [serverPassword, setServerPassword] = useState("");  
+  const [serverPassword, setServerPassword] = useState("");
   const [isOtherSchool, setIsOtherSchool] = useState(false);
   const [isOtherClass, setIsOtherClass] = useState(false);
-  
-  // State cho Modal chọn môn
+  const [showVipOptions, setShowVipOptions] = useState(false);
+  const [showVipBenefits, setShowVipBenefits] = useState(false);
+  const [showLichOptions, setshowLichOptions] = useState(false);
+
   const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
 
-  const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
-        top10: []
+  // ✅ FIX LỖI: thiếu ratings
+  const [stats, setStats] = useState<{ ratings: Record<number, number>, top10: any[] }>({
+    ratings: {},
+    top10: []
   });
-  const handleRegister = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
-  
-  setLoading(true);
-  try {
-    const payload = {
-      type: 'register',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    };
 
-    await fetch(DANHGIA_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Dùng no-cors để tránh lỗi Google Script
-      body: JSON.stringify(payload)
-    });
+  const handleLichClick = () => {
+    setshowLichOptions(true);
+  };
 
-    alert("Đăng ký thành công!");
-    // Sau khi đăng ký xong, có thể set dữ liệu sang phần VIP để sẵn sàng nâng cấp
-    setAccountVipInfo({ ...accountVipInfo, phone: accountInfo.phone, pass: accountInfo.pass });
-    
-  } catch (error) {
-    alert("Có lỗi xảy ra khi gửi dữ liệu!");
-  } finally {
-    setLoading(false);
-  }
-};
-  const handleLogin = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
+  useEffect(() => {
+    if (IMAGES_CAROUSEL.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
-  setLoading(true);
-  try {
-    // Dùng URLSearchParams để tạo query string
-    const params = new URLSearchParams({
-      type: 'checkLogin',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    });
-
-    // Gọi bằng phương thức GET để nhận được phản hồi JSON
-    const response = await fetch(`${DANHGIA_URL}?${params.toString()}`);
-    const result = await response.json();
-
-    if (result.status === "success") {
-      alert("Đăng nhập thành công!");
-      onSuccess({
-        phoneNumber: result.data.phone,
-        vip: result.data.vip // Sẽ nhận được Vip0 hoặc Vip1 từ Sheet
-      });
-    } else {
-      // NẾU SAI PASS, NÓ SẼ CHẠY VÀO ĐÂY
-      alert("Lỗi: " + result.message);
-    }
-  } catch (error) {
-    alert("Không thể kết nối máy chủ để xác minh!");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// 3. Hàm xử lý GỬI VIP (về sheet VIP)
-const handleUpgradeVip = async (vipType: string) => {
-  setLoading(true);
-  try {
-    const payload = {
-      type: 'vip_upgrade',
-      phone: accountVipInfo.phone,
-      pass: accountVipInfo.pass,
-      vip: vipType // ví dụ: 'VIP1', 'VIP_PRO'
-    };
-
-    await fetch(DANHGIA_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload)
-    });
-
-    alert("Yêu cầu nâng cấp VIP đã được gửi!");
-  } catch (error) {
-    alert("Lỗi nâng cấp!");
-  } finally {
-    setLoading(false);
-  }
-};
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
-    if (quizMode === 'gift' && inputPassword !== serverPassword) return alert("Mật khẩu Quà QuiZ không chính xác!.Liên hệ: 0988.948.882 để được giải đáp!");
-    if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ thông tin!");
-    
+
+    if (quizMode === 'gift' && inputPassword !== serverPassword)
+      return alert("Mật khẩu Quà QuiZ không chính xác!. Liên hệ: 0988.948.882 để được giải đáp!");
+
+    if (!quizInfo.name || !quizInfo.phone)
+      return alert("Vui lòng nhập đầy đủ thông tin!");
+
     onSelectQuiz(showQuizModal!.num, showQuizModal!.pts, {
       ...quizInfo,
       phoneNumber: quizInfo.phone,
@@ -151,58 +80,51 @@ const handleUpgradeVip = async (vipType: string) => {
       className: quizInfo.class,
       school: quizInfo.school
     });
+
     setShowQuizModal(null);
     setQuizMode(null);
   };
 
   const handleRedirect = () => {
     const key = `${selectedSubject}-${selectedLevel}`;
-    const link = REDIRECT_LINKS[key] || REDIRECT_LINKS["default"];
+    const link = REDIRECT_LINKS[key] || REDIRECT_LINKS.default;
     window.open(link, '_blank');
     setShowSubjectModal(false);
   };
-    // * Lấy pass QuiZ
-  useEffect(() => {
-  const fetchPassword = async () => {
-    try {
-      const res = await fetch(`${DANHGIA_URL}?type=getPass`);
-      const data = await res.json();
-      setServerPassword(data.password.toString()); // Lưu mật khẩu từ ô H2 vào state
-    } catch (e) {
-      console.error("Lỗi lấy mật khẩu:", e);
-    }
-  };
-  fetchPassword();
-}, []);
-  // *TOP10chuan
-  useEffect(() => {
-  const fetchTop10 = async () => {
-    try {
-      // Đảm bảo DANHGIA_URL đã được định nghĩa trong file config
-      const res = await fetch(`${DANHGIA_URL}?type=top10`);
-      const json = await res.json();
 
-      // Kiểm tra kỹ cấu trúc json trả về từ App Script của thầy
-      // Nếu App Script trả về { data: [...] } thì dùng json.data
-      // Nếu App Script trả về thẳng [...] thì dùng json
-      const dataToMap = json.data || json; 
-
-      if (Array.isArray(dataToMap)) {
-        setStats(prev => ({
-          ...prev,
-          top10: dataToMap.slice(0, 10) // Lấy đúng 10 người
-        }));
+  useEffect(() => {
+    const fetchPassword = async () => {
+      try {
+        const res = await fetch(`${DANHGIA_URL}?type=getPass`);
+        const data = await res.json();
+        if (data?.password) setServerPassword(data.password.toString());
+      } catch (e) {
+        console.error("Lỗi lấy mật khẩu:", e);
       }
-    } catch (e) {
-      console.error("Lỗi lấy dữ liệu Top 10:", e);
-    }
-  };
+    };
+    fetchPassword();
+  }, []);
 
-  fetchTop10();
-  // Có thể thêm interval để tự động cập nhật sau mỗi 1 phút
-  const interval = setInterval(fetchTop10, 60000);
-  return () => clearInterval(interval);
-}, []);
+  useEffect(() => {
+    const fetchTop10 = async () => {
+      try {
+        const res = await fetch(`${DANHGIA_URL}?type=top10`);
+        const json = await res.json();
+        const data = json.data || json;
+
+        if (Array.isArray(data)) {
+          setStats(prev => ({ ...prev, top10: data.slice(0, 10) }));
+        }
+      } catch (e) {
+        console.error("Lỗi lấy dữ liệu Top 10:", e);
+      }
+    };
+
+    fetchTop10();
+    const interval = setInterval(fetchTop10, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
   {/* 1. HEADER BUTTONS */}

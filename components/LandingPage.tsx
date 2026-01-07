@@ -219,14 +219,27 @@ const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </div>
 
-        {/* 3.CAROUSEL */}
+       {/* 3. CAROUSEL - SỬA LỖI: HIỂN THỊ ẢNH */}
         <div className="lg:col-span-7">
-          <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+          <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white group">
             {IMAGES_CAROUSEL.map((img, idx) => (
-              <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg ? 'opacity-100' : 'opacity-0'}`} alt="Carousel" />
+              <img 
+                key={idx} 
+                src={img} 
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg ? 'opacity-100' : 'opacity-0'}`} 
+                alt="Carousel" 
+              />
             ))}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+            <div className="absolute bottom-10 left-10 text-white drop-shadow-2xl">
+              <h2 className="text-3xl md:text-4xl font-black uppercase leading-none">Học Toán Thầy Hà</h2>
+              <p className="text-orange-400 text-lg font-bold mt-2 tracking-widest uppercase">Chuyên tâm - Sáng tạo - Thành công</p>
+            </div>
           </div>
-        </div>
+            </div>
+          </div>
+    
+
 
         {/* 4. CỘT PHẢI ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">

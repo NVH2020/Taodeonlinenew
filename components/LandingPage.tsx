@@ -244,7 +244,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
             <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn khác
           </button> 
           <button onClick={handleLichClick} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
-          <i className="fas fa-calendar-alt-text-lg"></i><br/>Lịch học Toán
+          <i className="fas fa-calendar-alt"></i><br/>Lịch học Toán
           </button> 
 
            {/* Dropdown Ứng dụng khác */}

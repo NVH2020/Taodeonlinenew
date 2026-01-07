@@ -327,19 +327,19 @@ const LandingPage: React.FC<LandingPageProps> = ({
       {showLichOptions && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-[3rem] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in duration-300 border-4 border-white">
-            <div className="bg-gradient-to-r from-orange-400 to-red-400 p-8 text-center text-white relative">
-              <div className="absolute top-4 right-6 text-white/50 text-5xl font-black">CALENDAR</div>
-              <i className="fas fa-calendar-alt text-4xl mb-3"></i>
-              <h3 className="text-3xl font-black uppercase tracking-tighter">Lịch Học Offline</h3>
-              <p className="text-orange-100 font-bold">Cập nhật mới nhất</p>
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 p-8 text-center text-white relative">
+              <div className="absolute top-4 right-6 text-white/50 text-6xl font-black">CALENDAR</div>
+              <i className="fas fa-calendar-alt text-5xl mb-3"></i>
+              <h3 className="text-3xl font-black uppercase italic tracking-tighter">Lịch Học Offline</h3>
+              <p className="text-orange-100 font-bold">Cập nhật mới nhất học kỳ này</p>
             </div>
             <div className="p-6 bg-slate-50">
               <div className="grid gap-3">
                 {[
-                  { grade: "Lớp 9", time: "Thứ 2: 16h30", color: "bg-blue-350" },
-                  { grade: "Lớp 10", time: "Thứ 4: 16h30 & Thứ 7: 14h15", color: "bg-indigo-350" },
-                  { grade: "Lớp 11", time: "Thứ 3: 14h15 & Thứ 6: 14h15", color: "bg-purple-350" },
-                  { grade: "Lớp 12", time: "Thứ 3: 16h30 & Thứ 5: 16h30", color: "bg-red-350" },
+                  { grade: "Lớp 9", time: "Thứ 2: 16h30", color: "bg-blue-500" },
+                  { grade: "Lớp 10", time: "Thứ 4: 16h30 & Thứ 7: 14h15", color: "bg-indigo-500" },
+                  { grade: "Lớp 11", time: "Thứ 3: 14h15 & Thứ 6: 14h15", color: "bg-purple-500" },
+                  { grade: "Lớp 12", time: "Thứ 3: 16h30 & Thứ 5: 16h30", color: "bg-red-500" },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center bg-white p-4 rounded-3xl shadow-sm border border-slate-100 hover:scale-[1.02] transition-transform">
                     <div className={`${item.color} w-16 h-16 rounded-2xl flex items-center justify-center text-white font-black text-xl shrink-0 shadow-lg`}>

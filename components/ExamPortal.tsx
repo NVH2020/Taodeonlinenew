@@ -134,52 +134,89 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
       </div>
 
       <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Cột 1 */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Xác Minh</h3>
-          <div className="bg-slate-50 p-6 rounded-[2.5rem] space-y-4 border border-slate-200 shadow-inner">
-            <div className="relative">
-              <i className="fas fa-chalkboard-teacher absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-              <input type="text" placeholder="ID BẢN QUYỀN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
+       {/* Cột 1: Thông tin thí sinh */}
+<div className="space-y-6">
+  <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Xác Minh</h3>
+  <div className="bg-slate-50 p-6 rounded-[2.5rem] border border-slate-200 shadow-inner space-y-4">
+    {/* Input Section */}
+    <div className="space-y-3">
+      <div className="relative">
+        <i className="fas fa-chalkboard-teacher absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+        <input type="text" placeholder="ID BẢN QUYỀN" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border border-slate-100 focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={idInput} onChange={e => setIdInput(e.target.value)} />
+      </div>
+      <div className="relative">
+        <i className="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+        <input type="text" placeholder="SỐ BÁO DANH" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border border-slate-100 focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
+      </div>
+      <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-blue-700 text-white rounded-2xl font-black shadow-xl hover:bg-blue-800 transition active:scale-95 uppercase text-lg border-b-4 border-blue-900">
+        {isVerifying ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-check-double mr-2"></i>}
+        {isVerifying ? 'ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
+      </button>
+    </div>
+    
+    {/* Thẻ thông tin Thí sinh (Verified Card) */}
+    {verifiedStudent && (
+      <div className="p-5 bg-white border border-blue-100 rounded-[2rem] shadow-sm space-y-3 animate-fade-in relative overflow-hidden">
+        {/* Badge tích xanh ẩn dưới nền cho sang trọng */}
+        <i className="fas fa-check-circle absolute -right-4 -bottom-4 text-blue-50 text-7xl rotate-12"></i>
+
+        {/* 1. Tên + Tích xanh */}
+        <div className="flex items-center gap-3 border-b border-slate-50 pb-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-md">
+            <i className="fas fa-user"></i>
+          </div>
+          <div className="flex flex-col truncate">
+            <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Thí sinh</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-blue-900 uppercase truncate">{verifiedStudent.name}</span>
+              <svg className="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 20 20 shadow-sm"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
             </div>
-            <div className="relative">
-              <i className="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-              <input type="text" placeholder="SỐ BÁO DANH" className="w-full p-4 pl-12 bg-white rounded-2xl shadow-sm border-none focus:ring-4 focus:ring-blue-100 font-black outline-none uppercase" value={sbdInput} onChange={e => setSbdInput(e.target.value)} />
+          </div>
+        </div>
+
+        {/* Danh sách thông tin dạng lưới 2 cột cho gọn */}
+        <div className="grid grid-cols-2 gap-2">
+          {/* Lớp */}
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100">
+            <i className="fas fa-graduation-cap text-indigo-500 text-xs"></i>
+            <span className="text-[11px] font-black text-slate-600">Lớp: {verifiedStudent.class}</span>
+          </div>
+          {/* SBD */}
+          <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100">
+            <i className="fas fa-hashtag text-pink-500 text-xs"></i>
+            <span className="text-[11px] font-black text-slate-600">SBD: {verifiedStudent.sbd}</span>
+          </div>
+          {/* Số lần thi */}
+          <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-xl border border-emerald-100">
+            <i className="fas fa-redo text-emerald-600 text-xs"></i>
+            <span className="text-[11px] font-black text-emerald-700">Lần thi: {verifiedStudent.limit}</span>
+          </div>
+          {/* Số lần chuyển tab */}
+          <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-xl border border-orange-100">
+            <i className="fas fa-external-link-square-alt text-orange-600 text-xs"></i>
+            <span className="text-[11px] font-black text-orange-700">Tab: {verifiedStudent.limittab}</span>
+          </div>
+        </div>
+
+        {/* Tài khoản VIP / App */}
+        <div className="pt-2 border-t border-slate-50">
+          <div className={`flex items-center justify-between p-3 rounded-2xl border ${isVip ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
+            <div className="flex items-center gap-2">
+              <i className={`fas ${isVip ? 'fa-gem' : 'fa-user-circle'}`}></i>
+              <span className="text-[11px] font-black uppercase">{verifiedStudent.taikhoanapp}</span>
             </div>
-            <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-blue-700 text-white rounded-2xl font-black shadow-xl hover:bg-blue-800 transition active:scale-95 uppercase tracking-tighter text-lg border-b-4 border-blue-900">
-              {isVerifying ? <i className="fas fa-spinner fa-spin"></i> : 'XÁC MINH ID'}
-            </button>
-            
-            {verifiedStudent && (
-              <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-4 animate-fade-in shadow-sm relative overflow-hidden">
-                <i className="fas fa-check-circle absolute -right-2 -top-2 text-blue-50/50 text-6xl rotate-12"></i>
-                <div className="flex items-center gap-3 relative">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i className="fas fa-user"></i></div>
-                  <div className="flex items-center gap-1.5 truncate">
-                    <span className="truncate text-blue-900">{verifiedStudent.name}</span>
-                    <i className="fas fa-check-circle text-blue-500 text-xs shadow-sm"></i>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0"><i className="fas fa-graduation-cap"></i></div>
-                  <span>Lớp: {verifiedStudent.class}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0"><i className="fas fa-hashtag"></i></div>
-                  <span>SBD: {verifiedStudent.sbd}</span>
-                </div>
-                <div className="flex items-center gap-3 pt-2 border-t border-slate-50">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><i className="fas fa-gem"></i></div>
-                  <span className={`${isVip ? 'text-amber-500 font-black animate-pulse flex items-center gap-1' : 'text-slate-500'}`}>
-                    {isVip && <i className="fas fa-crown text-[10px]"></i>}
-                    {verifiedStudent.taikhoanapp}
-                    {isVip && <i className="fas fa-check-circle text-amber-500 text-[10px]"></i>}
-                  </span>
-                </div>
+            {isVip && (
+              <div className="flex items-center gap-1 bg-amber-200 px-2 py-0.5 rounded-full">
+                <i className="fas fa-crown text-[8px]"></i>
+                <span className="text-[9px] font-black">VIP</span>
               </div>
             )}
           </div>
         </div>
+      </div>
+    )}
+  </div>
+</div>
 
         {/* Cột 2 */}
         <div className="space-y-6">

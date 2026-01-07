@@ -10,64 +10,68 @@ interface LandingPageProps {
   onOpenVip: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip }) => {
-  // 1. Khai báo dữ liệu môn học
+const LandingPage: React.FC<LandingPageProps> = ({
+  onSelectGrade,
+  onSelectQuiz,
+  user,
+  onOpenAuth,
+  onOpenVip
+}) => {
+
   const SUBJECTS = ["Toán học", "Vật lí", "Hóa học", "Sinh học", "Văn học", "Lịch sử", "Địa lí", "Tin học", "Tiếng Anh", "GDKT&PL", "CNCN", "CNNN", "Khác"];
   const LEVELS = ["THPT", "THCS", "Tiểu học", "Đại học", "Cao học", "Trên cao học"];
+
   const REDIRECT_LINKS: Record<string, string> = {
     "Toán học-THPT": "https://www.facebook.com/hoctoanthayha.bg",
     "Vật lí-THCS": "https://twitter.com/Math_teacher_Ha",
     "default": "https://www.facebook.com/hoctoanthayha.bg"
   };
 
-  // 2. Các State quản lý
   const [isOtherBank, setIsOtherBank] = useState(false);
-  
   const [quizMode, setQuizMode] = useState<'free' | 'gift' | null>(null);
-  const [inputPassword, setInputPassword] = useState('');  
+  const [inputPassword, setInputPassword] = useState('');
   const [currentImg, setCurrentImg] = useState(0);
-  const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
+  const [showQuizModal, setShowQuizModal] = useState<{ num: number, pts: number } | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
-  const [serverPassword, setServerPassword] = useState("");  
+  const [serverPassword, setServerPassword] = useState("");
   const [isOtherSchool, setIsOtherSchool] = useState(false);
   const [isOtherClass, setIsOtherClass] = useState(false);
   const [showVipOptions, setShowVipOptions] = useState(false);
-  const [showVipBenefits, setShowVipBenefits] = useState(false); 
+  const [showVipBenefits, setShowVipBenefits] = useState(false);
   const [showLichOptions, setshowLichOptions] = useState(false);
 
-  // State cho Modal chọn môn
   const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
 
-  const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
-        top10: []
+  // ✅ FIX LỖI: thiếu ratings
+  const [stats, setStats] = useState<{ ratings: Record<number, number>, top10: any[] }>({
+    ratings: {},
+    top10: []
   });
 
-  const handleVipClick = () => {
-    setShowVipOptions(true);
-  };
-  
   const handleLichClick = () => {
     setshowLichOptions(true);
   };
 
-  // --- LOGIC MỚI: TỰ ĐỘNG CHẠY CAROUSEL ---
   useEffect(() => {
     if (IMAGES_CAROUSEL.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentImg((prev) => (prev + 1) % IMAGES_CAROUSEL.length);
-    }, 4000); // Chuyển ảnh mỗi 4 giây
+      setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
-  // ----------------------------------------
 
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
-    if (quizMode === 'gift' && inputPassword !== serverPassword) return alert("Mật khẩu Quà QuiZ không chính xác!. Liên hệ: 0988.948.882 để được giải đáp!");
-    if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ thông tin!");
-    
+
+    if (quizMode === 'gift' && inputPassword !== serverPassword)
+      return alert("Mật khẩu Quà QuiZ không chính xác!. Liên hệ: 0988.948.882 để được giải đáp!");
+
+    if (!quizInfo.name || !quizInfo.phone)
+      return alert("Vui lòng nhập đầy đủ thông tin!");
+
     onSelectQuiz(showQuizModal!.num, showQuizModal!.pts, {
       ...quizInfo,
       phoneNumber: quizInfo.phone,
@@ -76,26 +80,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
       className: quizInfo.class,
       school: quizInfo.school
     });
+
     setShowQuizModal(null);
     setQuizMode(null);
   };
 
   const handleRedirect = () => {
     const key = `${selectedSubject}-${selectedLevel}`;
-    const link = REDIRECT_LINKS[key] || REDIRECT_LINKS["default"];
+    const link = REDIRECT_LINKS[key] || REDIRECT_LINKS.default;
     window.open(link, '_blank');
     setShowSubjectModal(false);
   };
 
-  // * Lấy pass QuiZ
   useEffect(() => {
     const fetchPassword = async () => {
       try {
         const res = await fetch(`${DANHGIA_URL}?type=getPass`);
         const data = await res.json();
-        if(data && data.password) {
-            setServerPassword(data.password.toString()); 
-        }
+        if (data?.password) setServerPassword(data.password.toString());
       } catch (e) {
         console.error("Lỗi lấy mật khẩu:", e);
       }
@@ -103,20 +105,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     fetchPassword();
   }, []);
 
-  // *TOP10chuan
   useEffect(() => {
     const fetchTop10 = async () => {
       try {
         const res = await fetch(`${DANHGIA_URL}?type=top10`);
         const json = await res.json();
+        const data = json.data || json;
 
-        const dataToMap = json.data || json; 
-
-        if (Array.isArray(dataToMap)) {
-          setStats(prev => ({
-            ...prev,
-            top10: dataToMap.slice(0, 10) 
-          }));
+        if (Array.isArray(data)) {
+          setStats(prev => ({ ...prev, top10: data.slice(0, 10) }));
         }
       } catch (e) {
         console.error("Lỗi lấy dữ liệu Top 10:", e);

@@ -164,7 +164,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   <div className="bg-indigo-700 py-1.5 rounded-full overflow-hidden shadow-lg border-b-4 border-indigo-900 w-full max-w-4xl relative">
     <div className="overflow-hidden bg-blue-600/20 py-1.5 backdrop-blur-sm">  
       <div  
-        className="whitespace-nowrap text-white font-bold uppercase text-[10px] tracking-widest inline-block"
+        className="whitespace-nowrap text-white font-bold uppercase text-[18px] tracking-widest inline-block"
         style={{
           animation: 'marquee-simple 20s linear infinite',
           display: 'inline-block',

@@ -265,7 +265,105 @@ const LandingPage: React.FC<LandingPageProps> = ({
           
         </div>
       </div>
-      {/* 5.MODAL CHỌN MÔN (2 CỘT) */}
+      {/* 5.MODAL */}
+      {/* MODAL VIP OPTIONS */}
+      {showVipOptions && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm text-center shadow-2xl relative animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-black text-slate-800 mb-6 uppercase">Em muốn thực hiện gì?</h3>
+            
+            <div className="flex flex-col gap-4">
+              <button 
+                onClick={() => { setShowVipBenefits(true); setShowVipOptions(false); }}
+                className="w-full py-4 bg-blue-500 text-white rounded-2xl font-black border-b-4 border-blue-700 active:translate-y-1 transition-all uppercase"
+              >
+                <i className="fas fa-list-check mr-2"></i> Quyền lợi VIP
+              </button>
+
+              <a 
+                href="https://forms.gle/co6FiWndaaLjtFNR8" 
+                target="_blank" 
+                rel="noreferrer"
+                className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black border-b-4 border-orange-700 active:translate-y-1 transition-all uppercase block"
+              >
+                <i className="fas fa-paper-plane mr-2"></i> Đăng ký VIP ngay
+              </a>
+            </div>
+
+            <button onClick={() => setShowVipOptions(false)} className="mt-6 text-slate-400 font-bold hover:text-red-500 transition">Đóng</button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL VIP BENEFITS */}
+      {showVipBenefits && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4">
+          <div className="bg-white rounded-[2rem] p-8 w-full max-w-md relative animate-in slide-in-from-bottom-4 duration-300">
+            <h3 className="text-2xl font-black text-orange-600 mb-4 uppercase text-center italic">Đặc quyền VIP</h3>
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-center gap-3 font-bold text-slate-700">
+                <i className="fas fa-check-circle text-green-500 text-xl"></i> Mở khóa toàn bộ kho đề thi 10, 11, 12.
+              </li>
+              <li className="flex items-center gap-3 font-bold text-slate-700">
+                <i className="fas fa-check-circle text-green-500 text-xl"></i> Xem lời giải chi tiết (Video + File PDF).
+              </li>
+              <li className="flex items-center gap-3 font-bold text-slate-700">
+                <i className="fas fa-check-circle text-green-500 text-xl"></i> Không giới hạn lượt làm Quiz mỗi ngày.
+              </li>
+              <li className="flex items-center gap-3 font-bold text-slate-700">
+                <i className="fas fa-check-circle text-green-500 text-xl"></i> Hỗ trợ trực tiếp từ Thầy qua Zalo VIP.
+              </li>
+            </ul>
+            <button 
+              onClick={() => setShowVipBenefits(false)}
+              className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold uppercase"
+            >
+              Đã hiểu
+            </button>
+          </div>
+        </div>
+      )}
+      {/* MODAL LỊCH HỌC */}
+      {showLichOptions && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-[3rem] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in duration-300 border-4 border-white">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 p-8 text-center text-white relative">
+              <div className="absolute top-4 right-6 text-white/50 text-6xl font-black">CALENDAR</div>
+              <i className="fas fa-calendar-alt text-5xl mb-3"></i>
+              <h3 className="text-3xl font-black uppercase italic tracking-tighter">Lịch Học Offline</h3>
+              <p className="text-orange-100 font-bold">Cập nhật mới nhất học kỳ này</p>
+            </div>
+            <div className="p-6 bg-slate-50">
+              <div className="grid gap-3">
+                {[
+                  { grade: "Lớp 9", time: "Thứ 2: 16h30", color: "bg-blue-500" },
+                  { grade: "Lớp 10", time: "Thứ 4: 16h30 & Thứ 7: 14h15", color: "bg-indigo-500" },
+                  { grade: "Lớp 11", time: "Thứ 3: 14h15 & Thứ 6: 14h15", color: "bg-purple-500" },
+                  { grade: "Lớp 12", time: "Thứ 3: 16h30 & Thứ 5: 16h30", color: "bg-red-500" },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center bg-white p-4 rounded-3xl shadow-sm border border-slate-100 hover:scale-[1.02] transition-transform">
+                    <div className={`${item.color} w-16 h-16 rounded-2xl flex items-center justify-center text-white font-black text-xl shrink-0 shadow-lg`}>
+                      {item.grade.split(" ")[1]}
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-slate-400 text-[10px] font-black uppercase">Khối {item.grade}</div>
+                      <div className="text-slate-800 font-black text-lg">{item.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="p-6 bg-white border-t border-slate-100">
+              <button 
+                onClick={() => setshowLichOptions(false)}
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-orange-600 transition-colors"
+              >
+                Đóng lịch học
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showSubjectModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh]">

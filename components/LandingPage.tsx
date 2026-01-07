@@ -328,14 +328,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
               </li>
             </ul>
             <button 
-            onClick={() => { 
-              setShowVipBenefits(false); // Tắt bảng đặc quyền
-              setShowVipOptions(true);   // Mở lại bảng có nút Đăng ký ngay
-              }}
-              className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black uppercase shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
+  onClick={() => { 
+    setShowVipBenefits(false); // Đóng bảng đặc quyền
+    window.open("https://forms.gle/co6FiWndaaLjtFNR8", "_blank"); // Mở ngay link đăng ký
+  }}
+  className="w-full py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-2xl font-black uppercase shadow-lg hover:scale-105 transition-all flex items-center justify-center gap-2"
 >
-              ĐÃ HIỂU - ĐĂNG KÝ NGAY <i className="fas fa-arrow-right"></i>
-          </button>
+  ĐÃ HIỂU - ĐĂNG KÝ VIP NGAY <i className="fas fa-paper-plane"></i>
+</button>
           </div>
         </div>
       )}

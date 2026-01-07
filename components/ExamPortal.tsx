@@ -362,5 +362,3 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 };
 
 export default ExamPortal;
-
-// *End

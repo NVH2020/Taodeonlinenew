@@ -164,7 +164,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   <div className="bg-indigo-700 py-1.5 rounded-full overflow-hidden shadow-lg border-b-4 border-indigo-900 w-full max-w-4xl relative">
     <div className="overflow-hidden bg-blue-600/20 py-1.5 backdrop-blur-sm">  
       <div  
-        className="whitespace-nowrap text-white font-bold uppercase text-[18px] tracking-widest inline-block"
+        className="whitespace-nowrap text-white font-bold uppercase text-[20px] tracking-widest inline-block"
         style={{
           animation: 'marquee-simple 20s linear infinite',
           display: 'inline-block',
@@ -230,23 +230,23 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
         {/* 4. CỘT PHẢI ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">
-          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
+          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
           </button>
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
+          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-headset text-lg"></i><br/>Trợ lý học tập
           </button>          
           
-         <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
+         <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-purple-800 p-2">
             <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn khác
           </button> 
-          <button onClick={handleLichClick} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
+          <button onClick={handleLichClick} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-purple-800 p-2">
           <i className="fas fa-calendar-alt"></i><br/>Lịch học Toán
           </button> 
 
            {/* Dropdown Ứng dụng khác */}
           <div className="relative group w-full flex-1">
-            <button className="w-full h-full bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-teal-800 p-2">
+            <button className="w-full h-full bg-teal-600 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-teal-800 p-2">
               <i className="fas fa-th text-lg"></i><br/>Ứng dụng khác
             </button>
             <div className="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-2xl shadow-2xl border hidden group-hover:block z-[100] p-2">
@@ -259,7 +259,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
+          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP
           </button>
           

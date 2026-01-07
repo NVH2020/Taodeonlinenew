@@ -328,11 +328,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
               </li>
             </ul>
             <button 
-              onClick={() => setShowVipBenefits(false)}
-              className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold uppercase"
-            >
-              Đã hiểu
-            </button>
+            onClick={() => { 
+              setShowVipBenefits(false); // Tắt bảng đặc quyền
+              setShowVipOptions(true);   // Mở lại bảng có nút Đăng ký ngay
+              }}
+              className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black uppercase shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
+>
+              ĐÃ HIỂU - ĐĂNG KÝ NGAY <i className="fas fa-arrow-right"></i>
+          </button>
           </div>
         </div>
       )}

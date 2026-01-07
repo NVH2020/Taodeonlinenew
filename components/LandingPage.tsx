@@ -290,7 +290,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={() => { setShowVipBenefits(true); setShowVipOptions(false); }}
                 className="w-full py-4 bg-blue-500 text-white rounded-2xl font-black border-b-4 border-blue-700 active:translate-y-1 transition-all uppercase"
               >
-                <i className="fas fa-list-check mr-2"></i> Quyền lợi VIP
+                <i className="fas fa-list-check mr-2"></i> Xem Quyền lợi VIP
               </button>
 
               <a 

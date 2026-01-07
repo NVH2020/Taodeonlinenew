@@ -236,8 +236,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
     
     {/* Phần chữ thương hiệu */}
     <div className="absolute bottom-10 left-10 text-white drop-shadow-2xl">
-      <h2 className="text-3xl md:text-4xl font-black uppercase leading-none">Học Toán Thầy Hà</h2>
-      <p className="text-orange-400 text-lg font-bold mt-2 tracking-widest uppercase">Chuyên tâm - Sáng tạo - Thành công</p>
+      <h2 className="text-3xl md:text-4xl font-black uppercase leading-none">Toán học là môn thể dục của trí tuệ!</h2>
+      <p className="text-orange-400 text-lg font-bold mt-2 tracking-widest uppercase">Mathematics is the gym for the mind!</p>
     </div>
   </div>
 </div> {/* Chỉ đóng duy nhất 1 thẻ div cho lg:col-span-7 tại đây */}

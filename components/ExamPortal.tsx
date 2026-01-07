@@ -190,38 +190,73 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
               {isVerifying ? ' ĐANG XỬ LÝ...' : 'XÁC MINH ID'}
             </button>
             
-            {verifiedStudent && (
-              <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-4 animate-fade-in shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i className="fas fa-user"></i></div>
-                  <span className="truncate">{verifiedStudent.name}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0"><i className="fas fa-graduation-cap"></i></div>
-                  <span>Lớp: {verifiedStudent.class}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0"><i className="fas fa-hashtag"></i></div>
-                  <span>SBD: {verifiedStudent.sbd}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0"><i className="fas fa-redo"></i></div>
-                  <span>Số lần thi: {verifiedStudent.limit}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 shrink-0"><i className="fas fa-external-link-square-alt"></i></div>
-                  <span>Số lần chuyển tab: {verifiedStudent.limittab}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><i className="fas fa-gem"></i></div>
-                  <span className={`${isVip ? 'text-amber-500 font-black animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200' : 'text-slate-500'}`}>
-                    Tài khoản: {verifiedStudent.taikhoanapp}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+           {verifiedStudent && (
+  <div className="p-6 bg-white border border-blue-100 rounded-3xl text-sm font-black text-slate-700 space-y-4 animate-fade-in shadow-sm relative overflow-hidden">
+    {/* Dấu tích xanh lớn mờ làm nền cho góc (tùy chọn để tăng tính thẩm mỹ) */}
+    <i className="fas fa-check-circle absolute -right-2 -top-2 text-blue-50/50 text-6xl rotate-12"></i>
+
+    {/* 1. Tên thí sinh + Tích xanh */}
+    <div className="flex items-center gap-3 relative">
+      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
+        <i className="fas fa-user"></i>
+      </div>
+      <div className="flex items-center gap-1.5 truncate">
+        <span className="truncate text-blue-900">{verifiedStudent.name}</span>
+        {/* Tích xanh xác minh */}
+        <i className="fas fa-check-circle text-blue-500 text-xs shadow-sm" title="Đã xác minh"></i>
+      </div>
+    </div>
+
+    {/* 2. Lớp học */}
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-sm">
+        <i className="fas fa-graduation-cap"></i>
+      </div>
+      <span>Lớp: {verifiedStudent.class}</span>
+    </div>
+
+    {/* 3. Số báo danh */}
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600 shrink-0 shadow-sm">
+        <i className="fas fa-hashtag"></i>
+      </div>
+      <span>SBD: {verifiedStudent.sbd}</span>
+    </div>
+
+    {/* 4. Số lần thi */}
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 shadow-sm">
+        <i className="fas fa-redo"></i>
+      </div>
+      <span className="flex items-center gap-2">
+        Số lần thi: {verifiedStudent.limit}
+        <i className="fas fa-check-circle text-emerald-500 text-[10px]"></i>
+      </span>
+    </div>
+
+    {/* 5. Số lần chuyển tab */}
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 shrink-0 shadow-sm">
+        <i className="fas fa-external-link-square-alt"></i>
+      </div>
+      <span>Chuyển tab: {verifiedStudent.limittab}</span>
+    </div>
+
+    {/* 6. Trạng thái tài khoản (VIP) */}
+    <div className="flex items-center gap-3 pt-2 border-t border-slate-50">
+      <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-sm">
+        <i className="fas fa-gem"></i>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={`${isVip ? 'text-amber-500 font-black animate-pulse bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1' : 'text-slate-500'}`}>
+          {isVip && <i className="fas fa-crown text-[10px]"></i>}
+          {verifiedStudent.taikhoanapp}
+          {isVip && <i className="fas fa-check-circle text-amber-500 text-[10px]"></i>}
+        </span>
+      </div>
+    </div>
+  </div>
+)}
 
         {/* Cột 2: Chọn mã đề */}
         <div className="space-y-6">

@@ -272,7 +272,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-orange-700 p-2">
+          <button onClick={() => setShowVipOptions(true)} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[15px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-2xl mb-1"></i><br/>Nâng Cấp VIP
           </button>
           

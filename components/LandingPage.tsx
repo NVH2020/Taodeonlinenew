@@ -182,9 +182,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
             0% { transform: translate(0, 0); }
             100% { transform: translate(-100%, 0); }
             }
-        `}</style>
-      
-    </div>
+        `}</style>   
+  
 
       {/* 3. MAIN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto w-full px-2">

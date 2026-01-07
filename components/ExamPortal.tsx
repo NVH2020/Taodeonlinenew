@@ -49,6 +49,30 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
   }, [grade, dynamicCodes]);
 
   const currentCodeDef = useMemo(() => allAvailableCodes.find(c => c.code === selectedCode), [selectedCode, allAvailableCodes]);
+  // Thêm mới: Hàm xác định các khối liên quan dựa trên khối hiện tại
+  const getRelatedGrades = (currentGrade: number) => {
+    if (currentGrade === 12) return [10, 11, 12];
+    if (currentGrade === 11) return [10, 11];
+    if (currentGrade === 10) return [10];
+    if (currentGrade === 9) return [7, 8, 9];
+    return [currentGrade]; // Mặc định cho các khối khác (VD: khối 6, 7, 8 lẻ)
+  };
+  // --------------------
+
+  // Thêm mới: useMemo để gộp danh sách chuyên đề từ tất cả các khối liên quan
+  const combinedTopics = useMemo(() => {
+    const relatedGrades = getRelatedGrades(grade);
+    // Tạo mảng chứa chuyên đề, thêm thuộc tính 'grade' để biết nguồn gốc
+    let topics: { id: number; name: string; grade: number }[] = [];
+    relatedGrades.forEach(g => {
+      const gradeTopics = TOPICS_DATA[g] || [];
+      // Spread operator (...) để copy chuyên đề và thêm grade vào từng cái
+      topics = [...topics, ...gradeTopics.map(t => ({ ...t, grade: g }))];
+    });
+    return topics;
+  }, [grade]);
+  // --------------------
+  
 
   /**
    * Xác minh thí sinh
@@ -236,15 +260,22 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
           </div>
         </div>
 
-        {/* Cột 3: Chuyên đề */}
+              {/* Cột 3: Chuyên đề */}
         <div className="space-y-6">
           <h3 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2 border-l-8 border-blue-600 pl-4">Phạm Vi Kiến Thức</h3>
           <div className="bg-slate-50 rounded-[2.5rem] p-6 border border-slate-200 h-[400px] overflow-y-auto shadow-inner no-scrollbar">
             {currentCodeDef?.topics === 'manual' ? (
               <div className="space-y-6">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2 mb-4">Lựa chọn chuyên đề lớp {grade}</p>
+
+                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2 mb-4">Lựa chọn chuyên đề liên quan</p>
+                {/* -------------------- */}
+
                 <div className="grid grid-cols-1 gap-3">
-                  {TOPICS_DATA[grade]?.map(t => (
+                  
+                  {/* Sửa đổi: Thay TOPICS_DATA[grade]?.map bằng combinedTopics.map để lặp qua danh sách đã gộp */}
+                  {combinedTopics.map(t => (
+                  // --------------------
+
                     <label key={t.id} className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer group shadow-sm min-h-[74px] ${selectedTopics.includes(t.id) ? 'bg-blue-600 border-blue-700 text-white' : 'bg-white border-white hover:border-blue-100'}`}>
                       <div className="relative shrink-0 mt-1">
                         <input type="checkbox" className="hidden" checked={selectedTopics.includes(t.id)} onChange={() => setSelectedTopics(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} />
@@ -252,7 +283,16 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
                           {selectedTopics.includes(t.id) && <i className="fas fa-check text-xs"></i>}
                         </div>
                       </div>
-                      <span className={`text-[11px] font-black leading-tight flex-1 pt-0.5 ${selectedTopics.includes(t.id) ? 'text-white' : 'text-slate-600 group-hover:text-blue-700'}`}>{t.name}</span>
+                      <span className={`text-[11px] font-black leading-tight flex-1 pt-0.5 ${selectedTopics.includes(t.id) ? 'text-white' : 'text-slate-600 group-hover:text-blue-700'}`}>
+                        
+                        {/* Thêm mới: Badge hiển thị khối lớp (VD: K12, K11) trước tên chuyên đề */}
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] mr-2 uppercase font-bold ${selectedTopics.includes(t.id) ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                          K{t.grade}
+                        </span>
+                        {/* -------------------- */}
+
+                        {t.name}
+                      </span>
                     </label>
                   ))}
                 </div>

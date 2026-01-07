@@ -198,21 +198,47 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
           </div>
         </div>
 
-        {/* Tài khoản VIP / App */}
-        <div className="pt-2 border-t border-slate-50">
-          <div className={`flex items-center justify-between p-3 rounded-2xl border ${isVip ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
-            <div className="flex items-center gap-2">
-              <i className={`fas ${isVip ? 'fa-gem' : 'fa-user-circle'}`}></i>
-              <span className="text-[11px] font-black uppercase">{verifiedStudent.taikhoanapp}</span>
-            </div>
-            {isVip && (
-              <div className="flex items-center gap-1 bg-amber-200 px-2 py-0.5 rounded-full">
-                <i className="fas fa-crown text-[8px]"></i>
-                <span className="text-[12px] font-black">VIP</span>
-              </div>
-            )}
-          </div>
+       {/* Tài khoản VIP / App */}
+<div className="pt-2 border-t border-slate-50">
+  <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isVip ? 'bg-amber-50 border-amber-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}>
+    
+    {/* Vế trước: Chữ Tài khoản cố định */}
+    <div className="flex items-center gap-2">
+      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isVip ? 'bg-amber-100 text-amber-600' : 'bg-slate-200 text-slate-500'}`}>
+        <i className={`fas ${isVip ? 'fa-gem' : 'fa-user-circle'} text-[10px]`}></i>
+      </div>
+      <span className={`text-[11px] font-black uppercase ${isVip ? 'text-amber-800' : 'text-slate-500'}`}>
+        Tài khoản:
+      </span>
+    </div>
+
+    {/* Vế sau: Trạng thái VIP óng ánh hoặc VIP0 */}
+    <div className="flex items-center">
+      {isVip ? (
+        // Hiển thị VIP 1 trở lên (Vàng óng ánh)
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 px-3 py-1 rounded-full shadow-inner animate-pulse border border-amber-300">
+          <i className="fas fa-crown text-[10px] text-amber-900"></i>
+          <span className="text-[12px] font-black text-amber-900 drop-shadow-sm uppercase">
+            {verifiedStudent.taikhoanapp || "VIP1"}
+          </span>
+          {/* Tích xanh nhỏ cho VIP */}
+          <svg className="w-3 h-3 text-amber-800 fill-current" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
         </div>
+      ) : (
+        // Hiển thị VIP0 hoặc trống (Xám đơn giản)
+        <div className="flex items-center gap-1 bg-slate-200 px-3 py-1 rounded-full border border-slate-300">
+          <i className="fas fa-user text-[8px] text-slate-500"></i>
+          <span className="text-[11px] font-black text-slate-600 uppercase">
+            {verifiedStudent.taikhoanapp && verifiedStudent.taikhoanapp.trim() !== "" ? verifiedStudent.taikhoanapp : "VIP0"}
+          </span>
+        </div>
+      )}
+    </div>
+
+  </div>
+</div>
       </div>
     )}
   </div>

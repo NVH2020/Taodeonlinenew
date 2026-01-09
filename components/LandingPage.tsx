@@ -50,6 +50,9 @@ const [extraApps, setExtraApps] = useState([]);
   const [useracc, setUseracc] = useState<UserAcc | null>(null);
 const [authMode, setAuthMode] = useState<'login' | 'register' | null>(null);
 const [authForm, setAuthForm] = useState({ phone: '', pass: '' });
+const [subjectData, setSubjectData] = useState<any[]>([]); // Lưu toàn bộ hàng từ sheet chọn môn
+const [dynamicSubjects, setDynamicSubjects] = useState<string[]>([]); // Danh sách môn duy nhất
+const [dynamicLevels, setDynamicLevels] = useState<string[]>([]); // Danh sách cấp học duy nhất
 const handleAuth = async (e: React.FormEvent) => {
   e.preventDefault();
   const url = `${DANHGIA_URL}?action=${authMode}&phone=${authForm.phone}&pass=${authForm.pass}`;
@@ -82,6 +85,38 @@ const handleAuth = async (e: React.FormEvent) => {
     alert("🚀 Lỗi kết nối máy chủ, vui lòng thử lại!");
   }
 };
+  // chọn môn
+  useEffect(() => {
+  const fetchSubjects = async () => {
+    try {
+      const sheetId = '1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc';
+      const gid = '701530798'; // ID của sheet chonmon
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+      
+      const response = await fetch(url);
+      const data = await response.text();
+      const rows = data.split('\n').slice(1); // Bỏ tiêu đề
+      
+      const parsedData = rows.map(row => {
+        const cols = row.split(',').map(c => c.replace(/"/g, '').trim());
+        return { mon: cols[0], caphoc: cols[1], chonmon: cols[2], link: cols[3] };
+      }).filter(item => item.mon);
+
+      setSubjectData(parsedData);
+      
+      // Lấy danh sách Môn học duy nhất (cột A)
+      const mons = [...new Set(parsedData.map(item => item.mon))];
+      setDynamicSubjects(mons);
+      
+      // Lấy danh sách Cấp học duy nhất (cột B)
+      const caps = [...new Set(parsedData.map(item => item.caphoc))];
+      setDynamicLevels(caps);
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu môn học:", error);
+    }
+  };
+  fetchSubjects();
+}, []);
   
 
 // 2. Trong useEffect hiện có của bạn, hãy thêm đoạn này:
@@ -183,11 +218,21 @@ fetchSchedules();
     });
     setShowQuizModal(null);
   };
-
+// hàm chọn môn khác
   const handleRedirect = () => {
-    window.open(REDIRECT_LINKS.default, '_blank');
-    setShowSubjectModal(false);
-  };
+  // Tìm hàng khớp với lựa chọn của học sinh
+  const match = subjectData.find(item => 
+    item.mon === selectedSubject && item.caphoc === selectedLevel
+  );
+
+  if (match && match.link) {
+    window.open(match.link, '_blank');
+  } else {
+    // Nếu không tìm thấy hàng khớp, về link mặc định
+    window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank');
+  }
+  setShowSubjectModal(false);
+};
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-12 overflow-x-hidden">
@@ -573,43 +618,55 @@ fetchSchedules();
     </div>
   </div>
 )} 
-         {showSubjectModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
-          <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh]">
-            <h3 className="text-xl font-black text-indigo-700 uppercase text-center mb-6">Chọn môn học & cấp học</h3>
-            <div className="grid grid-cols-2 gap-4 overflow-hidden">
-              <div className="flex flex-col overflow-hidden">
-                <div className="bg-indigo-50 p-2 font-black text-indigo-600 text-center uppercase text-[11px]">Môn học</div>
-                <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar">
-                  {SUBJECTS.map(sub => (
-                    <button key={sub} onClick={() => setSelectedSubject(sub)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold ${selectedSubject === sub ? 'bg-indigo-600 text-white' : 'bg-slate-50'}`}>
-                      <div className="w-4 h-4 rounded border flex items-center justify-center bg-white text-indigo-600">
-                        {selectedSubject === sub && "✓"}
-                      </div> {sub}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <div className="bg-orange-50 p-2 font-black text-orange-600 text-center uppercase text-[11px]">Cấp học</div>
-                <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar">
-                  {LEVELS.map(lvl => (
-                    <button key={lvl} onClick={() => setSelectedLevel(lvl)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold ${selectedLevel === lvl ? 'bg-orange-500 text-white' : 'bg-slate-50'}`}>
-                      <div className="w-4 h-4 rounded border flex items-center justify-center bg-white text-orange-600">
-                        {selectedLevel === lvl && "✓"}
-                      </div> {lvl}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 flex gap-3">
-              <button onClick={() => setShowSubjectModal(false)} className="flex-1 py-3 bg-slate-100 rounded-xl font-black uppercase text-xs">Hủy</button>
-              <button onClick={handleRedirect} disabled={!selectedSubject || !selectedLevel} className={`flex-1 py-3 rounded-xl font-black uppercase text-xs ${selectedSubject && selectedLevel ? 'bg-indigo-600 text-white' : 'bg-slate-200'}`}>Tiếp tục</button>
-            </div>
+      {/* Chọn môn */}
+     {showSubjectModal && (
+  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
+    <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh]">
+      <h3 className="text-xl font-black text-indigo-700 uppercase text-center mb-6 italic">Hệ thống học liệu đa năng</h3>
+      
+      <div className="grid grid-cols-2 gap-4 overflow-hidden">
+        {/* CỘT MÔN HỌC */}
+        <div className="flex flex-col overflow-hidden">
+          <div className="bg-indigo-50 p-2 font-black text-indigo-600 text-center uppercase text-[11px] rounded-t-xl">Môn học</div>
+          <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar bg-slate-50/50 p-1 rounded-b-xl">
+            {dynamicSubjects.map(sub => (
+              <button key={sub} onClick={() => setSelectedSubject(sub)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold transition-all ${selectedSubject === sub ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white border-slate-100 hover:border-indigo-200'}`}>
+                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSubject === sub ? 'bg-white text-indigo-600' : 'bg-slate-100'}`}>
+                  {selectedSubject === sub && <i className="fas fa-check text-[8px]"></i>}
+                </div> {sub}
+              </button>
+            ))}
           </div>
         </div>
-      )}
+
+        {/* CỘT CẤP HỌC */}
+        <div className="flex flex-col overflow-hidden">
+          <div className="bg-orange-50 p-2 font-black text-orange-600 text-center uppercase text-[11px] rounded-t-xl">Cấp học</div>
+          <div className="overflow-y-auto space-y-1 mt-2 pr-2 no-scrollbar bg-slate-50/50 p-1 rounded-b-xl">
+            {dynamicLevels.map(lvl => (
+              <button key={lvl} onClick={() => setSelectedLevel(lvl)} className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-bold transition-all ${selectedLevel === lvl ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-white border-slate-100 hover:border-orange-200'}`}>
+                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedLevel === lvl ? 'bg-white text-orange-600' : 'bg-slate-100'}`}>
+                  {selectedLevel === lvl && <i className="fas fa-check text-[8px]"></i>}
+                </div> {lvl}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex gap-3">
+        <button onClick={() => setShowSubjectModal(false)} className="flex-1 py-4 bg-slate-100 rounded-2xl font-black uppercase text-xs text-slate-400">Đóng</button>
+        <button 
+          onClick={handleRedirect} 
+          disabled={!selectedSubject || !selectedLevel} 
+          className={`flex-1 py-4 rounded-2xl font-black uppercase text-xs transition-all ${selectedSubject && selectedLevel ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg active:scale-95' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+        >
+          Truy cập ngay <i className="fas fa-arrow-right ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         
   {/* 6.MODAL QUIZ (Sửa lỗi step-by-step) */}
       {showQuizModal && (

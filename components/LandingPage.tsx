@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
+import { NEWS_DATA, IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS, CLASS_ID } from '../config';
 import { AppUser, Student } from '../types';
 const formatPhoneHidden = (phone: string) => {
   if (!phone || phone.length < 7) return "09xxx****";
@@ -25,18 +25,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   };
 
   // 2. Các State quản lý
-  const [isOtherBank, setIsOtherBank] = useState(false); 
- 
+  const [isOtherBank, setIsOtherBank] = useState(false);
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+  const [hasRated, setHasRated] = useState(false);
   const [quizMode, setQuizMode] = useState<'free' | 'gift' | null>(null);
   const [inputPassword, setInputPassword] = useState('');  
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizInfo, setQuizInfo] = useState({ name: '', class: '', school: '', phone: '' });
-  const [accountInfo, setAccountInfo] = useState({ phone: '', pass: '' });
-  const [accountVipInfo, setAccountVipInfo] = useState({ phone: '', pass: '', vip: '' });
-  const [loading, setLoading] = useState(false);
   const [bankInfo, setBankInfo] = useState({ stk: '', bankName: '' });
   const [serverPassword, setServerPassword] = useState("");  
+  const [showRateModal, setShowRateModal] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [isSubmittingRate, setIsSubmittingRate] = useState(false);
   const [isOtherSchool, setIsOtherSchool] = useState(false);
   const [isOtherClass, setIsOtherClass] = useState(false);
   
@@ -46,98 +48,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [selectedLevel, setSelectedLevel] = useState("");
 
   const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
-        top10: []
+    ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    top10: []
   });
-  const handleRegister = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
-  
-  setLoading(true);
-  try {
-    const payload = {
-      type: 'register',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    };
-
-    await fetch(DANHGIA_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Dùng no-cors để tránh lỗi Google Script
-      body: JSON.stringify(payload)
-    });
-
-    alert("Đăng ký thành công!");
-    // Sau khi đăng ký xong, có thể set dữ liệu sang phần VIP để sẵn sàng nâng cấp
-    setAccountVipInfo({ ...accountVipInfo, phone: accountInfo.phone, pass: accountInfo.pass });
-    
-  } catch (error) {
-    alert("Có lỗi xảy ra khi gửi dữ liệu!");
-  } finally {
-    setLoading(false);
-  }
-};
-  const handleLogin = async () => {
-  if (!accountInfo.phone || !accountInfo.pass) {
-    alert("Vui lòng nhập đủ thông tin!");
-    return;
-  }
-
-  setLoading(true);
-  try {
-    // Dùng URLSearchParams để tạo query string
-    const params = new URLSearchParams({
-      type: 'checkLogin',
-      phone: accountInfo.phone,
-      pass: accountInfo.pass
-    });
-
-    // Gọi bằng phương thức GET để nhận được phản hồi JSON
-    const response = await fetch(`${DANHGIA_URL}?${params.toString()}`);
-    const result = await response.json();
-
-    if (result.status === "success") {
-      alert("Đăng nhập thành công!");
-      onSuccess({
-        phoneNumber: result.data.phone,
-        vip: result.data.vip // Sẽ nhận được Vip0 hoặc Vip1 từ Sheet
-      });
-    } else {
-      // NẾU SAI PASS, NÓ SẼ CHẠY VÀO ĐÂY
-      alert("Lỗi: " + result.message);
-    }
-  } catch (error) {
-    alert("Không thể kết nối máy chủ để xác minh!");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// 3. Hàm xử lý GỬI VIP (về sheet VIP)
-const handleUpgradeVip = async (vipType: string) => {
-  setLoading(true);
-  try {
-    const payload = {
-      type: 'vip_upgrade',
-      phone: accountVipInfo.phone,
-      pass: accountVipInfo.pass,
-      vip: vipType // ví dụ: 'VIP1', 'VIP_PRO'
-    };
-
-    await fetch(DANHGIA_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload)
-    });
-
-    alert("Yêu cầu nâng cấp VIP đã được gửi!");
-  } catch (error) {
-    alert("Lỗi nâng cấp!");
-  } finally {
-    setLoading(false);
-  }
-};
   const handleStartQuiz = (e: React.FormEvent) => {
     e.preventDefault();
     if (quizMode === 'gift' && inputPassword !== serverPassword) return alert("Mật khẩu Quà QuiZ không chính xác!.Liên hệ: 0988.948.882 để được giải đáp!");
@@ -161,7 +74,43 @@ const handleUpgradeVip = async (vipType: string) => {
     window.open(link, '_blank');
     setShowSubjectModal(false);
   };
-    // * Lấy pass QuiZ
+  const fireConfetti = () => {
+  const emojis = ['🎉', '✨', '⭐', '❤️', '🔥'];
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement('div');
+    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    confetti.className = 'confetti-piece';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(confetti);
+    
+    // Xóa emoji sau khi rơi xong để nhẹ máy
+    setTimeout(() => confetti.remove(), 5000);
+  }
+};
+  const angryConfetti = () => {
+  const emojis = [
+    '😡', // mặt giận dữ
+    '😠', // không hài lòng
+    '🤬', // chửi thề / cực giận
+    '👊', // quả đấm
+    '💢', // biểu tượng tức giận (manga)
+    '🔥'  // bốc lửa / căng thẳng
+  ];
+
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement('div');
+    confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    confetti.className = 'confetti-piece';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    document.body.appendChild(confetti);
+
+    // Xóa emoji sau khi rơi xong để nhẹ máy
+    setTimeout(() => confetti.remove(), 5000);
+  }
+};
+  // * Lấy pass QuiZ
   useEffect(() => {
   const fetchPassword = async () => {
     try {
@@ -203,8 +152,51 @@ const handleUpgradeVip = async (vipType: string) => {
   const interval = setInterval(fetchTop10, 60000);
   return () => clearInterval(interval);
 }, []);
+const handleRate = (stars: number) => {
+  // 1. Cập nhật số liệu hiển thị ngay lập tức (Chỉ tồn tại trong phiên làm việc này)
+  setStats(prev => ({
+    ...prev,
+    ratings: {
+      ...prev.ratings,
+      [stars]: (prev.ratings[stars] || 0) + 1
+    }
+  }));
+
+  // 2. Thông báo kiểu "gắt" hoặc "vui vẻ" như bản cũ của bạn
+  if (stars >= 4) {
+    fireConfetti(); // Pháo hoa bằng emoji nổ tung!
+    alert(`❤️ Tuyệt vời! Cảm ơn bạn đã đánh giá ${stars} ⭐. Chúc bạn học tập thật tốt nhé! ❤️`);
+  } else {
+   alert(`😡 Này! Sao đánh giá có ${stars} ⭐ thôi? Học thì lười mà đánh giá thì khắt khe thế 😡! Thích ăn 👊 à. ❤️ Lần sau nhớ cho 5 sao nghe chưa!`);
+  }
+
+  // 3. Hiển thị trạng thái "Cảm ơn" trong Modal
+  setHasRated(true);
+
+  // 4. Đóng modal sau 1.3 giây
+  setTimeout(() => {
+    setShowRateModal(false);
+    setHasRated(false);
+  }, 1200);
+};
+   const totalRatings = (Object.values(stats.ratings) as number[]).reduce((a, b) => a + b, 0);
+
   return (
-    <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
+    <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden px-2">
+      <style>{`
+        @keyframes confetti-fall {
+        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .confetti-piece {
+        position: fixed;
+        top: -50px;
+        font-size: 24px;
+        z-index: 999;
+        pointer-events: none;
+        animation: confetti-fall 3s linear forwards;
+      }
+      `}</style>
   {/* 1. HEADER BUTTONS */}
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
       
@@ -233,13 +225,20 @@ const handleUpgradeVip = async (vipType: string) => {
               <i className={item.icon}></i> LỚP {item.g}
             </button>
           ))}
+          <button onClick={() => setShowQuizModal({num: 10, pts: 1})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
+            <i className="fas fa-bolt"></i> QUIZ 10
+          </button>
           <button onClick={() => setShowQuizModal({num: 20, pts: 0.5})} className="px-6 bg-orange-500 text-white border-b-4 border-orange-700 rounded-2xl font-black text-sm shrink-0 hover:brightness-110 h-[60px] uppercase whitespace-nowrap flex items-center justify-center gap-2 min-w-[130px]">
-            <i className="fas fa-gift"></i> SĂN QUÀ 
-          </button>          
+            <i className="fas fa-brain"></i> QUIZ 20
+          </button>
         </div>
       </div>
      </div>
-      <div className="flex flex-col items-center justify-center w-full px-4 gap-4 mt-6">
+    </div>
+
+      {/* 2. MARQUEE */}
+      {/* Container bao ngoài để căn giữa toàn bộ hệ thống nút */}
+<div className="flex flex-col items-center justify-center w-full px-4 gap-4 mt-6">
   
   {/* Thanh chạy chữ - Đã bo tròn và căn giữa */}
   <div className="bg-indigo-700 py-1.5 rounded-full overflow-hidden shadow-lg border-b-4 border-indigo-900 w-full max-w-4xl relative">
@@ -264,12 +263,7 @@ const handleUpgradeVip = async (vipType: string) => {
       100% { transform: translate(-100%, 0); }
     }
   `}</style>
-</div>  
-    </div>
-
-      {/* 2. MARQUEE */}
-      {/* Container bao ngoài để căn giữa toàn bộ hệ thống nút */}
- 
+</div>   
       {/* 3. MAIN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto w-full">
                {/* CỘT TRÁI: TOP 10 */}
@@ -300,7 +294,7 @@ const handleUpgradeVip = async (vipType: string) => {
           </div>
         </div>
 
-        {/* 3.CAROUSEL */}
+        {/* 5.CAROUSEL */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
@@ -309,11 +303,8 @@ const handleUpgradeVip = async (vipType: string) => {
           </div>
         </div>
 
-        {/* 4. CỘT PHẢI ACTIONS */}
+        {/* 6. CỘT PHẢI ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">
-          <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
-            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
-          </button>
           <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-headset text-lg"></i><br/>Trợ lý học tập
           </button>
@@ -321,10 +312,7 @@ const handleUpgradeVip = async (vipType: string) => {
             <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
           </button>
           
-         <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
-            <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
-          </button> 
-           {/* Dropdown Ứng dụng khác */}
+          {/* Dropdown Ứng dụng khác */}
           <div className="relative group w-full flex-1">
             <button className="w-full h-full bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-teal-800 p-2">
               <i className="fas fa-th text-lg"></i><br/>Ứng dụng khác
@@ -339,12 +327,20 @@ const handleUpgradeVip = async (vipType: string) => {
             </div>
           </div>
 
+          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
+            <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
+          </button>
+
+          <button onClick={onOpenAuth} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
+            <i className="fas fa-sign-in-alt text-lg"></i><br/>{user ? user.phoneNumber : "Đăng Nhập"}
+          </button>
+
           <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP
           </button>
         </div>
       </div>
-      {/* 5.MODAL CHỌN MÔN (2 CỘT) */}
+      {/* 7.MODAL CHỌN MÔN (2 CỘT) */}
       {showSubjectModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[90vh]">
@@ -382,8 +378,89 @@ const handleUpgradeVip = async (vipType: string) => {
           </div>
         </div>
       )}
-        
-  {/* 6.MODAL QUIZ (Sửa lỗi step-by-step) */}
+
+      {/* CÁC MODAL KHÁC (QUIZ, RATING...) */}
+      {/* (Lược bớt phần hiển thị để tiết kiệm không gian, bạn có thể thêm lại y hệt bản cũ) */}
+        {/* MODAL ĐÁNH GIÁ (Giữ nguyên của bạn) */}
+      {showRateModal && (
+  <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
+    <div className="bg-white w-full max-w-md rounded-[2.5rem] relative overflow-hidden shadow-2xl border border-slate-100 animate-fade-in">
+      
+      {/* Nút đóng */}
+      <button onClick={() => setShowRateModal(false)} className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors">
+        <i className="fas fa-times text-xl"></i>
+      </button>
+
+      <div className="p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-black text-slate-800 mb-2 uppercase tracking-tight">Đánh giá Web</h2>
+          <div className="flex items-center justify-center gap-2 text-yellow-500 mb-1">
+            <i className="fas fa-star text-2xl"></i>
+            {/* Tính trung bình sao từ dữ liệu stats của bạn */}
+            <span className="text-4xl font-black text-slate-800">
+              {totalRatings > 0 
+                ? (Object.entries(stats.ratings).reduce((acc, [star, count]) => acc + (Number(star) * Number(count)), 0) / totalRatings).toFixed(1) 
+                : "5.0"}
+            </span>
+          </div>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+            <i className="fas fa-users"></i> Dựa trên {totalRatings} lượt đánh giá
+          </p>
+        </div>
+
+        {!hasRated ? (
+          <>
+            {/* Dãy sao để chọn */}
+            <div className="flex justify-center gap-2 mb-8">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  onMouseEnter={() => setHoveredStar(star)}
+                  onMouseLeave={() => setHoveredStar(null)}
+                  onClick={() => handleRate(star)}
+                  className="transition-transform active:scale-90 focus:outline-none"
+                >
+                  <i className={`fa-star text-4xl transition-all ${
+                    (hoveredStar !== null ? star <= hoveredStar : false) 
+                    ? "fas text-yellow-400 scale-110" 
+                    : "far text-slate-200"
+                  }`}></i>
+                </button>
+              ))}
+            </div>
+
+            {/* Bảng tiến trình (Progress bars) */}
+            <div className="space-y-3">
+              {[5, 4, 3, 2, 1].map(star => {
+                const count = stats.ratings[star] || 0;
+                const percentage = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-3">
+                    <span className="text-[10px] font-black text-slate-400 w-4">{star}</span>
+                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-400 transition-all duration-500" style={{ width: `${percentage}%` }}></div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-500 w-8 text-right">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          /* Trạng thái sau khi bấm chọn sao */
+          <div className="py-10 text-center animate-bounce-short">
+            <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <i className="fas fa-check text-3xl"></i>
+            </div>
+            <p className="font-black text-slate-800 uppercase text-sm">Cảm ơn bạn đã đánh giá!</p>
+            <p className="text-slate-400 text-[10px] font-bold mt-1">Ý kiến của bạn giúp hệ thống hoàn thiện hơn</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+  {/* MODAL QUIZ (Sửa lỗi step-by-step) */}
       {showQuizModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative border border-slate-100 overflow-y-auto max-h-[90vh]">
@@ -435,7 +512,7 @@ const handleUpgradeVip = async (vipType: string) => {
               />
             )}
           </div>
-{/*  Chọn Trường học (Đoạn gốc của thầy) */}
+{/* 4. Chọn Trường học (Đoạn gốc của thầy) */}
 <select required className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={(e) => {
   const val = e.target.value;
   setIsOtherSchool(val === "Khác");
@@ -466,6 +543,33 @@ const handleUpgradeVip = async (vipType: string) => {
           </div>
         </div>
       )}
+       {/* 5. FOOTER & MODALS (Giữ nguyên logic của bạn) */}
+       <footer className="mt-8 border-t border-slate-200 pt-10 pb-6 text-center space-y-8 bg-slate-50/50 rounded-t-[3rem]">
+        <div className="max-w-xs mx-auto">
+          <button onClick={() => setShowRateModal(true)} className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full font-black text-sm shadow-xl hover:scale-105 transition-all active:scale-95 border-b-4 border-orange-600 uppercase tracking-widest flex items-center justify-center gap-2">
+            <span className="text-xl">⭐</span> ĐÁNH GIÁ WEB
+          </button>
+        </div>
+        <div className="flex justify-center gap-8">
+          {[
+            { id: 'fb', icon: 'fa-facebook-f', color: '#1877F2', link: 'https://www.facebook.com/hoctoanthayha.bg' },
+            { id: 'tw', icon: 'fa-twitter', color: '#1DA1F2', link: 'https://x.com/Math_teacher_Ha' },
+            { id: 'tg', icon: 'fa-telegram-plane', color: '#229ED9', link: 'https://www.telegram.org' }
+          ].map((social) => (
+            <a key={social.id} href={social.link} target="_blank" rel="noreferrer" style={{ backgroundColor: social.color }}
+              className="w-12 h-12 rounded-2xl text-white flex items-center justify-center text-xl shadow-lg hover:rotate-12 hover:scale-110 transition-all border-b-4 border-black/20"
+            >
+              <i className={`fab ${social.icon}`}></i>
+            </a>
+          ))}
+        </div>
+        <div className="text-slate-400 space-y-1">
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">© 2025 KÊNH HỌC TOÁN TRỰC TUYẾN CHUYÊN NGHIỆP</p>
+            <p className="text-[9px] font-bold opacity-60 uppercase tracking-tighter">Phát triển bởi nhóm giáo viên Toán. Admin: Nguyễn Văn Hà </p>
+        </div>
+      </footer>
+
+
 
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     </div>

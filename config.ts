@@ -2,11 +2,11 @@
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
 
 export const GRADES = [9, 10, 11, 12];
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec";
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec";
 export const DANHGIA_URL = DEFAULT_API_URL;
 export const API_ROUTING: Record<string, string> = {
   "680988948882": DEFAULT_API_URL,
-  "9999": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec",
+  "9999": "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec",
   "68686868": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec"
 };
 export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];

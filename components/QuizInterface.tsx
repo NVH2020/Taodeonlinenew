@@ -160,7 +160,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
         <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-50 min-h-[600px] flex flex-col animate-fade-in" key={currentIndex}>
           <div className="mb-8">
             <div className="flex flex-col gap-2 mb-6">
-               <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>Mã: {currentQuestion.id}</span>
+               <span className={`w-fit px-3 py-1 ${colorSet.bg} text-white text-[11px] font-black rounded shadow-md uppercase`}>ID: {currentQuestion.id}</span>
                <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorSet.text}`}>{currentQuestion.part}</span>
             </div>
             <div className="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed">
@@ -179,7 +179,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ config, student, question
             ))}
             
             {currentQuestion.type === 'short-answer' && (
-              <input type="text" className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black bg-slate-50 text-blue-900 outline-none" placeholder="Nhập đáp án của bạn..." value={answers[currentIndex].answer as string || ''} onChange={e => { const n = [...answers]; n[currentIndex].answer = e.target.value; setAnswers(n); }} />
+              <input type="text" className="w-full p-5 border-2 border-blue-100 rounded-2xl font-black bg-slate-50 text-blue-900 outline-none" placeholder="Nhập đáp án của bạn...(dùng dấu chấm (.) thay dấu phẩy(,) nhé. Ví dụ: 6.04" value={answers[currentIndex].answer as string || ''} onChange={e => { const n = [...answers]; n[currentIndex].answer = e.target.value; setAnswers(n); }} />
             )}
             
             {currentQuestion.type === 'true-false' && currentQuestion.s?.map((s, si) => (

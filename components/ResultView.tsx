@@ -11,6 +11,17 @@ interface ResultViewProps {
 
 const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) => {
   const [showReview, setShowReview] = useState(false);
+  // Thêm useEffect để tự động quét công thức khi nhấn nút "Xem lại bài làm"
+React.useEffect(() => {
+  if (showReview) {
+    const timer = setTimeout(() => {
+      if ((window as any).MathJax && (window as any).MathJax.typesetPromise) {
+        (window as any).MathJax.typesetPromise();
+      }
+    }, 300); // Đợi giao diện render xong rồi quét
+    return () => clearTimeout(timer);
+  }
+}, [showReview]);
 
   const btnStyle = "w-full sm:w-64 py-4 bg-blue-600 text-white rounded-full font-black text-lg hover:bg-blue-700 transition shadow-xl flex items-center justify-center gap-3 active:scale-95 border-b-4 border-blue-800";
 
@@ -22,7 +33,7 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
           <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
         </div>
         <h2 className="text-4xl font-black text-slate-800 mb-2 uppercase tracking-tight">KẾT QUẢ BÀI THI</h2>
-        <p className="text-slate-500 mb-10 font-bold uppercase text-xs tracking-widest">Hệ thống thi trực tuyến THPT Yên Dũng số 2</p>
+        <p className="text-slate-500 mb-10 font-bold uppercase text-xs tracking-widest">Hệ thống học tập và kiểm tra Online chuyên nghiệp</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-10 text-left">
           <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-inner">
@@ -52,54 +63,115 @@ const ResultView: React.FC<ResultViewProps> = ({ result, questions, onBack }) =>
       </div>
 
       {showReview && (
-        <div className="space-y-8 animate-fade-in">
-          <h3 className="text-2xl font-black text-slate-800 uppercase px-6 border-l-8 border-blue-600 mb-6">ĐÁP ÁN VÀ GIẢI THÍCH</h3>
-          {questions.map((q, idx) => {
-            const u = result.details[idx].answer;
-            const isCorrect = q.type === 'true-false' 
-              ? (u as any).every((v:any, i:any) => v === q.s![i].a) 
-              : u?.toString().trim().toLowerCase() === q.a?.toString().trim().toLowerCase();
+  <div className="space-y-8 animate-fade-in">
+    <div className="flex items-center justify-between px-6">
+      <h3 className="text-2xl font-black text-slate-800 uppercase border-l-8 border-blue-600 pl-4">
+        Chi tiết bài làm
+      </h3>
+    </div>
 
-            return (
-              <div key={q.id} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl relative overflow-hidden group">
-                <div className={`absolute left-0 top-0 w-3 h-full ${isCorrect ? 'bg-emerald-500':'bg-red-500'}`}></div>
-                
-                <div className="flex justify-between items-start mb-8">
-                  <div className="flex items-center gap-5">
-                    <span className={`w-14 h-14 flex items-center justify-center rounded-[1.2rem] font-black text-2xl shadow-inner ${isCorrect ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>{idx + 1}</span>
-                    <div>
-                      <span className="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-black rounded block w-fit mb-1">ID: {q.id}</span>
-                      <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{q.part}</span>
+    {questions.map((q, idx) => {
+      const u = result.details[idx].answer;
+      // Logic kiểm tra đúng/sai cho từng loại câu hỏi
+      const isCorrect = q.type === 'true-false' 
+        ? (Array.isArray(u) && q.s ? u.every((v: any, i: any) => v === q.s![i].a) : false)
+        : u?.toString().trim().toLowerCase() === q.a?.toString().trim().toLowerCase();
+
+      return (
+        <div key={q.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl overflow-hidden group">
+          {/* Header câu hỏi */}
+          <div className={`p-6 flex justify-between items-center ${isCorrect ? 'bg-emerald-50/50' : 'bg-red-50/50'}`}>
+            <div className="flex items-center gap-4">
+              <span className={`w-12 h-12 flex items-center justify-center rounded-2xl font-black text-xl ${isCorrect ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+                {idx + 1}
+              </span>
+              <div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ID: {q.id}</span>
+                <h4 className="font-bold text-slate-700 uppercase text-xs">{q.part}</h4>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8 md:p-10">
+            {/* 1. Nội dung câu hỏi chính */}
+            <div className="text-xl font-bold text-slate-800 mb-8 leading-relaxed">
+              <MathText content={q.question} />
+            </div>
+
+            {/* 2. Hiển thị danh sách phương án cho câu TRẮC NGHIỆM (nếu có) */}
+            {q.type !== 'true-false' && q.o && q.o.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {q.o.map((opt, i) => {
+                  const label = String.fromCharCode(65 + i);
+                  const isUserChoice = u === label;
+                  const isRightAnswer = q.a === label;
+                  
+                  return (
+                    <div key={i} className={`p-4 rounded-2xl border-2 flex gap-4 items-start ${isUserChoice ? (isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50') : (isRightAnswer ? 'border-emerald-500 border-dashed bg-emerald-50/30' : 'border-slate-50 bg-slate-50')}`}>
+                      <span className={`w-8 h-8 shrink-0 flex items-center justify-center rounded-lg font-black ${isUserChoice ? (isCorrect ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white') : 'bg-white text-slate-400 border'}`}>
+                        {label}
+                      </span>
+                      <div className="text-slate-700 font-medium pt-1"><MathText content={opt} /></div>
                     </div>
-                  </div>
-                  <span className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${isCorrect ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
-                    {isCorrect ? 'Chính xác' : 'Chưa đúng'}
-                  </span>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 3. Hiển thị danh sách các ý cho câu ĐÚNG/SAI */}
+            {q.type === 'true-false' && q.s && q.s.length > 0 && (
+              <div className="space-y-4 mb-8">
+                {q.s.map((item, i) => {
+                  const userAns = Array.isArray(u) ? u[i] : undefined;
+                  const isSubCorrect = userAns === item.a;
+                  const label = String.fromCharCode(97 + i); // a, b, c, d
+
+                  return (
+                    <div key={i} className={`p-5 rounded-2xl border-2 flex flex-col sm:flex-row justify-between items-center gap-4 ${userAns === undefined ? 'border-slate-100 bg-slate-50' : (isSubCorrect ? 'border-emerald-100 bg-emerald-50/50' : 'border-red-100 bg-red-50/50')}`}>
+                      <div className="flex gap-4 w-full">
+                        <span className="font-black text-blue-600">{label}.</span>
+                        <div className="text-slate-700 font-medium"><MathText content={item.q} /></div>
+                      </div>
+                      <div className="flex gap-2 shrink-0 self-end sm:self-center">
+                        <div className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase ${userAns === true ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}>Đúng</div>
+                        <div className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase ${userAns === false ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}>Sai</div>
+                        <div className="ml-2 flex items-center text-emerald-600 font-bold text-[11px] bg-white px-2 py-1 rounded border border-emerald-200">
+                          Đáp án: {item.a ? 'Đúng' : 'Sai'}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 4. Tổng kết đáp án (Dành cho Trắc nghiệm và Trả lời ngắn) */}
+            {q.type !== 'true-false' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Phương án đã chọn</p>
+                  <div className={`text-lg font-black ${isCorrect ? 'text-emerald-600' : 'text-red-600'}`}>{u || "Không trả lời"}</div>
                 </div>
-
-                <div className="text-2xl font-bold text-slate-800 mb-10 leading-relaxed">
-                   <MathText content={q.question} />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
-                    <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Phương án đã chọn</p>
-                    <div className="font-bold text-slate-700 text-lg">
-                       {q.type === 'true-false' ? (u as any).map((v:any, i:any) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {v===true?'Đúng':(v===false?'Sai':'Chưa chọn')}</span>) : (u || <span className="opacity-50">Không trả lời</span>)}
-                    </div>
-                  </div>
-                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-inner">
-                    <p className="text-[10px] font-black text-emerald-500 uppercase mb-3 tracking-widest">Đáp án đúng</p>
-                    <div className="font-bold text-emerald-700 text-lg">
-                      {q.type === 'true-false' ? q.s!.map((s, i) => <span key={i} className="mr-3">{String.fromCharCode(97+i)}: {s.a?'Đúng':'Sai'}</span>) : q.a}
-                    </div>
-                  </div>
+                <div className="md:border-l md:pl-6 border-slate-200">
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Đáp án đúng</p>
+                  <div className="text-lg font-black text-emerald-700">{q.a}</div>
                 </div>
               </div>
-            );
-          })}
+            )}
+
+            {/* 5. Giải thích chi tiết */}
+            {q.explanation && (
+              <div className="mt-8 p-6 bg-blue-50/50 rounded-3xl border-2 border-blue-100 border-dashed">
+                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2">Hướng dẫn giải</p>
+                <div className="text-slate-700 leading-relaxed italic"><MathText content={q.explanation} /></div>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      );
+    })}
+  </div>
+)}
     </div>
   );
 };

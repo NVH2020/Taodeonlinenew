@@ -9,7 +9,7 @@ export const API_ROUTING: Record<string, string> = {
   "9999": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec",
   "68686868": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec"
 };
-export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Khác"];
+export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];
 export const NEWS_DATA: NewsItem[] = [
   { title: "Thông tin tuyển sinh lớp 10 năm 2025", link: "https://moet.gov.vn" },
   { title: "Cấu trúc đề thi tốt nghiệp THPT mới nhất", link: "https://vneconomy.vn" },
@@ -27,9 +27,9 @@ export const ADMIN_CONFIG = {
     "THPT Yên Dũng số 2",
     "THPT Yên Dũng số 1",
     "THPT Lạng Giang số 1",
-    "Khác"
+    "Trường khác"
   ],
-  banks: ["Vietcombank", "Agribank", "MB Bank", "Khác"],
+  banks: ["Vietcombank", "Agribank", "MB Bank", "Ngân hàng khác"],
   CLASS_ID: CLASS_ID
 };
 export const OTHER_APPS = [

@@ -1,12 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
-import { ExamConfig, Student, ExamResult, Question, AppUser } from './types';
-import { API_ROUTING, DEFAULT_API_URL, VIP_SHEET_URL, DANHGIA_URL } from './config';
+import React, { useState } from 'react';
+import { Student, ExamResult, Question, AppUser } from './types';
+import { API_ROUTING, DEFAULT_API_URL, DANHGIA_URL } from './config';
 import LandingPage from './components/LandingPage';
 import ExamPortal from './components/ExamPortal';
 import QuizInterface from './components/QuizInterface';
 import ResultView from './components/ResultView';
+import Footer from './components/Footer'; // Đã thêm import Footer
 import { getRandomQuizQuestion } from './questionquiz';
+import { AppProvider } from './contexts/AppContext';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result'>('landing');
@@ -56,7 +57,6 @@ const App: React.FC = () => {
     setExamResult(result);
     setCurrentView('result');
     
-    // Luôn gửi kết quả về Server dựa trên phân loại Quiz hay Exam
     let targetUrl = DEFAULT_API_URL;
     if (result.type === 'quiz') {
       targetUrl = DANHGIA_URL;
@@ -83,59 +83,60 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 bg-slate-50">
-      <header className="bg-blue-800 text-white py-8 md:py-12 shadow-2xl text-center relative overflow-hidden border-b-8 border-blue-900 px-4">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-5xl font-black uppercase tracking-tighter mb-2 drop-shadow-lg leading-tight">
-            HỆ THỐNG KIỂM TRA ONLINE <br className="md:hidden" /> MÔN TOÁN
-          </h1>
-          <p className="text-sm md:text-lg opacity-90 font-black tracking-wide max-w-2xl mx-auto uppercase">
-            Học tập chuyên nghiệp - Kết quả bứt phá
-          </p>
-        </div>
-      </header>
+    <AppProvider>
+      <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 bg-slate-50">
+        <header className="bg-blue-800 text-white py-8 md:py-12 shadow-2xl text-center relative overflow-hidden border-b-8 border-blue-900 px-4">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div className="relative z-10">
+            <h1 className="text-2xl md:text-5xl font-black uppercase tracking-tighter mb-2 drop-shadow-lg leading-tight">
+              HỆ THỐNG HỌC TẬP VÀ KIỂM TRA ONLINE <br className="md:hidden" /> MÔN TOÁN
+            </h1>
+            <p className="text-sm md:text-lg opacity-90 font-black tracking-wide max-w-2xl mx-auto uppercase">
+              Học tập chuyên nghiệp - Kết quả bứt phá
+            </p>
+          </div>
+        </header>
 
-      <main className="flex-grow max-w-[1400px] mx-auto w-full p-4 md:p-10">
-        <div className="flex flex-col gap-6">
-            {currentView === 'landing' && (
-              <LandingPage 
-                user={user} 
-                onOpenAuth={() => setShowAuth(true)} 
-                onOpenVip={() => user ? setShowVipModal(true) : setShowAuth(true)}
-                onSelectGrade={(grade) => { setSelectedGrade(grade); setCurrentView('portal'); }} 
-                onSelectQuiz={handleStartQuizMode}
-              />
-            )}
-            {currentView === 'portal' && selectedGrade && (
-              <ExamPortal grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />
-            )}
-            {currentView === 'quiz' && activeExam && activeStudent && (
-              <QuizInterface 
-                config={activeExam} 
-                student={activeStudent} 
-                questions={questions} 
-                onFinish={handleFinishExam} 
-                isQuizMode={activeExam.id === 'QUIZ'}
-              />
-            )}
-            {currentView === 'result' && examResult && (
-              <ResultView result={examResult} questions={questions} onBack={goHome} />
-            )}
-        </div>
-      </main>
+        <main className="flex-grow max-w-[1400px] mx-auto w-full p-4 md:p-10">
+          <div className="flex flex-col gap-6">
+              {currentView === 'landing' && (
+                <LandingPage 
+                  user={user} 
+                  onOpenAuth={() => setShowAuth(true)} 
+                  onOpenVip={() => user ? setShowVipModal(true) : setShowAuth(true)}
+                  onSelectGrade={(grade) => { setSelectedGrade(grade); setCurrentView('portal'); }} 
+                  onSelectQuiz={handleStartQuizMode}
+                />
+              )}
+              {currentView === 'portal' && selectedGrade && (
+                <ExamPortal grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />
+              )}
+              {currentView === 'quiz' && activeExam && activeStudent && (
+                <QuizInterface 
+                  config={activeExam} 
+                  student={activeStudent} 
+                  questions={questions} 
+                  onFinish={handleFinishExam} 
+                  isQuizMode={activeExam.id === 'QUIZ'}
+                />
+              )}
+              {currentView === 'result' && examResult && (
+                <ResultView result={examResult} questions={questions} onBack={goHome} />
+              )}
+          </div>
+        </main>
 
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={(u) => { setUser(u); setShowAuth(false); }} />}
-      {showVipModal && <VipModal user={user!} onClose={() => setShowVipModal(false)} onSuccess={() => { setUser(prev => prev ? {...prev, isVip: true} : null); setShowVipModal(false); }} />}
+        {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={(u) => { setUser(u); setShowAuth(false); }} />}
+        {showVipModal && <VipModal user={user!} onClose={() => setShowVipModal(false)} onSuccess={() => { setUser(prev => prev ? {...prev, isVip: true} : null); setShowVipModal(false); }} />}
 
-      <footer className="bg-slate-900 py-10 text-center text-slate-500 text-[10px] md:text-xs mt-10 px-4">
-        <p className="font-black text-slate-400 mb-2 uppercase tracking-widest">Phát triển bởi nhóm GV Toán. Admin Nguyễn Văn Hà</p>
-        <p>&copy; {new Date().getFullYear()} THPT Yên Dũng số 2 - Kiểm tra chuyên nghiệp.</p>
-      </footer>
-    </div>
+        {/* Footer quan trọng được đặt ở đây để dùng được AppProvider */}
+        <Footer />
+      </div>
+    </AppProvider>
   );
 };
 
+// --- Các Component phụ hỗ trợ ---
 const AuthModal = ({ onClose, onSuccess }: { onClose: () => void, onSuccess: (u: AppUser) => void }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [phone, setPhone] = useState('');

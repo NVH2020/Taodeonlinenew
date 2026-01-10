@@ -54,7 +54,7 @@ const [newsList, setNewsList] = useState<{t: string, l: string}[]>([]);
   const fetchContentData = async () => {
     try {
       const sheetId = '1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc'; // ID file admin của thầy
-      const gid = '701530798'; // THẦY THAY GID CỦA SHEET linkimg VÀO ĐÂY
+      const gid = '1515444454'; // THẦY THAY GID CỦA SHEET linkimg VÀO ĐÂY
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
 
       const response = await fetch(url);

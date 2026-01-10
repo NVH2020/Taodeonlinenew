@@ -93,24 +93,16 @@ const handleAuth = async (e: React.FormEvent) => {
     try {
 
       const sheetId = '1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc';
-
-      const gid = '701530798'; 
-
-      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
-
-      
+      const gid = '701530798';
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;    
 
       const response = await fetch(url);
 
-      const data = await response.text();
-
-      
+      const data = await response.text();      
 
       // Tách các hàng
 
-      const rows = data.split('\n').slice(1); 
-
-      
+      const rows = data.split('\n').slice(1);       
 
       const parsedData = rows.map(row => {
 
@@ -119,53 +111,28 @@ const handleAuth = async (e: React.FormEvent) => {
         const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim());
 
         return { 
-
           mon: cols[0], 
-
           caphoc: cols[1], 
-
           chonmon: cols[2], 
-
           link: cols[3] 
-
         };
-
       }).filter(item => item.mon && item.mon !== ""); // Lọc bỏ hàng trống
-
-
-
-      setSubjectData(parsedData);
-
-      
+      setSubjectData(parsedData);   
 
       // Lấy danh sách Môn học (Cột A)
-
       const mons = [...new Set(parsedData.map(item => item.mon))].filter(Boolean);
 
-      setDynamicSubjects(mons);
-
-      
+      setDynamicSubjects(mons);      
 
       // Lấy danh sách Cấp học (Cột B)
-
       const caps = [...new Set(parsedData.map(item => item.caphoc))].filter(Boolean);
-
       setDynamicLevels(caps);
-
-
-
       console.log("Dữ liệu môn học đã tải:", parsedData); // Thầy F12 xem có hiện data chưa
-
     } catch (error) {
-
       console.error("Lỗi lấy dữ liệu môn học:", error);
-
     }
-
   };
-
   fetchSubjects();
-
 }, []);
   
 

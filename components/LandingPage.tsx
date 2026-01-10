@@ -269,16 +269,29 @@ fetchSchedules();
     setShowQuizModal(null);
   };
 // hàm chọn môn khác
-  const handleRedirect = () => {
-  // Tìm hàng khớp với lựa chọn của học sinh
-  const match = subjectData.find(item => 
-    item.mon === selectedSubject && item.caphoc === selectedLevel
-  );
+ const handleRedirect = () => {
+  // Chuẩn hóa dữ liệu lựa chọn của người dùng
+  const selectedSubNorm = selectedSubject.toLowerCase().trim();
+  const selectedLvlNorm = selectedLevel.toLowerCase().trim();
+
+  // Tìm hàng khớp trong subjectData đã được tải từ sheet
+  const match = subjectData.find(item => {
+    const sheetSubNorm = item.mon.toLowerCase().trim();
+    const sheetLvlNorm = item.caphoc.toLowerCase().trim();
+    
+    // So sánh chuẩn hóa (bất chấp i ngắn/y dài nếu thầy muốn, hoặc ít nhất là khớp tuyệt đối sau khi trim)
+    return sheetSubNorm === selectedSubNorm && sheetLvlNorm === selectedLvlNorm;
+  });
 
   if (match && match.link) {
-    window.open(match.link, '_blank');
+    // Nếu link không bắt đầu bằng http, tự thêm vào để tránh lỗi
+    let finalLink = match.link.trim();
+    if (!finalLink.startsWith('http')) {
+      finalLink = 'https://' + finalLink;
+    }
+    window.open(finalLink, '_blank');
   } else {
-    // Nếu không tìm thấy hàng khớp, về link mặc định
+    // Về link mặc định nếu không tìm thấy
     window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank');
   }
   setShowSubjectModal(false);

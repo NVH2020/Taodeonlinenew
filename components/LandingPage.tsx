@@ -269,31 +269,27 @@ fetchSchedules();
     setShowQuizModal(null);
   };
 // hàm chọn môn khác
- const handleRedirect = () => {
-  // Chuẩn hóa dữ liệu lựa chọn của người dùng
-  const selectedSubNorm = selectedSubject.toLowerCase().trim();
-  const selectedLvlNorm = selectedLevel.toLowerCase().trim();
+const handleRedirect = () => {
+  // 1. Lấy giá trị người dùng chọn và làm sạch (xóa khoảng trắng, chuyển chữ thường)
+  const userMon = selectedSubject.toString().toLowerCase().trim();
+  const userCap = selectedLevel.toString().toLowerCase().trim();
 
-  // Tìm hàng khớp trong subjectData đã được tải từ sheet
+  // 2. Tìm trong danh sách từ Sheet
   const match = subjectData.find(item => {
-    const sheetSubNorm = item.mon.toLowerCase().trim();
-    const sheetLvlNorm = item.caphoc.toLowerCase().trim();
-    
-    // So sánh chuẩn hóa (bất chấp i ngắn/y dài nếu thầy muốn, hoặc ít nhất là khớp tuyệt đối sau khi trim)
-    return sheetSubNorm === selectedSubNorm && sheetLvlNorm === selectedLvlNorm;
+    const sheetMon = item.mon.toString().toLowerCase().trim();
+    const sheetCap = item.caphoc.toString().toLowerCase().trim();
+    return sheetMon === userMon && sheetCap === userCap;
   });
 
-  if (match && match.link) {
-    // Nếu link không bắt đầu bằng http, tự thêm vào để tránh lỗi
-    let finalLink = match.link.trim();
-    if (!finalLink.startsWith('http')) {
-      finalLink = 'https://' + finalLink;
-    }
-    window.open(finalLink, '_blank');
+  if (match && match.link && match.link.includes('http')) {
+    window.open(match.link.trim(), '_blank');
   } else {
-    // Về link mặc định nếu không tìm thấy
+    // Nếu vẫn không khớp thì mới ra Facebook
     window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank');
+    // Thầy có thể dùng lệnh này để kiểm tra xem nó đang lệch ở đâu khi nhấn F12:
+    console.log("Không khớp! User chọn:", `|${userMon}|${userCap}|`, "Data Sheet có:", subjectData);
   }
+  
   setShowSubjectModal(false);
 };
 

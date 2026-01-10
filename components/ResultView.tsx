@@ -119,32 +119,46 @@ React.useEffect(() => {
             )}
 
             {/* 3. Hiển thị danh sách các ý cho câu ĐÚNG/SAI */}
-            {q.type === 'true-false' && q.s && q.s.length > 0 && (
-              <div className="space-y-4 mb-8">
-                {q.s.map((item, i) => {
-                  const userAns = Array.isArray(u) ? u[i] : undefined;
-                  const isSubCorrect = userAns === item.a;
-                  const label = String.fromCharCode(97 + i); // a, b, c, d
+{q.type === 'true-false' && q.s && q.s.length > 0 && (
+  <div className="space-y-4 mb-8">
+    {q.s.map((item, i) => {
+      // Lấy câu trả lời của học sinh (u[i] vì câu đúng sai lưu mảng boolean)
+      const userAns = Array.isArray(u) ? u[i] : undefined;
+      const isSubCorrect = userAns === item.a;
+      const label = String.fromCharCode(97 + i); // a, b, c, d
 
-                  return (
-                    <div key={i} className={`p-5 rounded-2xl border-2 flex flex-col sm:flex-row justify-between items-center gap-4 ${userAns === undefined ? 'border-slate-100 bg-slate-50' : (isSubCorrect ? 'border-emerald-100 bg-emerald-50/50' : 'border-red-100 bg-red-50/50')}`}>
-                      <div className="flex gap-4 w-full">
-                        <span className="font-black text-blue-600">{label}.</span>
-                        <div className="text-slate-700 font-medium"><MathText content={item.q} /></div>
-                      </div>
-                      <div className="flex gap-2 shrink-0 self-end sm:self-center">
-                        <div className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase ${userAns === true ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}>Đúng</div>
-                        <div className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase ${userAns === false ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}>Sai</div>
-                        <div className="ml-2 flex items-center text-emerald-600 font-bold text-[11px] bg-white px-2 py-1 rounded border border-emerald-200">
-                          Đáp án: {item.a ? 'Đúng' : 'Sai'}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+      return (
+        <div 
+          key={i} 
+          className={`p-5 rounded-2xl border-2 flex flex-col sm:flex-row justify-between items-center gap-4 
+            ${userAns === undefined ? 'border-slate-100 bg-slate-50' : 
+            (isSubCorrect ? 'border-emerald-100 bg-emerald-50/50' : 'border-red-100 bg-red-50/50')}`}
+        >
+          <div className="flex gap-4 w-full">
+            <span className="font-black text-blue-600">{label}.</span>
+            {/* SỬA TẠI ĐÂY: item.q -> item.text */}
+            <div className="text-slate-700 font-medium">
+              <MathText content={item.text} /> 
+            </div>
+          </div>
 
+          <div className="flex gap-2 shrink-0 items-center">
+            {/* Hiển thị lựa chọn của học sinh */}
+            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <div className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase transition-all ${userAns === true ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400'}`}>Đúng</div>
+              <div className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase transition-all ${userAns === false ? 'bg-red-600 text-white shadow-sm' : 'text-slate-400'}`}>Sai</div>
+            </div>
+
+            {/* Đáp án đúng của hệ thống */}
+            <div className="ml-2 flex items-center text-emerald-700 font-bold text-[10px] bg-emerald-100 px-3 py-2 rounded-xl border border-emerald-200 uppercase">
+              <i className="fas fa-check-circle mr-1"></i> {item.a ? 'Đúng' : 'Sai'}
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
             {/* 4. Tổng kết đáp án (Dành cho Trắc nghiệm và Trả lời ngắn) */}
             {q.type !== 'true-false' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">

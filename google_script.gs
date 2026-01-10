@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = "16w4EzHhTyS1CnTfJOWE7QQNM0o2mMQIqePpPK8TEYrg";
+const SPREADSHEET_ID = "1y7OmTFZxgdLgGUtoNpo7WTIVwJyeTVE9rzSzWaY_Btc";
 
 function clearWeeklyQuizData() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -13,7 +13,53 @@ function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const params = e.parameter;
   const type = e.parameter.type;
+  // Thêm đoạn này vào trong hàm doGet(e) của file .gs
+  // Thêm vào file Apps Script của bạn
+// Thêm vào hàm doGet(e)
+var action = e.parameter.action;
+var sheetAcc = ss.getSheetByName("account");
 
+if (action === "register") {
+  var phone = e.parameter.phone;
+  var pass = e.parameter.pass;
+  var rows = sheetAcc.getDataRange().getValues();
+  for (var i = 1; i < rows.length; i++) {
+    if (rows[i][1].toString() === phone) return ContentService.createTextOutput("exists");
+  }
+  sheetAcc.appendRow([new Date(), "'" + phone, pass, "VIP0"]);
+  return ContentService.createTextOutput("success");
+}
+
+if (action === "login") {
+  var phone = e.parameter.phone;
+  var pass = e.parameter.pass;
+  var rows = sheetAcc.getDataRange().getValues();
+  for (var i = 1; i < rows.length; i++) {
+    if (rows[i][1].toString() === phone && rows[i][2].toString() === pass) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        phoneNumber: rows[i][1].toString(),
+        vip: rows[i][3] || "VIP0"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  return ContentService.createTextOutput("fail");
+}
+if (e.parameter.sheet === "ungdung") {
+  var sheet = ss.getSheetByName("ungdung");
+  var rows = sheet.getDataRange().getValues();
+  var data = [];
+  
+  for (var i = 1; i < rows.length; i++) {
+    data.push({
+      name: rows[i][0],
+      icon: rows[i][1],
+      link: rows[i][2]
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
   // --- TRƯỜNG HỢP 0: LẤY TOP 10 ---
   if (type === 'top10') {
     const sheet = ss.getSheetByName("Top10Display");
@@ -21,7 +67,7 @@ function doGet(e) {
     const lastRow = sheet.getLastRow();
     if (lastRow < 2) return createResponse("success", "Chưa có dữ liệu Top 10", []);
     
-    const values = sheet.getRange(2, 1, Math.min(10, lastRow - 1), 7).getValues();
+    const values = sheet.getRange(2, 1, Math.min(10, lastRow - 1), 10).getValues();
     const top10 = values.map((row, index) => ({
       rank: index + 1,
       name: row[0],
@@ -30,7 +76,7 @@ function doGet(e) {
       time: row[3],
       sotk: row[4],
       bank: row[5],
-      idPhone: row[10]
+      idPhone: row[9]
     }));
     return createResponse("success", "OK", top10);
   }

@@ -237,24 +237,34 @@ fetchSchedules();
   };
 // hàm chọn môn khác
 const handleRedirect = () => {
-  // 1. Lấy giá trị người dùng chọn và làm sạch (xóa khoảng trắng, chuyển chữ thường)
-  const userMon = selectedSubject.toString().toLowerCase().trim();
-  const userCap = selectedLevel.toString().toLowerCase().trim();
+  // Hàm chuẩn hóa cực mạnh: Xóa khoảng trắng, chuyển chữ thường, đưa về cùng một chuẩn Unicode (NFC)
+  const normalize = (str) => 
+    (str || "").toString().normalize("NFC").toLowerCase().trim();
 
-  // 2. Tìm trong danh sách từ Sheet
+  const userMon = normalize(selectedSubject);
+  const userCap = normalize(selectedLevel);
+
+  // Tìm trong data
   const match = subjectData.find(item => {
-    const sheetMon = item.mon.toString().toLowerCase().trim();
-    const sheetCap = item.caphoc.toString().toLowerCase().trim();
+    const sheetMon = normalize(item.mon);
+    const sheetCap = normalize(item.caphoc);
     return sheetMon === userMon && sheetCap === userCap;
   });
 
-  if (match && match.link && match.link.includes('http')) {
+  if (match && match.link && match.link.toLowerCase().startsWith('http')) {
     window.open(match.link.trim(), '_blank');
   } else {
-    // Nếu vẫn không khớp thì mới ra Facebook
-    window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank');
-    // Thầy có thể dùng lệnh này để kiểm tra xem nó đang lệch ở đâu khi nhấn F12:
-    console.log("Không khớp! User chọn:", `|${userMon}|${userCap}|`, "Data Sheet có:", subjectData);
+    // Nếu vẫn không khớp (rất hiếm), thử so sánh với cột C (chonmon)
+    const userCombined = normalize(`${selectedSubject}-${selectedLevel}`);
+    const matchCombined = subjectData.find(item => normalize(item.chonmon) === userCombined);
+    
+    if (matchCombined && matchCombined.link) {
+      window.open(matchCombined.link.trim(), '_blank');
+    } else {
+      // Trường hợp cuối cùng không thấy thì về Facebook
+      window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank');
+      console.log("Thử mọi cách vẫn không khớp:", userMon, userCap);
+    }
   }
   
   setShowSubjectModal(false);

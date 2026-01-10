@@ -222,11 +222,17 @@ fetchSchedules();
 
 
   // --- CÁC HÀM XỬ LÝ ---
-  useEffect(() => {
-    if (IMAGES_CAROUSEL.length === 0) return;
-    const interval = setInterval(() => setCurrentImg(prev => (prev + 1) % IMAGES_CAROUSEL.length), 4000);
-    return () => clearInterval(interval);
-  }, []);
+  // lấy ảnh logo
+ useEffect(() => {
+  // Nếu chưa tải xong ảnh từ Sheet thì không chạy đếm giây
+  if (carouselImages.length === 0) return;
+
+  const interval = setInterval(() => {
+    setCurrentImg(prev => (prev + 1) % carouselImages.length);
+  }, 4000);
+
+  return () => clearInterval(interval);
+}, [carouselImages]); // Sẽ chạy lại mỗi khi danh sách ảnh từ Sheet thay đổi
 
   useEffect(() => {
     const fetchTop10 = async () => {

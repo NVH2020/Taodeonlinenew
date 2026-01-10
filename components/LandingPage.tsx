@@ -25,8 +25,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onOpenVip
 }) => {
   // --- GIỮ NGUYÊN TOÀN BỘ LOGIC DỮ LIỆU CỦA THẦY ---
-  const SUBJECTS = ["Toán học", "Vật lí", "Hóa học", "Sinh học", "Văn học", "Lịch sử", "Địa lí", "Tin học", "Tiếng Anh", "GDKT&PL", "CNCN", "CNNN", "Khác"];
-  const LEVELS = ["THPT", "THCS", "Tiểu học", "Đại học", "Cao học", "Trên cao học"];
   const REDIRECT_LINKS: Record<string, string> = { "default": "https://www.facebook.com/hoctoanthayha.bg" };
   const [showAppList, setShowAppList] = useState(false);
   const [isOtherBank, setIsOtherBank] = useState(false);

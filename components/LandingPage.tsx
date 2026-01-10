@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
+import { DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
 import { AppUser, Student } from '../types';
 
 interface LandingPageProps {

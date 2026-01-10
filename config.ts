@@ -15,12 +15,6 @@ export const NEWS_DATA: NewsItem[] = [
   { title: "Cấu trúc đề thi tốt nghiệp THPT mới nhất", link: "https://vneconomy.vn" },
   { title: "Lịch thi học sinh giỏi cấp tỉnh Bắc Ninh", link: "https://bacninh.edu.vn" }
 ];
-
-export const IMAGES_CAROUSEL = [
-  "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200",
-  "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200",
-  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200"
-];
 export const ADMIN_CONFIG = {  
   quizPassword: "66668888",
   schools: [

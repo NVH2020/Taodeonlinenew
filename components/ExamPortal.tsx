@@ -298,7 +298,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ grade, onBack, onStart }) => {
 
         {/* Thông tin điểm số (Tùy chọn) */}
         <p className="text-[9px] font-bold text-blue-400 italic">
-          * Ma trận đề thầy cô có thể tạo theo ý muốn khi đăng ký.
+          * Ma trận đề thầy cô có thể tạo theo ý muốn khi đăng ký app.
         </p>
       </div>
     )}

@@ -457,20 +457,23 @@ const handleRedirect = () => {
           </div>
         </div> {/* Đóng cột trái lg:col-span-3 */}
 
-       {/* CỘT GIỮA: CAROUSEL & TIN TỨC */}
+      {/* CỘT GIỮA: CAROUSEL & TIN TỨC */}
 <div className="lg:col-span-6 flex flex-col gap-6 order-1 lg:order-2">
+  {/* PHẦN CAROUSEL */}
   <div className="relative h-[380px] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-slate-100">
     {carouselImages.length > 0 ? (
       carouselImages.map((img, idx) => (
         <img 
           key={idx} 
           src={img} 
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentImg % carouselImages.length ? 'opacity-100' : 'opacity-0'}`} 
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === (currentImg % carouselImages.length) ? 'opacity-100' : 'opacity-0'}`} 
           alt="Carousel" 
         />
       ))
     ) : (
-      <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-bold">Đang tải ảnh...</div>
+      <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-bold">
+        Đang tải ảnh...
+      </div>
     )}
     
     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -480,24 +483,33 @@ const handleRedirect = () => {
     </div>
   </div>
 
-        {/* MỤC TIN TỨC (THÔNG TIN...) */}
-<div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
-   <h3 className="text-blue-600 font-black text-xs uppercase mb-4 flex items-center gap-2">
-      <i className="fas fa-newspaper"></i> Thông tin & Sự kiện mới
-   </h3>
-   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {newsList.length > 0 ? (
-        newsList.map((item, i) => (
-          <a key={i} href={item.l} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-xl hover:bg-blue-50 border border-transparent hover:border-blue-100 transition-all group">
-             <div className="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:scale-150 transition-transform"></div>
-             <span className="text-[12px] font-bold text-slate-700 truncate">{item.t}</span>
-          </a>
-        ))
-      ) : (
-        <div className="text-slate-400 text-xs italic p-2">Đang cập nhật tin tức mới nhất...</div>
-      )}
-   </div>
-</div>
+  {/* PHẦN TIN TỨC */}
+  <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
+     <h3 className="text-blue-600 font-black text-xs uppercase mb-4 flex items-center gap-2">
+        <i className="fas fa-newspaper"></i> Thông tin & Sự kiện mới
+     </h3>
+     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {newsList.length > 0 ? (
+          newsList.map((item, i) => (
+            <a 
+              key={i} 
+              href={item.l} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 p-2 rounded-xl hover:bg-blue-50 border border-transparent hover:border-blue-100 transition-all group"
+            >
+               <div className="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:scale-150 transition-transform"></div>
+               <span className="text-[12px] font-bold text-slate-700 truncate">{item.t}</span>
+            </a>
+          ))
+        ) : (
+          <div className="text-slate-400 text-xs italic p-2 italic">
+            Đang cập nhật tin tức mới nhất...
+          </div>
+        )}
+     </div>
+  </div>
+</div>       
 
         {/* CỘT PHẢI: QUIZ & TOP 10 (VUỐT) */}
         <div className="lg:col-span-3 flex flex-col gap-4 order-3">

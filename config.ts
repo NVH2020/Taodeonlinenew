@@ -109,15 +109,6 @@ export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
   12: [
     { code: "TD_45_K12", name: "Tự do 45 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_45P },
     { code: "TD_90_K12", name: "Tự do 90 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_90P },
-     { code: "Test_Ngan_Hang", 
-      name: "Test ngân hàng", 
-      topics: [1204], 
-      fixedConfig = {
-      duration: 15,
-      numMC: [100], scoreMC: 0.25, mcL3: [10], mcL4: [10],
-      numTF: [50], scoreTF: 1, tfL3: [10], tfL4: [10],
-      numSA: [100], scoreSA: 0.5, saL3: [30], saL4: [30]
-    };
-    
+       
   ]
 };

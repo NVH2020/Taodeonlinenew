@@ -10,12 +10,12 @@ import Footer from './components/Footer';
 import { getRandomQuizQuestion } from './questionquiz';
 import { AppProvider } from './contexts/AppContext';
 import AdminPanel from './components/AdminManager';
-import { fetchQuestionsBank } from './questions1'; // Dùng file questions1 của bạn
-// Fix: Import TeacherWordTask component
+import { fetchQuestionsBank } from './questions1';
 import TeacherWordTask from './components/TeacherWordTask';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result' | 'admin' | 'teacher_task'>('landing');
+  const [adminTab, setAdminTab] = useState<'matrix' | 'cauhoi'>('cauhoi');
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [activeExam, setActiveExam] = useState<any>(null);
   const [activeStudent, setActiveStudent] = useState<Student | null>(null);
@@ -75,14 +75,16 @@ const App: React.FC = () => {
     setExamResult(result);
     setCurrentView('result');
     let targetUrl = DEFAULT_API_URL;
-    if (result.type === 'quiz') {
-      targetUrl = DANHGIA_URL;
-    } else if (activeStudent && API_ROUTING[activeStudent.idnumber]) {
-      targetUrl = API_ROUTING[activeStudent.idnumber];
-    }
+    if (result.type === 'quiz') targetUrl = DANHGIA_URL;
+    else if (activeStudent && API_ROUTING[activeStudent.idnumber]) targetUrl = API_ROUTING[activeStudent.idnumber];
     try {
       await fetch(targetUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(result) });
     } catch (e) {}
+  };
+
+  const openAdmin = (tab: 'matrix' | 'cauhoi') => {
+    setAdminTab(tab);
+    setCurrentView('admin');
   };
 
   const goHome = () => {
@@ -117,13 +119,14 @@ const App: React.FC = () => {
                   onSelectGrade={(grade) => { setSelectedGrade(grade.toString()); setCurrentView('portal'); }} 
                   onSelectQuiz={handleStartQuizMode}
                   onOpenTeacherTask={() => setCurrentView('teacher_task')}
+                  onOpenAdmin={openAdmin}
                 />
               )}
               {currentView === 'teacher_task' && (
                 <TeacherWordTask onBack={goHome} />
               )}
               {currentView === 'admin' && (
-                <AdminPanel mode="cauhoi" onBack={goHome} />
+                <AdminPanel mode={adminTab} onBack={goHome} />
               )}
               {currentView === 'portal' && selectedGrade && (
                 <ExamPortal grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />

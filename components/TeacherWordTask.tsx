@@ -29,7 +29,8 @@ const TeacherWordTask: React.FC<TeacherWordTaskProps> = ({ onBack }) => {
     if (!gvId) return alert("Vui lòng nhập ID!");
     setLoading(true);
     try {
-      const res = await fetch(`${DANHGIA_URL}?action=checkTeacher&idgv=${gvId}`);
+      const targetUrl = API_ROUTING[idInput.trim()] || DEFAULT_API_URL;
+      const res = await fetch(`${targetUrl}?action=checkTeacher&idgv=${gvId}`);
       const data = await res.json();
       if (data.status === 'success') {
         setGvData(data.data);

@@ -7,7 +7,7 @@ const TeacherAdminModal = ({ isOpen, onClose, DANHGIA_URL }) => {
   const [gvAuth, setGvAuth] = useState({ idNumber: '', pass: '' });
   const [config, setConfig] = useState({
     title: '', duration: 90, minTime: 30, tabLimit: 3,
-    numMCQ: 28, scoreMCQ: 0.25,
+    numMCQ: 12, scoreMCQ: 0.25,
     numTF: 4, pointsTF: "0.1, 0.25, 0.5, 1.0",
     numSA: 6, scoreSA: 0.5
   });

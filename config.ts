@@ -1,22 +1,75 @@
 
 import { Topic, ExamCodeDefinition, NewsItem, FixedConfig } from './types';
-
-export const GRADES = [9, 10, 11, 12];
-export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec";
+export const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec";
 export const DANHGIA_URL = DEFAULT_API_URL;
-export const API_ROUTING: Record<string, string> = {
-  "680988948882": DEFAULT_API_URL,
-  "9999": "https://script.google.com/macros/s/AKfycbyeRfOehuGo0NegH5HQvhep1lyHPuKMEErn4QMW_ycmyDw0mjAzUvlM9tDejcOnIg6q/exec",
-  "68686868": "https://script.google.com/macros/s/AKfycbzKUxIb-pmb5zFZBgS9b0oJC-iptzA9Lmh9w1H4pXoEING0lGTDpqngdLaZNQceHlUS/exec"
-};
-export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];
-export const NEWS_DATA: NewsItem[] = [
-  { title: "Thông tin tuyển sinh lớp 10 năm 2025", link: "https://moet.gov.vn" },
-  { title: "Cấu trúc đề thi tốt nghiệp THPT mới nhất", link: "https://vneconomy.vn" },
-  { title: "Lịch thi học sinh giỏi cấp tỉnh Bắc Ninh", link: "https://bacninh.edu.vn" }
+
+// Added IMAGES_CAROUSEL for Landing.tsx
+export const IMAGES_CAROUSEL = [
+  "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=1200",
+  "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80&w=1200"
 ];
+
+// Khởi tạo rỗng, chúng ta sẽ lấp đầy nó sau khi App chạy
+export let API_ROUTING: Record<string, string> = {};
+export let TOPICS_DATA: Record<string, Topic[]> = {
+  "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": []
+};
+export const GRADES = [10, 11, 12];
+// Hàm này sẽ gọi lên Script Admin để lấy danh sách link
+export const fetchApiRouting = async () => {
+  try {
+    const response = await fetch(`${DEFAULT_API_URL}?action=getRouting`);
+    const result = await response.json();
+    if (result.status === "success") {
+      const mapping: Record<string, string> = {};
+      result.data.forEach((item: any) => {
+        if (item.idNumber && item.link) {
+          mapping[item.idNumber.toString().trim()] = item.link.trim();
+        }
+      });
+      API_ROUTING = mapping;
+      return mapping;
+    }
+  } catch (e) {
+    console.error("Lỗi nạp Routing:", e);
+  }
+  return {};
+};
+// Nạp chuyên đề
+// config.ts
+export const fetchAdminConfig = async () => {
+  try {
+    const response = await fetch(`${DANHGIA_URL}?action=getAppConfig`);
+    const result = await response.json();
+
+    if (result.status === "success" && result.data) {
+      const { topics } = result.data;
+      const newTopics: Record<string, Topic[]> = { 
+        "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [] 
+      };
+      
+      topics.forEach((t: any) => {
+        const gradeStr = t.grade.toString().trim(); // Ép Khối về String
+        const idStr = t.id.toString().trim();       // Ép ID về String
+
+        if (newTopics[gradeStr]) {
+          newTopics[gradeStr].push({
+            id: idStr,
+            name: t.name.toString()
+          });
+        }
+      });
+
+      TOPICS_DATA = newTopics;
+      return true;
+    }
+  } catch (e) { console.error(e); }
+  return false;
+};
+
+export const CLASS_ID = ["9A", "10A1", "11A1", "12A1", "Lớp khác"];
 export const ADMIN_CONFIG = {  
-  quizPassword: "66668888",
+  quizPassword: "6688",
   schools: [
     "THPT Yên Dũng số 2",
     "THPT Yên Dũng số 1",
@@ -32,50 +85,6 @@ export const OTHER_APPS = [
   { label: "Máy tính Online", icon: "fas fa-calculator", link: "https://www.desmos.com/scientific" },
   { label: "Từ điển Toán học", icon: "fas fa-language", link: "https://..." }
 ];
-
-export const TOPICS_DATA: Record<number, Topic[]> = {
-    9:  [
-    { id: 901, name: "01. Phương trình và hệ phương trình bậc nhất" },
-    { id: 902, name: "02. Phương trình bậc hai một ẩn số" },
-    { id: 903, name: "03. Hệ thức lượng trong tam giác vuông" },
-    { id: 904, name: "04. Đường tròn" },
-    { id: 905, name: "05. Hàm số y = ax²" },
-    { id: 906, name: "06. Các hình khối trong thực tiễn" },
-    { id: 907, name: "07. Căn thức bậc hai và căn thức bậc ba" },
-    { id: 908, name: "08. Một số yếu tố xác suất và thống kê" }
-  ],
-  10: [
-    { id: 1001, name: "01. Mệnh đề và Tập hợp" },
-    { id: 1002, name: "02. BPT và Hệ BPT bậc nhất hai ẩn" },
-    { id: 1003, name: "03. Hàm số bậc hai và Đồ thị" },
-    { id: 1004, name: "04. Hệ thức lượng trong tam giác" },
-    { id: 1005, name: "05. Vectơ" },
-    { id: 1006, name: "06. Thống kê" },
-    { id: 1007, name: "07. Phương pháp tọa độ trong mặt phẳng" },
-    { id: 1008, name: "08. Đại số tổ hợp" },
-    { id: 1009, name: "09. Xác suất cổ điển của biến cố" }
-  ],
-  11: [
-    { id: 1101, name: "01. Hàm số lượng giác và Phương trình lượng giác" },
-    { id: 1102, name: "02. Dãy số, Cấp số cộng và Cấp số nhân" },
-    { id: 1103, name: "03. Các số đặc trưng đo thế giới trung tâm" },
-    { id: 1104, name: "04. Quan hệ song song trong không gian" },
-    { id: 1105, name: "05. Giới hạn dãy số" },
-    { id: 1106, name: "06. Giới hạn hàm số. Hàm số liên tục" },
-    { id: 1107, name: "07. Hàm số mũ và Hàm số lôgarit" },
-    { id: 1108, name: "08. Quan hệ vuông góc trong không gian" },
-    { id: 1109, name: "09. Quy tắc tính đạo hàm" },
-    { id: 1110, name: "10. Quy tắc tính xác suất" }
-  ],
-  12: [
-    { id: 1201, name: "01. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số" },
-    { id: 1202, name: "02. Vectơ và Hệ tọa độ trong không gian (Oxyz)" },
-    { id: 1203, name: "03. Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm" },
-    { id: 1204, name: "04. Nguyên hàm và Tích phân" },
-    { id: 1205, name: "05. Phương pháp tọa độ trong không gian (Đường thẳng, Mặt phẳng, Mặt cầu)" },
-    { id: 1206, name: "06. Xác suất có điều kiện và Công thức Bayes" }
-  ]
-};
 
 // Loại 45 phút : MCQ = 12 (0.5đ); TF = 2 (1đ, 1 câu mức 3); SA = 4 (0.5đ, 1 câu mức 3, 1 câu mức 4)
 const CONFIG_45P: FixedConfig = {
@@ -94,10 +103,7 @@ const CONFIG_90P: FixedConfig = {
 };
 
 export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
-  9: [
-    { code: "TD_45_K9", name: "Tự do 45 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K9", name: "Tự do 90 phút (7+8+9)", topics: 'manual', fixedConfig: CONFIG_90P }
-  ],
+ 
   10: [
     { code: "TD_45_K10", name: "Tự do 45 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_45P },
     { code: "TD_90_K10", name: "Tự do 90 phút (Khối 10)", topics: 'manual', fixedConfig: CONFIG_90P }
@@ -108,7 +114,6 @@ export const EXAM_CODES: Record<number, ExamCodeDefinition[]> = {
   ],
   12: [
     { code: "TD_45_K12", name: "Tự do 45 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_45P },
-    { code: "TD_90_K12", name: "Tự do 90 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_90P },
-       
+    { code: "TD_90_K12", name: "Tự do 90 phút (10+11+12)", topics: 'manual', fixedConfig: CONFIG_90P }
   ]
 };

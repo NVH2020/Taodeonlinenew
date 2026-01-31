@@ -12,14 +12,17 @@ export interface Question {
   part: string;
   type: QuestionType;
   question: string;
-  o?: string[]; // Options
-  a?: string;   // Correct Answer (string for MCQ/SA)
+  o?: string[];
+  a?: string;
   s?: TrueFalseStatement[];
-  shuffledOptions?: string[]; // Dùng để lưu phương án sau khi trộn
+  loigiai?: string;
+  shuffledOptions?: string[];
+ 
 }
 
+
 export interface Topic {
-  id: number;
+  id: number | string;
   name: string;
 }
 
@@ -42,7 +45,7 @@ export interface FixedConfig {
 export interface ExamCodeDefinition {
   code: string;
   name: string;
-  topics: number[] | 'manual';
+  topics: number[] | string[] | 'manual';
   fixedConfig?: FixedConfig;
 }
 
@@ -101,4 +104,47 @@ export interface AppUser {
   phoneNumber: string;
   isVip: boolean;
   name?: string;
+}
+
+// Added missing interfaces for AppContext
+export interface ClassInfo {
+  id: string;
+  grade: number;
+  title: string;
+  description: string;
+  schedule: string;
+  link: string;
+}
+
+export interface ScheduleGrid {
+  days: string[];
+  classNames: string[];
+  cells: Record<string, string>;
+}
+
+export interface DocumentItem {
+  id: number;
+  title: string;
+  type: string;
+  date: string;
+  downloadUrl: string;
+}
+
+export interface HeroData {
+  badge: string;
+  titleLine1: string;
+  titleLine2: string;
+  description: string;
+}
+
+export interface ContactData {
+  phone: string;
+  email: string;
+  address: string;
+}
+
+export interface RatingData {
+  average: number;
+  total: number;
+  breakdown: Record<number, number>;
 }

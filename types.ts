@@ -1,6 +1,10 @@
 
 export type QuestionType = 'mcq' | 'true-false' | 'short-answer';
 
+// Fix: Suppress module augmentation error for mammoth using ts-ignore
+// @ts-ignore
+declare module 'mammoth';
+
 export interface TrueFalseStatement {
   text: string;
   a: boolean;

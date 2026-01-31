@@ -12,11 +12,11 @@ const TeacherWordTask: React.FC<TeacherWordTaskProps> = ({ onBack }) => {
   const [step, setStep] = useState<'verify' | 'work'>('verify');
   const [loading, setLoading] = useState(false);
   const [gvId, setGvId] = useState('');
-  const [gvData, setGvData] = useState<any>(null);
+  const [gvData, setGvData] = useState<any>(null); 
 
   const [examForm, setExamForm] = useState({
     exams: '', fulltime: 90, mintime: 30, tab: 3, dateclose: '',
-    MCQ: 28, scoremcq: 0.25, 
+    MCQ: 12, scoremcq: 0.25, 
     TF: 4, scoretf: 1.0, 
     SA: 6, scoresa: 0.5, 
     IDimglink: ''
@@ -29,7 +29,7 @@ const TeacherWordTask: React.FC<TeacherWordTaskProps> = ({ onBack }) => {
     if (!gvId) return alert("Vui lòng nhập ID!");
     setLoading(true);
     try {
-      const targetUrl = API_ROUTING[idInput.trim()] || DEFAULT_API_URL;
+      const targetUrl = API_ROUTING[gvId.trim()] || DEFAULT_API_URL;
       const res = await fetch(`${targetUrl}?action=checkTeacher&idgv=${gvId}`);
       const data = await res.json();
       if (data.status === 'success') {

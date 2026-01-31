@@ -10,19 +10,18 @@ import Footer from './components/Footer';
 import { getRandomQuizQuestion } from './questionquiz';
 import { AppProvider } from './contexts/AppContext';
 import AdminPanel from './components/AdminManager';
-import { fetchQuestionsBank } from './questions';
+import { fetchQuestionsBank } from './questions1'; // Dùng file questions1 của bạn
+// Fix: Import TeacherWordTask component
+import TeacherWordTask from './components/TeacherWordTask';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result' | 'admin'>('landing');
-  const [adminMode, setAdminMode] = useState<'matran' | 'cauhoi' | 'word'>('matran'); 
+  const [currentView, setCurrentView] = useState<'landing' | 'portal' | 'quiz' | 'result' | 'admin' | 'teacher_task'>('landing');
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [activeExam, setActiveExam] = useState<any>(null);
   const [activeStudent, setActiveStudent] = useState<Student | null>(null);
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<AppUser | null>(null);
-  const [showAuth, setShowAuth] = useState(false);
-  const [showVipModal, setShowVipModal] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
@@ -113,14 +112,18 @@ const App: React.FC = () => {
              {currentView === 'landing' && (
                 <LandingPage 
                   user={user} 
-                  onOpenAuth={() => setShowAuth(true)} 
-                  onOpenVip={() => user ? setShowVipModal(true) : setShowAuth(true)}
+                  onOpenAuth={() => {}} 
+                  onOpenVip={() => {}}
                   onSelectGrade={(grade) => { setSelectedGrade(grade.toString()); setCurrentView('portal'); }} 
                   onSelectQuiz={handleStartQuizMode}
+                  onOpenTeacherTask={() => setCurrentView('teacher_task')}
                 />
               )}
+              {currentView === 'teacher_task' && (
+                <TeacherWordTask onBack={goHome} />
+              )}
               {currentView === 'admin' && (
-                <AdminPanel mode={adminMode} onBack={goHome} />
+                <AdminPanel mode="cauhoi" onBack={goHome} />
               )}
               {currentView === 'portal' && selectedGrade && (
                 <ExamPortal grade={selectedGrade} onBack={goHome} onStart={handleStartExam} />

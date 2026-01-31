@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { IMAGES_CAROUSEL, DANHGIA_URL, ADMIN_CONFIG, OTHER_APPS } from '../config';
 import { AppUser, Student } from '../types';
@@ -41,7 +42,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
 
+  // Fix: Added missing ratings property to initial state
   const [stats, setStats] = useState<{ratings: Record<number, number>, top10: any[]}>({
+        ratings: {},
         top10: []
   });
 
@@ -68,12 +71,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
     if (quizMode === 'gift' && inputPassword !== serverPassword) return alert("Mật khẩu Quà QuiZ không chính xác!. Liên hệ: 0988.948.882 để được giải đáp!");
     if (!quizInfo.name || !quizInfo.phone) return alert("Vui lòng nhập đầy đủ thông tin!");
     
+    // Fix: Object literal property mapping. 'className' changed to 'class' to match Partial<Student>
     onSelectQuiz(showQuizModal!.num, showQuizModal!.pts, {
       ...quizInfo,
       phoneNumber: quizInfo.phone,
       stk: quizMode === 'gift' ? bankInfo.stk : "Tự do",
       bank: quizMode === 'gift' ? bankInfo.bankName : "Tự do",
-      className: quizInfo.class,
+      class: quizInfo.class,
       school: quizInfo.school
     });
     setShowQuizModal(null);

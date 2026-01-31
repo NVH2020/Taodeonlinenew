@@ -10,9 +10,10 @@ interface LandingPageProps {
   onOpenAuth: () => void;
   onOpenVip: () => void;
   onOpenTeacherTask: () => void;
+  onOpenAdmin: (tab: 'matrix' | 'cauhoi') => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip, onOpenTeacherTask }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, user, onOpenAuth, onOpenVip, onOpenTeacherTask, onOpenAdmin }) => {
   const [currentImg, setCurrentImg] = useState(0);
   const [showQuizModal, setShowQuizModal] = useState<{num: number, pts: number} | null>(null);
   const [quizMode, setQuizMode] = useState<'free' | 'gift' | null>(null);
@@ -76,7 +77,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
   return (
     <div className="flex flex-col gap-6 pb-12 font-sans overflow-x-hidden">
-      {/* HEADER BUTTONS */}
+      {/* HEADER BUTTONS - ĐÃ KHÔI PHỤC CÁC NÚT LINH HỒN VÀ LỌC LỚP 10-12 */}
       <div className="flex justify-center">
         <div className="bg-white p-2 rounded-3xl shadow-lg border border-slate-100 mt-4 overflow-hidden max-w-full">
           <div className="flex flex-nowrap overflow-x-auto gap-3 pb-2 pt-1 px-1 no-scrollbar items-center">
@@ -89,10 +90,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               <i className="fas fa-gift"></i> SĂN QUÀ 
             </button>      
             {[10, 11, 12].map(g => (
-              <button key={g} onClick={() => onSelectGrade(g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 h-[60px] flex items-center justify-center gap-2 min-w-[120px]">
-                <i className="fas fa-user-graduate"></i> LỚP {g}
+              <button key={g} onClick={() => onSelectGrade(g)} className="px-6 bg-blue-600 text-white border-b-4 border-blue-800 rounded-2xl font-black text-sm shrink-0 h-[60px] flex items-center justify-center gap-2 min-w-[100px]">
+                LỚP {g}
               </button>
             ))}
+            <button onClick={() => onOpenAdmin('matrix')} className="px-6 bg-indigo-600 text-white border-b-4 border-indigo-800 rounded-2xl font-black text-sm shrink-0 h-[60px] uppercase flex items-center justify-center gap-2">
+              <i className="fas fa-layer-group"></i> QUẢN LÝ MA TRẬN
+            </button>
+            <button onClick={() => onOpenAdmin('cauhoi')} className="px-6 bg-blue-700 text-white border-b-4 border-blue-900 rounded-2xl font-black text-sm shrink-0 h-[60px] uppercase flex items-center justify-center gap-2">
+              <i className="fas fa-database"></i> NGÂN HÀNG ĐỀ
+            </button>
             <button onClick={onOpenTeacherTask} className="px-6 bg-emerald-600 text-white border-b-4 border-emerald-800 rounded-2xl font-black text-sm shrink-0 h-[60px] uppercase flex items-center justify-center gap-2 whitespace-nowrap">
               <i className="fas fa-file-word"></i> TẠO ĐỀ WORD
             </button>
@@ -114,7 +121,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
 
       {/* MAIN CONTENT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto w-full px-2">
-        {/* TOP 10 */}
         <div className="lg:col-span-3">
           <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden h-full flex flex-col min-h-[500px]">
             <div className="bg-blue-600 p-4 text-white font-black text-xs uppercase text-center flex items-center justify-center gap-2">
@@ -138,7 +144,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* CAROUSEL */}
         <div className="lg:col-span-7">
           <div className="relative h-64 md:h-full min-h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
             {IMAGES_CAROUSEL.map((img, idx) => (
@@ -152,19 +157,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
           </div>
         </div>
 
-        {/* RIGHT SIDEBAR ACTIONS */}
         <div className="lg:col-span-2 flex flex-col gap-3">            
-          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2 hover:bg-indigo-700 transition">
+          <button onClick={() => window.open("https://new-chat-bot-two.vercel.app/", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-headset text-lg"></i><br/>Trợ lý học tập
           </button>
-          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2 hover:bg-indigo-700 transition">
+          <button onClick={() => window.open("https://www.facebook.com/hoctoanthayha.bg", '_blank')} className="w-full flex-1 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-indigo-900 p-2">
             <i className="fas fa-users text-lg"></i><br/>Đăng ký học Toán
           </button>
-          <button onClick={() => setshowLichOptions(true)} className="h-[85px] bg-white hover:bg-teal-600 hover:text-white text-teal-600 rounded-[2rem] shadow-lg border-b-4 border-teal-200 font-black uppercase flex flex-col items-center justify-center transition-all group">
+          <button onClick={() => setshowLichOptions(true)} className="h-[85px] bg-white text-teal-600 rounded-[2rem] shadow-lg border-b-4 border-teal-200 font-black uppercase flex flex-col items-center justify-center transition-all">
             <i className="fas fa-calendar-check text-2xl mb-1"></i>
             <span className="text-[12px]">Lịch học Toán</span>
           </button> 
-          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2 hover:bg-purple-700 transition">
+          <button onClick={() => setShowSubjectModal(true)} className="w-full flex-1 bg-purple-600 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-purple-800 p-2">
             <i className="fas fa-graduation-cap text-lg"></i><br/>Chọn môn học
           </button>
           <div className="relative group w-full flex-1">
@@ -180,7 +184,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
               ))}
             </div>
           </div>
-          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2 hover:from-amber-500 hover:to-orange-600 transition">
+          <button onClick={onOpenVip} className="w-full flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[10px] uppercase border-b-4 border-orange-700 p-2">
             <i className="fas fa-gem text-lg"></i><br/>Nâng Cấp VIP
           </button>
         </div>
@@ -217,27 +221,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectGrade, onSelectQuiz, 
                 )}
                 <input required placeholder="Họ và tên" className="w-full p-3 bg-slate-100 rounded-xl font-bold" value={quizInfo.name} onChange={e=>setQuizInfo({...quizInfo, name: e.target.value})} />
                 <input required type="tel" placeholder="Số điện thoại" className="w-full p-3 bg-slate-100 rounded-xl font-bold" value={quizInfo.phone} onChange={e=>setQuizInfo({...quizInfo, phone: e.target.value})} />
-                <select required className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={(e) => { setIsOtherClass(e.target.value === "Khác"); setQuizInfo({...quizInfo, class: e.target.value === "Khác" ? "" : e.target.value}); }}>
-                  <option value="">Chọn lớp học</option>
-                  {ADMIN_CONFIG.CLASS_ID.filter(c => c !== "Khác").map(c => <option key={c} value={c}>{c}</option>)}
-                  <option value="Khác">Lớp khác...</option>
+                
+                <select className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={e => { setIsOtherClass(e.target.value === 'Khác'); setQuizInfo({...quizInfo, class: e.target.value === 'Khác' ? '' : e.target.value}) }}>
+                  <option value="">Chọn lớp</option>
+                  {ADMIN_CONFIG.CLASS_ID.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
-                {isOtherClass && <input required placeholder="Nhập tên lớp..." className="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl font-bold" onChange={e => setQuizInfo({...quizInfo, class: e.target.value})} />}
-                <select required className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={(e) => { setIsOtherSchool(e.target.value === "Khác"); setQuizInfo({...quizInfo, school: e.target.value === "Khác" ? "" : e.target.value}); }}>
-                  <option value="">Chọn trường học</option>
+                {isOtherClass && <input required placeholder="Nhập lớp..." className="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl font-bold" onChange={e => setQuizInfo({...quizInfo, class: e.target.value})} />}
+                
+                <select className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={e => { setIsOtherSchool(e.target.value === 'Khác'); setQuizInfo({...quizInfo, school: e.target.value === 'Khác' ? '' : e.target.value}) }}>
+                  <option value="">Chọn trường</option>
                   {ADMIN_CONFIG.schools.map(s => <option key={s} value={s}>{s}</option>)}
-                  <option value="Khác">Trường khác...</option>
                 </select>
-                {isOtherSchool && <input required placeholder="Nhập tên trường..." className="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl font-bold" onChange={e => setQuizInfo({...quizInfo, school: e.target.value})} />}
+                {isOtherSchool && <input required placeholder="Nhập trường..." className="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl font-bold" onChange={e => setQuizInfo({...quizInfo, school: e.target.value})} />}
+
                 {quizMode === 'gift' && (
-                  <div className="p-4 bg-orange-50 rounded-2xl space-y-3 border border-orange-100">
-                    <input required placeholder="Số tài khoản ngân hàng" className="w-full p-3 bg-white rounded-xl font-bold" value={bankInfo.stk} onChange={e=>setBankInfo({...bankInfo, stk: e.target.value})} />
-                    <select required className="w-full p-3 bg-white rounded-xl font-bold" onChange={(e) => { setIsOtherBank(e.target.value === "Khác"); setBankInfo({...bankInfo, bankName: e.target.value === "Khác" ? "" : e.target.value}); }}>
+                  <div className="p-4 bg-orange-50 rounded-2xl space-y-3">
+                    <input required placeholder="Số tài khoản ngân hàng" className="w-full p-3 bg-white rounded-xl" onChange={e=>setBankInfo({...bankInfo, stk: e.target.value})} />
+                    <select className="w-full p-3 bg-white rounded-xl" onChange={e => { setIsOtherBank(e.target.value === 'Khác'); setBankInfo({...bankInfo, bankName: e.target.value === 'Khác' ? '' : e.target.value}) }}>
                       <option value="">Ngân hàng</option>
                       {ADMIN_CONFIG.banks.map(b => <option key={b} value={b}>{b}</option>)}
-                      <option value="Khác">Khác...</option>
                     </select>
-                    {isOtherBank && <input required placeholder="Tên ngân hàng..." className="w-full p-3 bg-white border border-orange-200 rounded-xl font-bold" onChange={e => setBankInfo({...bankInfo, bankName: e.target.value})} />}
+                    {isOtherBank && <input required placeholder="Tên ngân hàng..." className="w-full p-3 bg-white rounded-xl" onChange={e => setBankInfo({...bankInfo, bankName: e.target.value})} />}
                   </div>
                 )}
                 <button className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black shadow-xl uppercase">Vào Thi</button>
